@@ -118,7 +118,9 @@ public class SchemaIndexCacheVisitorImpl implements SchemaIndexCacheVisitor {
                 int cntr = 0;
 
                 while (cursor.next()) {
-                    KeyCacheObject key = cursor.get().key();
+                    CacheDataRowAdapter row = (CacheDataRowAdapter)cursor.get();
+
+                    KeyCacheObject key = row.key();
 
                     if (!locked) {
                         cctx.shared().database().checkpointReadLock();
@@ -126,7 +128,7 @@ public class SchemaIndexCacheVisitorImpl implements SchemaIndexCacheVisitor {
                         locked = true;
                     }
 
-                    processKey(key, clo);
+                    processKey(key, row, clo);
 
                     if (++cntr % BATCH_SIZE == 0) {
                         cctx.shared().database().checkpointReadUnlock();
@@ -152,10 +154,11 @@ public class SchemaIndexCacheVisitorImpl implements SchemaIndexCacheVisitor {
      * Process single key.
      *
      * @param key Key.
+     * @param row Data row.
      * @param clo Closure.
      * @throws IgniteCheckedException If failed.
      */
-    private void processKey(KeyCacheObject key, SchemaIndexCacheVisitorClosure clo) throws IgniteCheckedException {
+    private void processKey(KeyCacheObject key, CacheDataRowAdapter row, SchemaIndexCacheVisitorClosure clo) throws IgniteCheckedException {
         while (true) {
             try {
                 checkCancelled();
@@ -163,7 +166,7 @@ public class SchemaIndexCacheVisitorImpl implements SchemaIndexCacheVisitor {
                 GridCacheEntryEx entry = cctx.cache().entryEx(key);
 
                 try {
-                    entry.updateIndex(rowFilter, clo);
+                    entry.updateIndex(rowFilter, row, clo);
                 }
                 finally {
                     cctx.evicts().touch(entry, AffinityTopologyVersion.NONE);

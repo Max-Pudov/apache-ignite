@@ -103,6 +103,8 @@ public abstract class GridCacheMapEntry extends GridMetadataAwareAdapter impleme
     /** */
     private static final byte IS_EVICT_DISABLED = 0x04;
 
+    public static boolean OFFHEAP_HACK;
+
     /** */
     public static final GridCacheAtomicVersionComparator ATOMIC_VER_COMPARATOR = new GridCacheAtomicVersionComparator();
 
@@ -3291,7 +3293,7 @@ public abstract class GridCacheMapEntry extends GridMetadataAwareAdapter impleme
     }
 
     /** {@inheritDoc} */
-    @Override public void updateIndex(SchemaIndexCacheFilter filter, SchemaIndexCacheVisitorClosure clo)
+    @Override public void updateIndex(SchemaIndexCacheFilter filter, CacheDataRowAdapter row, SchemaIndexCacheVisitorClosure clo)
         throws IgniteCheckedException, GridCacheEntryRemovedException {
         synchronized (this) {
             if (isInternal())
@@ -3299,7 +3301,10 @@ public abstract class GridCacheMapEntry extends GridMetadataAwareAdapter impleme
 
             checkObsolete();
 
-            CacheDataRow row = cctx.offheap().read(this);
+            if (OFFHEAP_HACK)
+                row.initFromLink(cctx.group(), CacheDataRowAdapter.RowData.NO_KEY);
+            else
+                row = (CacheDataRowAdapter)cctx.offheap().read(this);
 
             if (row != null && (filter == null || filter.apply(row)))
                 clo.apply(row);

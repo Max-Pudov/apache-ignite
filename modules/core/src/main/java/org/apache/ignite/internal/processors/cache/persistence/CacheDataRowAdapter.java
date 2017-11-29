@@ -119,7 +119,7 @@ public class CacheDataRowAdapter implements CacheDataRow {
         RowData rowData)
         throws IgniteCheckedException {
         assert link != 0 : "link";
-        assert key == null : "key";
+//        assert key == null : "key";
 
         CacheObjectContext coctx = grp != null ?  grp.cacheObjectContext() : null;
 

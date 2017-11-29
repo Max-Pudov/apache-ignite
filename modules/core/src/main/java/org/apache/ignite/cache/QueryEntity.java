@@ -355,9 +355,12 @@ public class QueryEntity implements Serializable {
      * Sets table name for this query entity.
      *
      * @param tableName table name
+     * @return {@code this} for chaining.
      */
-    public void setTableName(String tableName) {
+    public QueryEntity setTableName(String tableName) {
         this.tableName = tableName;
+
+        return this;
     }
 
     /**

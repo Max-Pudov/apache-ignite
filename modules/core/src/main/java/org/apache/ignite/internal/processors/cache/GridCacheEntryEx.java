@@ -29,6 +29,7 @@ import org.apache.ignite.internal.processors.cache.distributed.GridDistributedLo
 import org.apache.ignite.internal.processors.cache.distributed.dht.GridDhtLocalPartition;
 import org.apache.ignite.internal.processors.cache.distributed.dht.atomic.GridDhtAtomicAbstractUpdateFuture;
 import org.apache.ignite.internal.processors.cache.persistence.CacheDataRow;
+import org.apache.ignite.internal.processors.cache.persistence.CacheDataRowAdapter;
 import org.apache.ignite.internal.processors.cache.transactions.IgniteInternalTx;
 import org.apache.ignite.internal.processors.cache.transactions.IgniteTxKey;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
@@ -871,11 +872,12 @@ public interface GridCacheEntryEx {
      * Update index from within entry lock, passing key, value, and expiration time to provided closure.
      *
      * @param filter Row filter.
+     * @param row Data row.
      * @param clo Closure to apply to key, value, and expiration time.
      * @throws IgniteCheckedException If failed.
      * @throws GridCacheEntryRemovedException If entry was removed.
      */
-    public void updateIndex(SchemaIndexCacheFilter filter, SchemaIndexCacheVisitorClosure clo)
+    public void updateIndex(SchemaIndexCacheFilter filter, CacheDataRowAdapter row, SchemaIndexCacheVisitorClosure clo)
         throws IgniteCheckedException, GridCacheEntryRemovedException;
 
     /**

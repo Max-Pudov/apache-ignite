@@ -18,14 +18,20 @@
 package org.apache.ignite.internal.processors.cache.index;
 
 import java.util.Arrays;
+import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteDataStreamer;
 import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.binary.BinaryObjectBuilder;
 import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.cache.QueryIndex;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.DataRegionConfiguration;
+import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.configuration.WALMode;
 import org.apache.ignite.internal.IgniteEx;
+import org.apache.ignite.internal.processors.cache.GridCacheMapEntry;
+import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.TcpDiscoveryIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
@@ -41,14 +47,25 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
     /** Cache name. */
     private static final String CACHE_NAME = "test";
 
+    /** Index name. */
+    private static final String INDEX_NAME = "IDX";
+
     /** Keys count. */
-    private static final int KEYS = 1_500_0;
+    private static final int KEYS = 10_000_000;
 
     /** Fields count. */
     private static final int FIELDS = 10;
 
     /** Fields count. */
-    private static final String TABLE_NAME = "Value";
+    private static final String TABLE_NAME = "VALUE";
+
+    /** Field name prefix. */
+    private static final String FIELD_PREF = "FIELD_";
+
+    /** {@inheritDoc} */
+    @Override protected long getTestTimeout() {
+        return 10 * 3600 * 1000;
+    }
 
     /** {@inheritDoc} */
     @Override protected IgniteConfiguration getConfiguration(String igniteInstanceName) throws Exception {
@@ -61,15 +78,24 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
         cfg.setDiscoverySpi(disco);
 
         cfg.setCacheConfiguration(new CacheConfiguration().setName(CACHE_NAME).setQueryEntities(Arrays.asList(
-            new QueryEntity(Integer.class.getName(), TABLE_NAME)
-                .addQueryField("field_0", String.class.getName(), null))));
+            new QueryEntity(Long.class.getName(), TABLE_NAME).setTableName(TABLE_NAME)
+                .addQueryField(FIELD_PREF + 0, String.class.getName(), null))));
+
+        cfg.setDataStorageConfiguration(new DataStorageConfiguration().setWalMode(WALMode.NONE)
+            .setDefaultDataRegionConfiguration(new DataRegionConfiguration().setPersistenceEnabled(true)));
 
         return cfg;
     }
 
     /** {@inheritDoc} */
     @Override protected void beforeTestsStarted() throws Exception {
+        super.beforeTestsStarted();
+
+        U.resolveWorkDirectory(U.defaultWorkDirectory(), "db", true);
+
         startGrid();
+
+        grid().active(true);
     }
 
     /** {@inheritDoc} */
@@ -81,17 +107,33 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
      * @throws Exception On error.
      */
     public void testBenchmark() throws Exception {
-        IgniteEx ig = grid();
-
         fillData();
 
-        System.out.println("+++ Begin creating index");
+        createIdx();
+        for (int i = 0; i < 2; ++i) {
+            GridCacheMapEntry.OFFHEAP_HACK = false;
 
+            createIdx();
+
+            GridCacheMapEntry.OFFHEAP_HACK = true;
+
+            createIdx();
+        }
+    }
+
+    /**
+     * @throws IgniteCheckedException If failed.
+     */
+    private void createIdx() throws IgniteCheckedException {
         long t0 = System.currentTimeMillis();
 
-        ig.context().query().dynamicIndexCreate(CACHE_NAME, CACHE_NAME, TABLE_NAME, new QueryIndex("field_0"), false);
+        grid().context().query().dynamicIndexCreate(CACHE_NAME, CACHE_NAME, TABLE_NAME,
+            new QueryIndex(FIELD_PREF + 0).setName(INDEX_NAME), false).get();
 
-        System.out.println("Index build: " + ((System.currentTimeMillis() - t0) / 1000.0));
+        System.out.println("+++ Index build (HACK=" + GridCacheMapEntry.OFFHEAP_HACK + "): "
+            + ((System.currentTimeMillis() - t0) / 1000.0));
+
+        grid().context().query().dynamicIndexDrop(CACHE_NAME, CACHE_NAME, INDEX_NAME, false).get();
     }
 
     /**
@@ -99,11 +141,11 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
      */
     private void fillData() throws Exception {
         try(IgniteDataStreamer streamer = grid().dataStreamer(CACHE_NAME)) {
-            for (int i = 0; i < KEYS; ++i) {
+            for (long i = 0; i < KEYS; ++i) {
                 BinaryObjectBuilder bob = grid().binary().builder(TABLE_NAME);
 
                 for (int fld = 0; fld < FIELDS; ++fld)
-                    bob.setField("field_" + fld, "value_" + fld + "_" + i);
+                    bob.setField(FIELD_PREF + fld, "value_" + fld + "_" + i);
 
                 streamer.addData(i, bob.build());
 
