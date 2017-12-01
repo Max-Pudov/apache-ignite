@@ -18,6 +18,7 @@
 package org.apache.ignite.internal.processors.cache.index;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteDataStreamer;
 import org.apache.ignite.binary.BinaryObject;
@@ -51,7 +52,7 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
     private static final String INDEX_NAME = "IDX";
 
     /** Keys count. */
-    private static final int KEYS = 10_000_000;
+    private static final int KEYS = 15_000_000;
 
     /** Fields count. */
     private static final int FIELDS = 10;
@@ -81,8 +82,16 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
             new QueryEntity(Long.class.getName(), TABLE_NAME).setTableName(TABLE_NAME)
                 .addQueryField(FIELD_PREF + 0, String.class.getName(), null))));
 
-        cfg.setDataStorageConfiguration(new DataStorageConfiguration().setWalMode(WALMode.NONE)
-            .setDefaultDataRegionConfiguration(new DataRegionConfiguration().setPersistenceEnabled(true)));
+        cfg.setDataStorageConfiguration(new DataStorageConfiguration().setWalMode(WALMode.LOG_ONLY)
+            .setCheckpointFrequency(Long.MAX_VALUE)
+            .setWriteThrottlingEnabled(true)
+            .setDefaultDataRegionConfiguration(
+                new DataRegionConfiguration()
+                    .setName("HugeCheckpoint")
+                    .setPersistenceEnabled(true)
+                    .setMaxSize(4L * 1024 * 1024 * 1024)
+                    .setInitialSize(4L * 1024 * 1024 * 1024)
+                    .setCheckpointPageBufferSize(256 * 1024 * 1024)));
 
         return cfg;
     }
@@ -109,8 +118,11 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
     public void testBenchmark() throws Exception {
         fillData();
 
+        System.out.println("+++ warmup");
         createIdx();
-        for (int i = 0; i < 2; ++i) {
+
+        System.out.println("+++ benchmark");
+        while (true) {
             GridCacheMapEntry.OFFHEAP_HACK = false;
 
             createIdx();
@@ -128,7 +140,7 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
         long t0 = System.currentTimeMillis();
 
         grid().context().query().dynamicIndexCreate(CACHE_NAME, CACHE_NAME, TABLE_NAME,
-            new QueryIndex(FIELD_PREF + 0).setName(INDEX_NAME), false).get();
+            new QueryIndex(FIELD_PREF + 0).setName(INDEX_NAME), false, 0).get();
 
         System.out.println("+++ Index build (HACK=" + GridCacheMapEntry.OFFHEAP_HACK + "): "
             + ((System.currentTimeMillis() - t0) / 1000.0));
@@ -140,18 +152,23 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
      * @throws Exception On error.
      */
     private void fillData() throws Exception {
-        try(IgniteDataStreamer streamer = grid().dataStreamer(CACHE_NAME)) {
-            for (long i = 0; i < KEYS; ++i) {
+        int batchSize = 100_000;
+
+        for (long i = 0; i < KEYS / batchSize; ++i) {
+            System.out.println("Fill data: " + i * batchSize);
+
+            HashMap<Long, BinaryObject> data = new HashMap<>(batchSize);
+
+            for (int j = 0; j < batchSize; ++j) {
                 BinaryObjectBuilder bob = grid().binary().builder(TABLE_NAME);
 
                 for (int fld = 0; fld < FIELDS; ++fld)
                     bob.setField(FIELD_PREF + fld, "value_" + fld + "_" + i);
 
-                streamer.addData(i, bob.build());
-
-                if (i % 100_000 == 0)
-                    System.out.println("Fill data: " + i);
+                data.put(i * batchSize + j, bob.build());
             }
+
+            grid().cache(CACHE_NAME).putAll(data);
         }
     }
 
