@@ -3301,13 +3301,21 @@ public abstract class GridCacheMapEntry extends GridMetadataAwareAdapter impleme
 
             checkObsolete();
 
-            if (OFFHEAP_HACK)
-                row.initFromLink(cctx.group(), CacheDataRowAdapter.RowData.NO_KEY);
-            else
-                row = (CacheDataRowAdapter)cctx.offheap().read(this);
+            CacheDataRowAdapter.OffheapPageLocker lock = null;
+            try {
+                if (OFFHEAP_HACK)
+                    lock = row.initOffheapValueFromLink(cctx.group(), cctx.group().shared(),
+                        cctx.group().dataRegion().pageMemory());
+                else
+                    row = (CacheDataRowAdapter)cctx.offheap().read(this);
 
-            if (row != null && (filter == null || filter.apply(row)))
-                clo.apply(row);
+                if (row != null && (filter == null || filter.apply(row)))
+                    clo.apply(row);
+            }
+            finally {
+                if (lock != null)
+                    lock.unlock();
+            }
         }
     }
 

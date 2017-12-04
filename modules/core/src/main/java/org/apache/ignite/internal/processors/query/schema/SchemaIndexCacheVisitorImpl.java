@@ -195,7 +195,6 @@ public class SchemaIndexCacheVisitorImpl implements SchemaIndexCacheVisitor {
                 int cntr = 0;
 
                 while (cursor.next() && !stop) {
-
                     CacheDataRowAdapter row = (CacheDataRowAdapter)cursor.get();
 
                     KeyCacheObject key = cursor.get().key();

@@ -52,7 +52,7 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
     private static final String INDEX_NAME = "IDX";
 
     /** Keys count. */
-    private static final int KEYS = 15_000_000;
+    private static final int KEYS = 6_000_000;
 
     /** Fields count. */
     private static final int FIELDS = 10;
@@ -146,6 +146,16 @@ public class IndexSimpleBenchmarkTest extends GridCommonAbstractTest {
             + ((System.currentTimeMillis() - t0) / 1000.0));
 
         grid().context().query().dynamicIndexDrop(CACHE_NAME, CACHE_NAME, INDEX_NAME, false).get();
+
+        System.gc();
+
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
