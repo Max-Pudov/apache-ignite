@@ -132,7 +132,7 @@ form(novalidate name=form)
                     'Flag indicating whether data can be read from backup<br/>\
                     If not set then always get data from primary node (never from backup)')
             .settings-row(ng-show='cache.cacheMode === "PARTITIONED" && cache.atomicityMode === "TRANSACTIONAL"')
-                +checkbox('Invalidate near cache', 'cache.invalidate', '"invalidate"',
+                +checkbox('Invalidate near cache', 'cache.isInvalidate', '"isInvalidate"',
                     'Invalidation flag for near cache entries in transaction<br/>\
                     If set then values will be invalidated (nullified) upon commit in near cache')
 

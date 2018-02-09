@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-'use strict';
+const recreateIndex = require('./migration-utils').recreateIndex;
 
-module.exports = function(done, model, oldIdxName, oldIdx, newIdx) {
-    model.indexExists(oldIdxName)
-        .then((exists) => {
-            if (exists) {
-                return model.dropIndex(oldIdx)
-                    .then(() => model.createIndex(newIdx, {unique: true}));
-            }
-        })
-        .then(() => done())
-        .catch(done);
+exports.up = function up(done) {
+    recreateIndex(done, this('Cache').collection,
+        'name_1_space_1',
+        {name: 1, space: 1},
+        {name: 1, space: 1, clusters: 1});
+};
+
+exports.down = function down(done) {
+    recreateIndex(done, this('Cache').collection,
+        'name_1_space_1_clusters_1',
+        {name: 1, space: 1, clusters: 1},
+        {name: 1, space: 1});
 };

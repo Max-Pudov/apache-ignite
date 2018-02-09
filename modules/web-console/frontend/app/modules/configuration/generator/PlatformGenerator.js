@@ -285,7 +285,7 @@ export default ['JavaTypes', 'igniteClusterPlatformDefaults', 'igniteCachePlatfo
             ccfg.intProperty('copyOnRead');
 
             if (ccfg.valueOf('cacheMode') === 'PARTITIONED' && ccfg.valueOf('atomicityMode') === 'TRANSACTIONAL')
-                ccfg.intProperty('invalidate');
+                ccfg.intProperty('isInvalidate', 'invalidate');
 
             return ccfg;
         }

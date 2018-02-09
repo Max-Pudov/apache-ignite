@@ -335,11 +335,7 @@ angular.module('ignite-console', [
         $root.revertIdentity = () => {
             $http.get('/api/v1/admin/revert/identity')
                 .then(() => User.load())
-                .then((user) => {
-                    $root.$broadcast('user', user);
-
-                    $state.go('base.settings.admin');
-                })
+                .then(() => $state.go('base.settings.admin'))
                 .then(() => Notebook.load())
                 .catch(Messages.showError);
         };

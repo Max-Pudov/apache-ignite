@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-'use strict';
+const recreateIndex = require('./migration-utils').recreateIndex;
 
-class AppErrorException extends Error {
-    constructor(message) {
-        super(message);
+exports.up = function up(done) {
+    recreateIndex(done, this('Igfs').collection,
+        'name_1_space_1',
+        {name: 1, space: 1},
+        {name: 1, space: 1, clusters: 1});
+};
 
-        this.name = this.constructor.name;
-        this.code = 400;
-
-        if (typeof Error.captureStackTrace === 'function')
-            Error.captureStackTrace(this, this.constructor);
-        else
-            this.stack = (new Error(message)).stack;
-    }
-}
-
-module.exports = AppErrorException;
+exports.down = function down(done) {
+    recreateIndex(done, this('Igfs').collection,
+        'name_1_space_1_clusters_1',
+        {name: 1, space: 1, clusters: 1},
+        {name: 1, space: 1});
+};

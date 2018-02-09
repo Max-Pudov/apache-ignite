@@ -17,18 +17,15 @@
 
 'use strict';
 
-class AppErrorException extends Error {
-    constructor(message) {
-        super(message);
+// Fire me up!
 
-        this.name = this.constructor.name;
-        this.code = 400;
+module.exports = {
+    implements: 'middlewares:demo',
+    factory: () => {
+        return (req, res, next) => {
+            req.demo = () => req.header('IgniteDemoMode');
 
-        if (typeof Error.captureStackTrace === 'function')
-            Error.captureStackTrace(this, this.constructor);
-        else
-            this.stack = (new Error(message)).stack;
+            next();
+        };
     }
-}
-
-module.exports = AppErrorException;
+};

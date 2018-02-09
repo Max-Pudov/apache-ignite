@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-'use strict';
+exports.up = function up(done) {
+    this('Cache').update({}, { $rename: { invalidate: 'isInvalidate' } }, { multi: true })
+        .then(() => done())
+        .catch(done);
+};
 
-class AppErrorException extends Error {
-    constructor(message) {
-        super(message);
-
-        this.name = this.constructor.name;
-        this.code = 400;
-
-        if (typeof Error.captureStackTrace === 'function')
-            Error.captureStackTrace(this, this.constructor);
-        else
-            this.stack = (new Error(message)).stack;
-    }
-}
-
-module.exports = AppErrorException;
+exports.down = function down(done) {
+    this('Cache').update({}, { $rename: { isInvalidate: 'invalidate' } }, { multi: true })
+        .then(() => done())
+        .catch(done);
+};
