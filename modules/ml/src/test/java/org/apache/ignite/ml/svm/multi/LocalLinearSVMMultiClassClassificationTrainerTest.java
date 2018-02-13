@@ -14,24 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.ignite.internal.processors.cache.persistence.baseline;
+
+package org.apache.ignite.ml.svm.multi;
+
+import org.apache.ignite.ml.math.impls.matrix.DenseLocalOnHeapMatrix;
+import org.apache.ignite.ml.regressions.linear.LinearRegressionSGDTrainer;
+import org.apache.ignite.ml.svm.SVMLinearMultiClassClassificationTrainer;
 
 /**
- *
+ * Tests for {@link LinearRegressionSGDTrainer} on {@link DenseLocalOnHeapMatrix}.
  */
-public class IgniteOnlineNodeOutOfBaselineFullApiSelfTest extends IgniteBaselineAbstractFullApiSelfTest {
-    /** {@inheritDoc} */
-    @Override protected void beforeTestsStarted() throws Exception {
-        initStoreStrategy();
-
-        cleanPersistenceDir();
-
-        startGrids(gridCount());
-
-        grid(0).active(true);
-
-        startGrid("onlineOutOfBaselineNode");
-
-        awaitPartitionMapExchange();
+public class LocalLinearSVMMultiClassClassificationTrainerTest extends GenericLinearSVMMultiClassClassificationTrainerTest {
+    /** */
+    public LocalLinearSVMMultiClassClassificationTrainerTest() {
+        super(
+            new SVMLinearMultiClassClassificationTrainer()
+                .withLambda(0.2)
+                .withAmountOfIterations(10)
+                .withAmountOfLocIterations(20),
+            false,
+            1e-2);
     }
 }
