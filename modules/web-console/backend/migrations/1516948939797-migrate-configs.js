@@ -77,7 +77,8 @@ function cloneCache(clustersModel, cachesModel, domainsModel, cache) {
                                 newDomain.clusters = [cluster];
 
                                 return domainsModel.create(newDomain)
-                                    .then((createdDomain) => clustersModel.update({_id: cluster}, {$addToSet: {models: createdDomain._id}}).exec());
+                                    .then((createdDomain) => clustersModel.update({_id: cluster}, {$addToSet: {models: createdDomain._id}}).exec())
+                                    .catch((err) => error('Failed to clone domain', err));
                             })
                             .catch((err) => error(`Failed to duplicate domain model[domain=${domainId}], cache=${clone.name}]`, err));
                     }), Promise.resolve());
@@ -203,7 +204,8 @@ function migrateDomain(clustersModel, cachesModel, domainsModel, domain) {
         return getClusterForMigration(clustersModel)
             .then((clusterLostFound) => linkDomainToCluster(clustersModel, clusterLostFound, domainsModel, domain))
             .then(() => getCacheForMigration(cachesModel))
-            .then((cacheLostFound) => linkDomainToCache(cachesModel, cacheLostFound, domainsModel, domain));
+            .then((cacheLostFound) => linkDomainToCache(cachesModel, cacheLostFound, domainsModel, domain))
+            .catch((err) => error('Failed to migrate domain', err));
     }
 
     if (_.isEmpty(domain.clusters)) {
