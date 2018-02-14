@@ -116,7 +116,7 @@ function migrateCaches(clustersModel, cachesModel, domainsModel) {
         .then((caches) => {
             log(`Caches to migrate: ${_.size(caches)}`);
 
-            _.reduce(caches, (start, cache) => start.then(() => migrateCache(clustersModel, cachesModel, domainsModel, cache)), Promise.resolve())
+            return _.reduce(caches, (start, cache) => start.then(() => migrateCache(clustersModel, cachesModel, domainsModel, cache)), Promise.resolve())
                 .then(() => log('Caches migration finished.'));
         })
         .catch((err) => error('Caches migration failed', err));
