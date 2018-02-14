@@ -16,7 +16,11 @@
  */
 
 function log(msg) {
-    console.log(`[${new Date().toISOString()}] ${msg}`);
+    console.log(`[${new Date().toISOString()}] [INFO ] ${msg}`);
+}
+
+function error(msg, err) {
+    console.log(`[${new Date().toISOString()}] [ERROR] ${msg}. Error: ${err}`);
 }
 
 function recreateIndex0(done, model, oldIdxName, oldIdx, newIdx) {
@@ -109,6 +113,7 @@ function getCacheForMigration(cachesModel) {
 
 module.exports = {
     log,
+    error,
     recreateIndex,
     createClusterForMigration,
     getClusterForMigration,

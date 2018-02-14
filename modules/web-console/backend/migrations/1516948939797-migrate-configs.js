@@ -18,6 +18,7 @@
 const _ = require('lodash');
 
 const log = require('./migration-utils').log;
+const error = require('./migration-utils').error;
 
 const createClusterForMigration = require('./migration-utils').createClusterForMigration;
 const getClusterForMigration = require('./migration-utils').getClusterForMigration;
@@ -36,7 +37,7 @@ function linkCacheToCluster(clustersModel, cluster, cachesModel, cache, domainsM
                     .then(() => clustersModel.update({_id: cluster._id}, {$addToSet: {models: domain}}).exec());
             }), Promise.resolve());
         })
-        .catch((err) => log(`Failed link cache to cluster [cache=${cache.name}, cluster=${cluster.name}, err=${err}]`));
+        .catch((err) => error(`Failed link cache to cluster [cache=${cache.name}, cluster=${cluster.name}]`, err));
 }
 
 function cloneCache(clustersModel, cachesModel, domainsModel, cache) {
@@ -78,10 +79,10 @@ function cloneCache(clustersModel, cachesModel, domainsModel, cache) {
                                 return domainsModel.create(newDomain)
                                     .then((createdDomain) => clustersModel.update({_id: cluster}, {$addToSet: {models: createdDomain._id}}).exec());
                             })
-                            .catch((err) => log(`Failed to duplicate domain model[domain=${domainId}], cache=${clone.name}, err=${err}`));
+                            .catch((err) => error(`Failed to duplicate domain model[domain=${domainId}], cache=${clone.name}]`, err));
                     }), Promise.resolve());
                 })
-                .catch((err) => log(`Failed to clone cache[id=${cacheId}, name=${cache.name}, err=${err}]`));
+                .catch((err) => error(`Failed to clone cache[id=${cacheId}, name=${cache.name}]`, err));
         }
 
         return cachesModel.update({_id: cacheId}, {clusters: [cluster]}).exec();
@@ -118,13 +119,13 @@ function migrateCaches(clustersModel, cachesModel, domainsModel) {
             _.reduce(caches, (start, cache) => start.then(() => migrateCache(clustersModel, cachesModel, domainsModel, cache)), Promise.resolve())
                 .then(() => log('Caches migration finished.'));
         })
-        .catch((err) => log('Caches migration failed: ' + err));
+        .catch((err) => error('Caches migration failed', err));
 }
 
 function linkIgfsToCluster(clustersModel, cluster, igfsModel, igfs) {
     return clustersModel.update({_id: cluster._id}, {$addToSet: {igfss: igfs._id}}).exec()
         .then(() => igfsModel.update({_id: igfs._id}, {clusters: [cluster._id]}).exec())
-        .catch((err) => log(`Failed link IGFS to cluster [IGFS=${igfs.name}, cluster=${cluster.name}, err=${err}]`));
+        .catch((err) => error(`Failed link IGFS to cluster [IGFS=${igfs.name}, cluster=${cluster.name}]`, err));
 }
 
 function cloneIgfs(clustersModel, igfsModel, igfs) {
@@ -143,7 +144,7 @@ function cloneIgfs(clustersModel, igfsModel, igfs) {
             return clustersModel.update({_id: {$in: newIgfs.clusters}}, {$pull: {igfss: igfsId}}, {multi: true}).exec()
                 .then(() => igfsModel.create(newIgfs))
                 .then((clone) => clustersModel.update({_id: {$in: igfs.newIgfs}}, {$addToSet: {igfss: clone._id}}, {multi: true}).exec())
-                .catch((err) => log(`Failed to clone IGFS: id=${igfsId}, name=${igfs.name}, err=${err}`));
+                .catch((err) => error(`Failed to clone IGFS: id=${igfsId}, name=${igfs.name}]`, err));
         }
 
         return igfsModel.update({_id: igfsId}, {clusters: [cluster]}).exec();
@@ -180,19 +181,19 @@ function migrateIgfss(clustersModel, igfsModel) {
             return _.reduce(igfss, (start, igfs) => start.then(() => migrateIgfs(clustersModel, igfsModel, igfs)), Promise.resolve())
                 .then(() => log('IGFS migration finished.'));
         })
-        .catch((err) => log('IGFS migration failed: ' + err));
+        .catch((err) => error('IGFS migration failed', err));
 }
 
 function linkDomainToCluster(clustersModel, cluster, domainsModel, domain) {
     return clustersModel.update({_id: cluster._id}, {$addToSet: {models: domain._id}}).exec()
         .then(() => domainsModel.update({_id: domain._id}, {clusters: [cluster._id]}).exec())
-        .catch((err) => log(`Failed link domain model to cluster [domain=${domain._id}, cluster=${cluster.name}, err=${err}]`));
+        .catch((err) => error(`Failed link domain model to cluster [domain=${domain._id}, cluster=${cluster.name}]`, err));
 }
 
 function linkDomainToCache(cachesModel, cache, domainsModel, domain) {
     return cachesModel.update({_id: cache._id}, {$addToSet: {domains: domain._id}}).exec()
         .then(() => domainsModel.update({_id: domain._id}, {caches: [cache._id]}).exec())
-        .catch((err) => log(`Failed link domain model to cache[cache=${cache.name}, domain=${domain._id}, err=${err}]`));
+        .catch((err) => error(`Failed link domain model to cache[cache=${cache.name}, domain=${domain._id}]`, err));
 }
 
 function migrateDomain(clustersModel, cachesModel, domainsModel, domain) {
@@ -229,7 +230,7 @@ function migrateDomains(clustersModel, cachesModel, domainsModel) {
             return _.reduce(domains, (start, domain) => migrateDomain(clustersModel, cachesModel, domainsModel, domain), Promise.resolve())
                 .then(() => log('Domain models migration finished.'));
         })
-        .catch((err) => log('Domain models migration failed: ' + err));
+        .catch((err) => error('Domain models migration failed', err));
 }
 
 function deduplicate(title, model, name) {
