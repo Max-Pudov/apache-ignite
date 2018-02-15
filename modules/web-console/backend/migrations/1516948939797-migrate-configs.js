@@ -20,10 +20,10 @@ const _ = require('lodash');
 const log = require('./migration-utils').log;
 const error = require('./migration-utils').error;
 
-const createClusterForMigration = require('./migration-utils').createClusterForMigration;
 const getClusterForMigration = require('./migration-utils').getClusterForMigration;
-const createCacheForMigration = require('./migration-utils').createCacheForMigration;
 const getCacheForMigration = require('./migration-utils').getCacheForMigration;
+
+const _debug = false;
 
 function linkCacheToCluster(clustersModel, cluster, cachesModel, cache, domainsModel) {
     return clustersModel.update({_id: cluster._id}, {$addToSet: {caches: cache._id}}).exec()
@@ -94,14 +94,16 @@ function migrateCache(clustersModel, cachesModel, domainsModel, cache) {
     const len = _.size(cache.clusters);
 
     if (len < 1) {
-        log(`Found cache not linked to cluster [cache=${cache.name}]`);
+        if (_debug)
+            log(`Found cache not linked to cluster [cache=${cache.name}]`);
 
-        return getClusterForMigration(clustersModel)
+        return getClusterForMigration(clustersModel, cache.space)
             .then((clusterLostFound) => linkCacheToCluster(clustersModel, clusterLostFound, cachesModel, cache, domainsModel));
     }
 
     if (len > 1) {
-        log(`Found cache linked to many clusters [cache=${cache.name}, cnt=${len}]`);
+        if (_debug)
+            log(`Found cache linked to many clusters [cache=${cache.name}, cnt=${len}]`);
 
         return cloneCache(clustersModel, cachesModel, domainsModel, cache);
     }
@@ -111,14 +113,19 @@ function migrateCache(clustersModel, cachesModel, domainsModel, cache) {
 }
 
 function migrateCaches(clustersModel, cachesModel, domainsModel) {
-    log('Caches migration started...');
-
     return cachesModel.find({}).lean().exec()
         .then((caches) => {
-            log(`Caches to migrate: ${_.size(caches)}`);
+            const sz = _.size(caches);
 
-            return _.reduce(caches, (start, cache) => start.then(() => migrateCache(clustersModel, cachesModel, domainsModel, cache)), Promise.resolve())
-                .then(() => log('Caches migration finished.'));
+            if (sz > 0) {
+                log(`Caches to migrate: ${sz}`);
+
+                return _.reduce(caches, (start, cache) => start.then(() => migrateCache(clustersModel, cachesModel, domainsModel, cache)), Promise.resolve())
+                    .then(() => log('Caches migration finished.'));
+            }
+
+            return Promise.resolve();
+
         })
         .catch((err) => error('Caches migration failed', err));
 }
@@ -136,7 +143,7 @@ function cloneIgfs(clustersModel, igfsModel, igfs) {
     delete igfs._id;
     igfs.clusters = [];
 
-    return _.reduce(clusters, (start, cluster, idx) => {
+    return _.reduce(clusters, (start, cluster, idx) => start.then(() => {
         const newIgfs = _.clone(igfs);
 
         newIgfs.clusters = [cluster];
@@ -149,21 +156,23 @@ function cloneIgfs(clustersModel, igfsModel, igfs) {
         }
 
         return igfsModel.update({_id: igfsId}, {clusters: [cluster]}).exec();
-    }, Promise.resolve());
+    }), Promise.resolve());
 }
 
 function migrateIgfs(clustersModel, igfsModel, igfs) {
     const len = _.size(igfs.clusters);
 
     if (len < 1) {
-        log(`Found IGFS not linked to cluster [IGFS=${igfs.name}]`);
+        if (_debug)
+            log(`Found IGFS not linked to cluster [IGFS=${igfs.name}]`);
 
-        return getClusterForMigration(clustersModel)
+        return getClusterForMigration(clustersModel, igfs.space)
             .then((clusterLostFound) => linkIgfsToCluster(clustersModel, clusterLostFound, igfsModel, igfs));
     }
 
     if (len > 1) {
-        log(`Found IGFS linked to many clusters [IGFS=${igfs.name}, cnt=${len}]`);
+        if (_debug)
+            log(`Found IGFS linked to many clusters [IGFS=${igfs.name}, cnt=${len}]`);
 
         return cloneIgfs(clustersModel, igfsModel, igfs);
     }
@@ -173,14 +182,18 @@ function migrateIgfs(clustersModel, igfsModel, igfs) {
 }
 
 function migrateIgfss(clustersModel, igfsModel) {
-    log('IGFS migration started...');
-
     return igfsModel.find({}).lean().exec()
         .then((igfss) => {
-            log(`IGFS to migrate: ${_.size(igfss)}`);
+            const sz = _.size(igfss);
 
-            return _.reduce(igfss, (start, igfs) => start.then(() => migrateIgfs(clustersModel, igfsModel, igfs)), Promise.resolve())
-                .then(() => log('IGFS migration finished.'));
+            if (sz > 0) {
+                log(`IGFS to migrate: ${sz}`);
+
+                return _.reduce(igfss, (start, igfs) => start.then(() => migrateIgfs(clustersModel, igfsModel, igfs)), Promise.resolve())
+                    .then(() => log('IGFS migration finished.'));
+            }
+
+            return Promise.resolve();
         })
         .catch((err) => error('IGFS migration failed', err));
 }
@@ -199,11 +212,12 @@ function linkDomainToCache(cachesModel, cache, domainsModel, domain) {
 
 function migrateDomain(clustersModel, cachesModel, domainsModel, domain) {
     if (_.isEmpty(domain.caches)) {
-        log(`Found domain model not linked to cache [domain=${domain._id}]`);
+        if (_debug)
+            log(`Found domain model not linked to cache [domain=${domain._id}]`);
 
-        return getClusterForMigration(clustersModel)
+        return getClusterForMigration(clustersModel, domain.space)
             .then((clusterLostFound) => linkDomainToCluster(clustersModel, clusterLostFound, domainsModel, domain))
-            .then(() => getCacheForMigration(cachesModel))
+            .then(() => getCacheForMigration(clustersModel, cachesModel, domain.space))
             .then((cacheLostFound) => linkDomainToCache(cachesModel, cacheLostFound, domainsModel, domain))
             .catch((err) => error('Failed to migrate domain', err));
     }
@@ -223,14 +237,18 @@ function migrateDomain(clustersModel, cachesModel, domainsModel, domain) {
 }
 
 function migrateDomains(clustersModel, cachesModel, domainsModel) {
-    log('Domain models migration started...');
-
     return domainsModel.find({}).lean().exec()
         .then((domains) => {
-            log(`Domain models to migrate: ${_.size(domains)}`);
+            const sz = _.size(domains);
 
-            return _.reduce(domains, (start, domain) => migrateDomain(clustersModel, cachesModel, domainsModel, domain), Promise.resolve())
-                .then(() => log('Domain models migration finished.'));
+            if (sz > 0) {
+                log(`Domain models to migrate: ${sz}`);
+
+                return _.reduce(domains, (start, domain) => start.then(() => migrateDomain(clustersModel, cachesModel, domainsModel, domain)) , Promise.resolve())
+                    .then(() => log('Domain models migration finished.'));
+            }
+
+            return Promise.resolve();
         })
         .catch((err) => error('Domain models migration failed', err));
 }
@@ -238,29 +256,34 @@ function migrateDomains(clustersModel, cachesModel, domainsModel) {
 function deduplicate(title, model, name) {
     return model.find({}).lean().exec()
         .then((items) => {
-            log(`Deduplication of ${title} started...`);
+            const sz = _.size(items);
 
-            let cnt = 0;
+            if (sz > 0) {
+                log(`Deduplication of ${title} started...`);
 
-            return _.reduce(items, (start, item) => start.then(() => {
-                const data = item[name];
+                let cnt = 0;
 
-                const dataSz = _.size(data);
+                return _.reduce(items, (start, item) => start.then(() => {
+                    const data = item[name];
 
-                if (dataSz < 2)
+                    const dataSz = _.size(data);
+
+                    if (dataSz < 2)
+                        return Promise.resolve();
+
+                    const deduped = _.uniqWith(data, _.isEqual);
+
+                    if (dataSz !== _.size(deduped)) {
+                        return model.updateOne({_id: item._id}, {$set: {[name]: deduped}})
+                            .then(() => cnt++);
+                    }
+
                     return Promise.resolve();
+                }), Promise.resolve())
+                    .then(() => log(`Deduplication of ${title} finished: ${cnt}.`));
+            }
 
-                const deduped = _.uniqWith(data, _.isEqual);
-
-                if (dataSz !== _.size(deduped)) {
-                    return model.updateOne({_id: item._id}, {$set: {[name]: deduped}})
-                        .then(() => cnt++);
-                }
-
-
-                return Promise.resolve();
-            }), Promise.resolve())
-                .then(() => log(`Deduplication of ${title} finished: ${cnt}.`));
+            return Promise.resolve();
         });
 }
 
@@ -270,14 +293,17 @@ exports.up = function up(done) {
     const domainsModel = this('DomainModel');
     const igfsModel = this('Igfs');
 
-    deduplicate('Cluster caches', clustersModel, 'caches')
+    process.on('unhandledRejection', function(reason, p) {
+        console.log('Unhandled rejection at:', p, 'reason:', reason);
+    });
+
+    Promise.resolve()
+        .then(() => deduplicate('Cluster caches', clustersModel, 'caches'))
         .then(() => deduplicate('Cluster IGFS', clustersModel, 'igfss'))
         .then(() => deduplicate('Cache clusters', cachesModel, 'clusters'))
         .then(() => deduplicate('Cache domains', cachesModel, 'domains'))
         .then(() => deduplicate('IGFS clusters', igfsModel, 'clusters'))
         .then(() => deduplicate('Domain model caches', domainsModel, 'caches'))
-        .then(() => createClusterForMigration(clustersModel, cachesModel))
-        .then(() => createCacheForMigration(clustersModel, cachesModel, domainsModel))
         .then(() => migrateCaches(clustersModel, cachesModel, domainsModel))
         .then(() => migrateIgfss(clustersModel, igfsModel))
         .then(() => migrateDomains(clustersModel, cachesModel, domainsModel))

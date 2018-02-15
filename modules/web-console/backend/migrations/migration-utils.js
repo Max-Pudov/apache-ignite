@@ -52,44 +52,63 @@ function recreateIndex(done, model, oldIdxName, oldIdx, newIdx) {
 
 const LOST_AND_FOUND = 'LOST_AND_FOUND';
 
-function createClusterForMigration(clustersModel, cachesModel) {
-    return cachesModel.findOne({clusters: []})
-        .then((cache) => {
-            if (cache) {
-                return clustersModel.create({
-                    space: cache.space,
-                    name: LOST_AND_FOUND,
-                    connector: {noDelay: true},
-                    communication: {tcpNoDelay: true},
-                    igfss: [],
-                    caches: [],
-                    binaryConfiguration: {
-                        compactFooter: true,
-                        typeConfigurations: []
-                    },
-                    discovery: {
-                        kind: 'Multicast',
-                        Multicast: {addresses: ['127.0.0.1:47500..47510']},
-                        Vm: {addresses: ['127.0.0.1:47500..47510']}
-                    }
-                });
+let _clusterLostAndFound = null;
+
+function getClusterForMigration(clustersModel, space) {
+    if (_clusterLostAndFound)
+        return Promise.resolve(_clusterLostAndFound);
+
+    return clustersModel.findOne({name: LOST_AND_FOUND}).lean().exec()
+        .then((cluster) => {
+            if (cluster) {
+                _clusterLostAndFound = cluster;
+
+                return cluster;
             }
 
-            return Promise.resolve();
+            return clustersModel.create({
+                space,
+                name: LOST_AND_FOUND,
+                connector: {noDelay: true},
+                communication: {tcpNoDelay: true},
+                igfss: [],
+                caches: [],
+                binaryConfiguration: {
+                    compactFooter: true,
+                    typeConfigurations: []
+                },
+                discovery: {
+                    kind: 'Multicast',
+                    Multicast: {addresses: ['127.0.0.1:47500..47510']},
+                    Vm: {addresses: ['127.0.0.1:47500..47510']}
+                }
+            })
+                .then((cluster) => {
+                    _clusterLostAndFound = cluster;
+
+                    return cluster;
+                });
         });
 }
 
-function getClusterForMigration(clustersModel) {
-    return clustersModel.findOne({name: LOST_AND_FOUND}).lean().exec();
-}
+let _cacheLostAndFound = null;
 
-function createCacheForMigration(clustersModel, cachesModel, domainsModels) {
-    return domainsModels.findOne({caches: []})
-        .then((domain) => {
-            if (domain) {
-                return getClusterForMigration(clustersModel)
-                    .then((cluster) => cachesModel.create({
-                        space: domain.space,
+function getCacheForMigration(clustersModel, cachesModel, space) {
+    if (_cacheLostAndFound)
+        return Promise.resolve(_cacheLostAndFound);
+
+    return cachesModel.findOne({name: LOST_AND_FOUND})
+        .then((cache) => {
+            if (cache) {
+                _cacheLostAndFound = cache;
+
+                return cache;
+            }
+
+            return getClusterForMigration(clustersModel, space)
+                .then((cluster) => {
+                    return cachesModel.create({
+                        space,
                         name: LOST_AND_FOUND,
                         clusters: [cluster._id],
                         domains: [],
@@ -107,24 +126,21 @@ function createCacheForMigration(clustersModel, cachesModel, domainsModels) {
                         },
                         nearConfiguration: {},
                         evictionPolicy: {}
-                    }));
-            }
+                    });
+                })
+                .then((cache) => {
+                    _cacheLostAndFound = cache;
 
-            return Promise.resolve();
+                    return cache;
+                });
         });
-}
-
-function getCacheForMigration(cachesModel) {
-    return cachesModel.findOne({name: LOST_AND_FOUND});
 }
 
 module.exports = {
     log,
     error,
     recreateIndex,
-    createClusterForMigration,
     getClusterForMigration,
-    createCacheForMigration,
     getCacheForMigration
 };
 
