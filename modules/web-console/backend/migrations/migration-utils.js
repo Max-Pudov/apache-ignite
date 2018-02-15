@@ -56,7 +56,7 @@ function createClusterForMigration(clustersModel, cachesModel) {
     return cachesModel.findOne({clusters: []})
         .then((cache) => {
             if (cache) {
-                clustersModel.create({
+                return clustersModel.create({
                     space: cache.space,
                     name: LOST_AND_FOUND,
                     connector: {noDelay: true},
@@ -74,6 +74,8 @@ function createClusterForMigration(clustersModel, cachesModel) {
                     }
                 });
             }
+
+            return Promise.resolve();
         });
 }
 
@@ -83,28 +85,33 @@ function getClusterForMigration(clustersModel) {
 
 function createCacheForMigration(clustersModel, cachesModel, domainsModels) {
     return domainsModels.findOne({caches: []})
-        .then((domain) => getClusterForMigration(clustersModel)
-            .then((cluster) => cachesModel.create({
-                space: domain.space,
-                name: LOST_AND_FOUND,
-                clusters: [cluster._id],
-                domains: [],
-                cacheMode: 'PARTITIONED',
-                atomicityMode: 'ATOMIC',
-                readFromBackup: true,
-                copyOnRead: true,
-                readThrough: false,
-                writeThrough: false,
-                sqlFunctionClasses: [],
-                writeBehindCoalescing: true,
-                cacheStoreFactory: {
-                    CacheHibernateBlobStoreFactory: {hibernateProperties: []},
-                    CacheJdbcBlobStoreFactory: {connectVia: 'DataSource'}
-                },
-                nearConfiguration: {},
-                evictionPolicy: {}
-            }))
-        );
+        .then((domain) => {
+            if (domain) {
+                return getClusterForMigration(clustersModel)
+                    .then((cluster) => cachesModel.create({
+                        space: domain.space,
+                        name: LOST_AND_FOUND,
+                        clusters: [cluster._id],
+                        domains: [],
+                        cacheMode: 'PARTITIONED',
+                        atomicityMode: 'ATOMIC',
+                        readFromBackup: true,
+                        copyOnRead: true,
+                        readThrough: false,
+                        writeThrough: false,
+                        sqlFunctionClasses: [],
+                        writeBehindCoalescing: true,
+                        cacheStoreFactory: {
+                            CacheHibernateBlobStoreFactory: {hibernateProperties: []},
+                            CacheJdbcBlobStoreFactory: {connectVia: 'DataSource'}
+                        },
+                        nearConfiguration: {},
+                        evictionPolicy: {}
+                    }));
+            }
+
+            return Promise.resolve();
+        });
 }
 
 function getCacheForMigration(cachesModel) {
