@@ -22,8 +22,7 @@ exports.up = function up(done) {
 
     accountsModel.find({}).lean().exec()
         .then((accounts) => _.reduce(accounts, (start, account) => start
-                .then(() => accountsModel.update({_id: account._id}, {$set: {registered: account.lastLogin}}).exec())),
-            Promise.resolve())
+            .then(() => accountsModel.update({_id: account._id}, {$set: {registered: account.lastLogin}}).exec()), Promise.resolve()))
         .then(() => done())
         .catch(done);
 };
