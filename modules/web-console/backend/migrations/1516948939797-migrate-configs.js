@@ -219,17 +219,24 @@ function migrateDomain(clustersModel, cachesModel, domainsModel, domain) {
             .then((clusterLostFound) => linkDomainToCluster(clustersModel, clusterLostFound, domainsModel, domain))
             .then(() => getCacheForMigration(clustersModel, cachesModel, domain.space))
             .then((cacheLostFound) => linkDomainToCache(cachesModel, cacheLostFound, domainsModel, domain))
-            .catch((err) => error('Failed to migrate domain', err));
+            .catch((err) => error('Failed to migrate domain [domain=${domain._id}]', err));
     }
 
     if (_.isEmpty(domain.clusters)) {
         return cachesModel.findOne({_id: {$in: domain.caches}}).lean().exec()
             .then((cache) => {
-                const clusterId = cache.clusters[0];
+                if (cache) {
+                    const clusterId = cache.clusters[0];
 
-                return domainsModel.update({_id: domain._id}, {clusters: [clusterId]}).exec()
-                    .then(() => clustersModel.update({_id: clusterId}, {models: [domain._id]}).exec());
-            });
+                    return domainsModel.update({_id: domain._id}, {clusters: [clusterId]}).exec()
+                        .then(() => clustersModel.update({_id: clusterId}, {models: [domain._id]}).exec());
+                }
+
+                log(`Found broken domain: [domain=${domain._id}, caches=${domain.caches}]`);
+
+                return Promise.resolve();
+            })
+            .catch((err) => error('Failed to migrate domain [domain=${domain._id}]', err));
     }
 
     // Nothing to migrate, other domains will be migrated with caches.
@@ -244,7 +251,7 @@ function migrateDomains(clustersModel, cachesModel, domainsModel) {
             if (sz > 0) {
                 log(`Domain models to migrate: ${sz}`);
 
-                return _.reduce(domains, (start, domain) => start.then(() => migrateDomain(clustersModel, cachesModel, domainsModel, domain)) , Promise.resolve())
+                return _.reduce(domains, (start, domain) => start.then(() => migrateDomain(clustersModel, cachesModel, domainsModel, domain)), Promise.resolve())
                     .then(() => log('Domain models migration finished.'));
             }
 
