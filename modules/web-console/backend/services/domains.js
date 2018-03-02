@@ -152,10 +152,10 @@ module.exports.factory = (mongo, spacesService, cachesService, errors) => {
         static shortList(userId, demo, clusterId) {
             return spacesService.spaceIds(userId, demo)
                 .then((spaceIds) => {
-                    spaceIds = _.map(spaceIds, (spaceId) => mongo.ObjectId(spaceId));
+                    const sIds = _.map(spaceIds, (spaceId) => mongo.ObjectId(spaceId));
 
                     return mongo.DomainModel.aggregate([
-                        {$match: {space: {$in: spaceIds}, clusters: mongo.ObjectId(clusterId)}},
+                        {$match: {space: {$in: sIds}, clusters: mongo.ObjectId(clusterId)}},
                         {$project: {
                             keyType: 1,
                             valueType: 1,
