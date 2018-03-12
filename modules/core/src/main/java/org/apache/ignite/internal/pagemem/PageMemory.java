@@ -33,6 +33,16 @@ public interface PageMemory extends LifecycleAware, PageIdAllocator, PageSupport
      */
     public int systemPageSize();
 
+    int getFullScanCount();
+
+    int getReplacedCleanPage();
+
+    int getReplacedDirtyPage();
+
+    int getReplacedIndexPage();
+
+    int getReplacedMetaPage();
+
     /**
      * @param pageAddr Page address.
      * @return Page byte buffer.

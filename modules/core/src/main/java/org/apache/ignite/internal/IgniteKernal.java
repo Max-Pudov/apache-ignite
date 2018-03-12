@@ -1245,6 +1245,32 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
                                 "    ^-- " + createExecutorDescription("Public thread pool", execSvc) + NL +
                                 "    ^-- " + createExecutorDescription("System thread pool", sysExecSvc);
 
+                                if (!F.isEmpty(policies)) {
+                                    int idx= 0;
+                                    int fullScanCnt = 0;
+                                    int replacedCleanPage = 0;
+                                    int replacedDirtyPage = 0;
+                                    int replacedIdxPage = 0;
+                                    int replacedMetaPage = 0;
+
+                                    for (DataRegion memPlc : policies) {
+                                        replacedCleanPage = memPlc.pageMemory().getReplacedCleanPage();
+                                        replacedDirtyPage = memPlc.pageMemory().getReplacedDirtyPage();
+                                        replacedIdxPage = memPlc.pageMemory().getReplacedIndexPage();
+                                        replacedMetaPage = memPlc.pageMemory().getReplacedMetaPage();
+                                        fullScanCnt = memPlc.pageMemory().getFullScanCount();
+
+                                        msg = msg + NL + "    ^-- DataRegion [" + idx + "]" + NL +
+                                            "           replacedCleanPage = '" + replacedCleanPage + "'" + NL +
+                                            "           replacedDirtyPage = '" + replacedDirtyPage + "'" + NL +
+                                            "           replacedIndexPage = '" + replacedIdxPage + "'" + NL +
+                                            "           replacedMetaPage = '" + replacedMetaPage + "'" + NL +
+                                            "           fullScanCount = '" + fullScanCnt + "'";
+
+                                        idx++;
+                                    }
+                                }
+
                             if (customExecSvcs != null) {
                                 StringBuilder customSvcsMsg = new StringBuilder();
 

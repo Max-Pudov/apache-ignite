@@ -255,6 +255,32 @@ public class PageMemoryImpl implements PageMemoryEx {
     /** Memory metrics to track dirty pages count and page replace rate. */
     private DataRegionMetricsImpl memMetrics;
 
+    private volatile int fullScanCount;
+    private int replacedCleanPage;
+    private int replacedDirtyPage;
+    private int replacedIndexPage;
+    private int replacedMetaPage;
+
+    @Override public int getFullScanCount() {
+        return fullScanCount;
+    }
+
+    @Override public int getReplacedCleanPage() {
+        return replacedCleanPage;
+    }
+
+    @Override public int getReplacedDirtyPage() {
+        return replacedDirtyPage;
+    }
+
+    @Override public int getReplacedIndexPage() {
+        return replacedIndexPage;
+    }
+
+    @Override public int getReplacedMetaPage() {
+        return replacedMetaPage;
+    }
+
     /**
      * @param directMemoryProvider Memory allocator to use.
      * @param sizes segments sizes, last is checkpoint pool size.
@@ -2208,6 +2234,15 @@ public class PageMemoryImpl implements PageMemoryEx {
                     continue;
                 }
 
+                if (cleanAddr != INVALID_REL_PTR)
+                    replacedCleanPage++;
+                else if (dirtyAddr != INVALID_REL_PTR)
+                    replacedDirtyPage++;
+                else if (indexAddr != INVALID_REL_PTR)
+                    replacedIndexPage++;
+                else
+                    replacedMetaPage++;
+
                 loadedPages.remove(
                     fullPageId.groupId(),
                     PageIdUtils.effectivePageId(fullPageId.pageId())
@@ -2250,6 +2285,8 @@ public class PageMemoryImpl implements PageMemoryEx {
          * @param saveDirtyPage Evicted page writer.
          */
         private long tryToFindSequentially(int cap, ReplacedPageWriter saveDirtyPage) throws IgniteCheckedException {
+            fullScanCount++;
+
             assert getWriteHoldCount() > 0;
 
             long prevAddr = INVALID_REL_PTR;
@@ -2285,6 +2322,19 @@ public class PageMemoryImpl implements PageMemoryEx {
                 final FullPageId fullPageId = PageHeader.fullPageId(absEvictAddr);
 
                 if (preparePageRemoval(fullPageId, absEvictAddr, saveDirtyPage)) {
+                    final boolean dirty = isDirty(absPageAddr);
+                    final boolean isIndex = isIndexPage(absPageAddr);
+                    final boolean storMeta = isStoreMetadataPage(absPageAddr);
+
+                    if (!dirty && !isIndex && !storMeta)
+                        replacedCleanPage++;
+                    else if (!isIndex && !storMeta)
+                        replacedDirtyPage++;
+                    else if (!storMeta)
+                        replacedIndexPage++;
+                    else
+                        replacedMetaPage++;
+
                     loadedPages.remove(
                         fullPageId.groupId(),
                         PageIdUtils.effectivePageId(fullPageId.pageId())

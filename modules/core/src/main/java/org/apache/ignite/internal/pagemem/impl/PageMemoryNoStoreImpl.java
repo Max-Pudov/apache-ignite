@@ -329,6 +329,26 @@ public class PageMemoryNoStoreImpl implements PageMemory {
         return sysPageSize;
     }
 
+    @Override public int getFullScanCount() {
+        return 0;
+    }
+
+    @Override public int getReplacedCleanPage() {
+        return 0;
+    }
+
+    @Override public int getReplacedDirtyPage() {
+        return 0;
+    }
+
+    @Override public int getReplacedIndexPage() {
+        return 0;
+    }
+
+    @Override public int getReplacedMetaPage() {
+        return 0;
+    }
+
     /**
      * @return Next index.
      */
