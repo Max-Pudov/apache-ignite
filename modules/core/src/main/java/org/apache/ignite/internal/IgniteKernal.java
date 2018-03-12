@@ -1265,7 +1265,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
                                             "           replacedDirtyPage = '" + replacedDirtyPage + "'" + NL +
                                             "           replacedIndexPage = '" + replacedIdxPage + "'" + NL +
                                             "           replacedMetaPage = '" + replacedMetaPage + "'" + NL +
-                                            "           fullScanCount = '" + fullScanCnt + "'";
+                                            "           fullScanCount= '" + fullScanCnt + "'";
 
                                         idx++;
                                     }
