@@ -87,6 +87,11 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.apache.ignite.IgniteSystemProperties.IGNITE_DELAYED_REPLACED_PAGE_WRITE;
 import static org.apache.ignite.IgniteSystemProperties.getBoolean;
+import static org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO.T_DATA_REF_INNER;
+import static org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO.T_DATA_REF_LEAF;
+import static org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO.T_PAGE_LIST_META;
+import static org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO.T_PART_CNTRS;
+import static org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO.T_PART_META;
 import static org.apache.ignite.internal.util.GridUnsafe.wrapPointer;
 
 /**
@@ -251,6 +256,32 @@ public class PageMemoryImpl implements PageMemoryEx {
 
     /** Memory metrics to track dirty pages count and page replace rate. */
     private DataRegionMetricsImpl memMetrics;
+
+    private volatile int fullScanCount;
+    private int replacedCleanPage;
+    private int replacedDirtyPage;
+    private int replacedIndexPage;
+    private int replacedMetaPage;
+
+    @Override public int getFullScanCount() {
+        return fullScanCount;
+    }
+
+    @Override public int getReplacedCleanPage() {
+        return replacedCleanPage;
+    }
+
+    @Override public int getReplacedDirtyPage() {
+        return replacedDirtyPage;
+    }
+
+    @Override public int getReplacedIndexPage() {
+        return replacedIndexPage;
+    }
+
+    @Override public int getReplacedMetaPage() {
+        return replacedMetaPage;
+    }
 
     /**
      * @param directMemoryProvider Memory allocator to use.
@@ -2092,6 +2123,8 @@ public class PageMemoryImpl implements PageMemoryEx {
                 long dirtyTs = Long.MAX_VALUE;
                 long metaAddr = INVALID_REL_PTR;
                 long metaTs = Long.MAX_VALUE;
+                long indexAddr = INVALID_REL_PTR;
+                long indexTs = Long.MAX_VALUE;
 
                 for (int i = 0; i < RANDOM_PAGES_EVICT_NUM; i++) {
                     ++iterations;
@@ -2136,17 +2169,23 @@ public class PageMemoryImpl implements PageMemoryEx {
                     final long pageTs = PageHeader.readTimestamp(absPageAddr);
 
                     final boolean dirty = isDirty(absPageAddr);
+                    final boolean isIndex = isIndexPage(absPageAddr);
                     final boolean storMeta = isStoreMetadataPage(absPageAddr);
 
-                    if (pageTs < cleanTs && !dirty && !storMeta) {
+                    if (pageTs < cleanTs && !dirty && !storMeta && !isIndex) {
                         cleanAddr = rndAddr;
 
                         cleanTs = pageTs;
                     }
-                    else if (pageTs < dirtyTs && dirty && !storMeta) {
+                    else if (pageTs < dirtyTs && dirty && !storMeta && !isIndex) {
                         dirtyAddr = rndAddr;
 
                         dirtyTs = pageTs;
+                    }
+                    else if (pageTs < indexTs && !storMeta && isIndex) {
+                        indexAddr = rndAddr;
+
+                        indexTs = pageTs;
                     }
                     else if (pageTs < metaTs && storMeta) {
                         metaAddr = rndAddr;
@@ -2158,6 +2197,8 @@ public class PageMemoryImpl implements PageMemoryEx {
                         relRmvAddr = cleanAddr;
                     else if (dirtyAddr != INVALID_REL_PTR)
                         relRmvAddr = dirtyAddr;
+                    else if (indexAddr != INVALID_REL_PTR)
+                        relRmvAddr = indexAddr;
                     else
                         relRmvAddr = metaAddr;
                 }
@@ -2181,6 +2222,15 @@ public class PageMemoryImpl implements PageMemoryEx {
 
                     continue;
                 }
+
+                if (cleanAddr != INVALID_REL_PTR)
+                    replacedCleanPage++;
+                else if (dirtyAddr != INVALID_REL_PTR)
+                    replacedDirtyPage++;
+                else if (indexAddr != INVALID_REL_PTR)
+                    replacedIndexPage++;
+                else
+                    replacedMetaPage++;
 
                 loadedPages.remove(
                     fullPageId.groupId(),
@@ -2217,6 +2267,14 @@ public class PageMemoryImpl implements PageMemoryEx {
             }
         }
 
+        private boolean isIndexPage(long absPageAddr) {
+            long dataAddr = absPageAddr + PAGE_OVERHEAD;
+
+            int type = PageIO.getType(dataAddr);
+
+            return type == T_DATA_REF_INNER || type == T_DATA_REF_LEAF;
+        }
+
         /**
          * Will scan all segment pages to find one to evict it
          *
@@ -2224,6 +2282,8 @@ public class PageMemoryImpl implements PageMemoryEx {
          * @param saveDirtyPage Evicted page writer.
          */
         private long tryToFindSequentially(int cap, ReplacedPageWriter saveDirtyPage) throws IgniteCheckedException {
+            fullScanCount++;
+
             assert getWriteHoldCount() > 0;
 
             long prevAddr = INVALID_REL_PTR;
@@ -2259,6 +2319,19 @@ public class PageMemoryImpl implements PageMemoryEx {
                 final FullPageId fullPageId = PageHeader.fullPageId(absEvictAddr);
 
                 if (preparePageRemoval(fullPageId, absEvictAddr, saveDirtyPage)) {
+                    final boolean dirty = isDirty(absPageAddr);
+                    final boolean isIndex = isIndexPage(absPageAddr);
+                    final boolean storMeta = isStoreMetadataPage(absPageAddr);
+
+                    if (!dirty && !isIndex && !storMeta)
+                        replacedCleanPage++;
+                    else if (!isIndex && !storMeta)
+                        replacedDirtyPage++;
+                    else if (!storMeta)
+                        replacedIndexPage++;
+                    else
+                        replacedMetaPage++;
+
                     loadedPages.remove(
                         fullPageId.groupId(),
                         PageIdUtils.effectivePageId(fullPageId.pageId()),
