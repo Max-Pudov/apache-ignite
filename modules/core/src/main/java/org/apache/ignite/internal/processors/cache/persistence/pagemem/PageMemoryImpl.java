@@ -2123,8 +2123,6 @@ public class PageMemoryImpl implements PageMemoryEx {
                 long dirtyTs = Long.MAX_VALUE;
                 long metaAddr = INVALID_REL_PTR;
                 long metaTs = Long.MAX_VALUE;
-                long indexAddr = INVALID_REL_PTR;
-                long indexTs = Long.MAX_VALUE;
 
                 for (int i = 0; i < RANDOM_PAGES_EVICT_NUM; i++) {
                     ++iterations;
@@ -2169,25 +2167,18 @@ public class PageMemoryImpl implements PageMemoryEx {
                     final long pageTs = PageHeader.readTimestamp(absPageAddr);
 
                     final boolean dirty = isDirty(absPageAddr);
-                    final boolean isIndex = isIndexPage(absPageAddr);
                     final boolean storMeta = isStoreMetadataPage(absPageAddr);
 
-                    if (pageTs < cleanTs && !dirty && !storMeta && !isIndex) {
+                    if (pageTs < cleanTs && !dirty && !storMeta) {
                         cleanAddr = rndAddr;
 
                         cleanTs = pageTs;
                     }
-                    else if (pageTs < dirtyTs && dirty && !storMeta && !isIndex) {
+                    else if (pageTs < dirtyTs && dirty && !storMeta) {
                         dirtyAddr = rndAddr;
 
                         dirtyTs = pageTs;
-                    }
-                    else if (pageTs < indexTs && !storMeta && isIndex) {
-                        indexAddr = rndAddr;
-
-                        indexTs = pageTs;
-                    }
-                    else if (pageTs < metaTs && storMeta) {
+                    } else if (pageTs < metaTs && storMeta) {
                         metaAddr = rndAddr;
 
                         metaTs = pageTs;
@@ -2197,8 +2188,6 @@ public class PageMemoryImpl implements PageMemoryEx {
                         relRmvAddr = cleanAddr;
                     else if (dirtyAddr != INVALID_REL_PTR)
                         relRmvAddr = dirtyAddr;
-                    else if (indexAddr != INVALID_REL_PTR)
-                        relRmvAddr = indexAddr;
                     else
                         relRmvAddr = metaAddr;
                 }
@@ -2223,14 +2212,20 @@ public class PageMemoryImpl implements PageMemoryEx {
                     continue;
                 }
 
-                if (cleanAddr != INVALID_REL_PTR)
+                final boolean dirty = isDirty(absRmvAddr);
+                final boolean storMeta = isStoreMetadataPage(absRmvAddr);
+                final boolean isIndex = isIndexPage(absRmvAddr);
+
+
+                if (!dirty && !isIndex && !storMeta)
                     replacedCleanPage++;
-                else if (dirtyAddr != INVALID_REL_PTR)
+                else if (!isIndex && !storMeta)
                     replacedDirtyPage++;
-                else if (indexAddr != INVALID_REL_PTR)
+                else if (!storMeta)
                     replacedIndexPage++;
                 else
                     replacedMetaPage++;
+
 
                 loadedPages.remove(
                     fullPageId.groupId(),
