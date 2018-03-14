@@ -50,6 +50,27 @@
             </list>
         </property>
 
+        <property name="clientConnectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+                <property name="host" value="127.0.0.1"/>
+                <property name="port" value="11110"/>
+                <property name="portRange" value="10"/>
+                <property name="sslEnabled" value="true"/>
+                <property name="useIgniteSslContextFactory" value="false"/>
+                <property name="sslClientAuth" value="false"/>
+
+                <!-- Provide Ssl context. -->
+                <property name="sslContextFactory">
+                    <bean class="org.apache.ignite.ssl.SslContextFactory">
+                        <property name="keyStoreFilePath" value="/Users/nva/work/ignite/incubator-ignite/modules/platforms/cpp/odbc-test/config/ssl/server.jks"/>
+                        <property name="keyStorePassword" value="123456"/>
+                        <property name="trustStoreFilePath" value="/Users/nva/work/ignite/incubator-ignite/modules/platforms/cpp/odbc-test/config/ssl/trust.jks"/>
+                        <property name="trustStorePassword" value="123456"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+
         <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
         <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
