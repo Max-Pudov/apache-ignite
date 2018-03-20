@@ -24,7 +24,7 @@ if [ "$JAVA_HOME" = "" ]; then
     if [ $RETCODE -ne 0 ]; then
         echo $0", ERROR:"
         echo "JAVA_HOME environment variable is not found."
-        echo "Please point JAVA_HOME variable to location of JDK 1.7 or JDK 1.8."
+        echo "Please point JAVA_HOME variable to location of JDK 1.8 or JDK 1.9."
         echo "You can also download latest JDK at http://java.com/download"
 
         exit 1
@@ -41,7 +41,7 @@ fi
 if [ ! -e "$JAVA" ]; then
     echo $0", ERROR:"
     echo "JAVA is not found in JAVA_HOME=$JAVA_HOME."
-    echo "Please point JAVA_HOME variable to installation of JDK 1.7 or JDK 1.8."
+    echo "Please point JAVA_HOME variable to installation of JDK 1.8 or JDK 1.9."
     echo "You can also download latest JDK at http://java.com/download"
 
     exit 1
@@ -52,7 +52,7 @@ JAVA_VER=`"$JAVA" -version 2>&1 | egrep "1\.[78]\."`
 if [ "$JAVA_VER" == "" ]; then
     echo $0", ERROR:"
     echo "The version of JAVA installed in JAVA_HOME=$JAVA_HOME is incorrect."
-    echo "Please point JAVA_HOME variable to installation of JDK 1.7 or JDK 1.8."
+    echo "Please point JAVA_HOME variable to installation of JDK 1.8 or JDK 1.9."
     echo "You can also download latest JDK at http://java.com/download"
 
     exit 1
@@ -94,5 +94,17 @@ if [ -z "$JVM_OPTS" ] ; then
 fi
 
 JVM_OPTS="${JVM_OPTS} -Djava.net.useSystemProxies=true"
+
+#
+# Final JVM_OPTS for Java 9 compatibility
+#
+${JAVA_HOME}/bin/java -version 2>&1 | grep -qE 'java version "9.*"' && {
+JVM_OPTS="--add-exports java.base/jdk.internal.misc=ALL-UNNAMED \
+          --add-exports java.base/sun.nio.ch=ALL-UNNAMED \
+          --add-exports java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED \
+          --add-exports jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED \
+          --add-modules java.xml.bind \
+      ${JVM_OPTS}"
+} || true
 
 "$JAVA" ${JVM_OPTS} -cp "*" org.apache.ignite.console.agent.AgentLauncher "$@"
