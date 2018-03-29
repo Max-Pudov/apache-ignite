@@ -143,6 +143,7 @@ import pageLanding from './components/page-landing';
 import pageProfile from './components/page-profile';
 import pagePasswordChanged from './components/page-password-changed';
 import pagePasswordReset from './components/page-password-reset';
+import igniteChart from './components/ignite-chart';
 
 import igniteServices from './services';
 
@@ -241,6 +242,7 @@ angular.module('ignite-console', [
     uiAceJava.name,
     uiAceSpring.name,
     breadcrumbs.name,
+    igniteChart.name,
     // Ignite modules.
     IgniteModules.name
 ])

@@ -53,6 +53,7 @@ import 'jszip';
 import 'nvd3';
 import 'lodash';
 import 'angular-ui-carousel';
+import 'google-charts';
 
 import 'angular-gridster/dist/angular-gridster.min.css';
 import 'angular-tree-control/css/tree-control-attribute.css';
