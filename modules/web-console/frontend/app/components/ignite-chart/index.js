@@ -23,7 +23,7 @@ export default angular
     .module('ignite-console.ignite-chart', [])
     .component('igniteChart', {
         controller: IgniteChartController,
-        template: '<div class="ignite-chare-placeholder"></div>',
+        template: '<div class="ignite-chare-placeholder"><canvas></canvas></div>',
         bindings: {
             chartOptions: '<',
             chartData: '<'

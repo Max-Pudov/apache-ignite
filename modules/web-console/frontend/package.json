@@ -73,6 +73,8 @@
     "browser-update": "2.1.9",
     "bson-objectid": "1.1.5",
     "copy-webpack-plugin": "^4.5.1",
+    "chart.js": "^2.7.2",
+    "chartjs-plugin-streaming": "^1.4.0",
     "css-loader": "0.28.7",
     "eslint": "4.3.0",
     "eslint-friendly-formatter": "3.0.0",

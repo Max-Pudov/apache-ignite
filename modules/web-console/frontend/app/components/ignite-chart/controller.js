@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-import {GoogleCharts} from 'google-charts';
+const Chart = require('chart.js');
+require('chartjs-plugin-streaming');
 
 export class IgniteChartController {
 
@@ -26,21 +27,73 @@ export class IgniteChartController {
     }
 
     $onInit() {
-        GoogleCharts.load(() => {
-            this.drawChart();
-        });
+        this.ctx = this.$element.find('canvas')[0].getContext('2d');
     }
 
-    drawChart() {
-        // Standard google charts functionality is available as GoogleCharts.api after load
-        const data = GoogleCharts.api.visualization.arrayToDataTable([
-            ['Chart thing', 'Chart amount'],
-            ['Lorem ipsum', 60],
-            ['Dolor sit', 22],
-            ['Sit amet', 18]
-        ]);
-        const elm = this.$element[0];
-        const pie_1_chart = new GoogleCharts.api.visualization.PieChart(elm);
-        pie_1_chart.draw(data);
+    $onChanges() {
+        console.log(this.chartData);
+        if (this.chartData) {
+            if (!this.chart)
+                this.initChart();
+
+            this.updateChart(this.chartData);
+        }
+    }
+
+    initChart() {
+        this.config = {
+            type: 'line',
+            data: {
+                datasets: Object.keys(this.chartData).map((key) => {
+                    return { label: key, data: [] };
+                })
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Line chart (hotizontal scroll) sample'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'realtime',
+                        display: true
+                    }],
+                    yAxes: [{
+                        type: 'linear',
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'value'
+                        }
+                    }]
+                },
+                tooltips: {
+                    mode: 'nearest',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: false
+                },
+                plugins: {
+                    streaming: {
+                        duration: 20000,
+                        refresh: 3000,
+                        delay: 5000,
+                        onRefresh: this.updateCharts
+                    }
+                }
+            }
+        };
+
+        this.chart = new Chart(this.ctx, this.config);
+    }
+
+    updateChart(data) {
+        Object.keys(data).forEach((key) => {
+            const datasetIndex = this.config.data.datasets.findIndex((dataset) => dataset.label === key);
+            this.config.data.datasets[datasetIndex].data.push({x: Date.now(), y: data[key]});
+        });
     }
 }
