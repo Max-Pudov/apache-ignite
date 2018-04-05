@@ -20,10 +20,10 @@ require('chartjs-plugin-streaming');
 
 export class IgniteChartController {
 
-    static $inject = ['$element'];
+    static $inject = ['$element', 'IgniteChartColors'];
 
-    constructor($element) {
-        Object.assign(this, { $element });
+    constructor($element, IgniteChartColors) {
+        Object.assign(this, { $element, IgniteChartColors });
     }
 
     $onInit() {
@@ -50,10 +50,6 @@ export class IgniteChartController {
             },
             options: {
                 responsive: true,
-                title: {
-                    display: true,
-                    text: 'Line chart (hotizontal scroll) sample'
-                },
                 scales: {
                     xAxes: [{
                         type: 'realtime',
@@ -64,12 +60,12 @@ export class IgniteChartController {
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'value'
+                            labelString: 'Percentage'
                         }
                     }]
                 },
                 tooltips: {
-                    mode: 'nearest',
+                    mode: 'index',
                     intersect: false
                 },
                 hover: {
@@ -78,9 +74,9 @@ export class IgniteChartController {
                 },
                 plugins: {
                     streaming: {
-                        duration: 20000,
+                        duration: 80000,
                         refresh: 3000,
-                        delay: 5000,
+                        delay: 0,
                         onRefresh: this.updateCharts
                     }
                 }
@@ -94,6 +90,11 @@ export class IgniteChartController {
         Object.keys(data).forEach((key) => {
             const datasetIndex = this.config.data.datasets.findIndex((dataset) => dataset.label === key);
             this.config.data.datasets[datasetIndex].data.push({x: Date.now(), y: data[key]});
+            this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
         });
+    }
+
+    toggleSeriesVisibility(seriesName) {
+
     }
 }

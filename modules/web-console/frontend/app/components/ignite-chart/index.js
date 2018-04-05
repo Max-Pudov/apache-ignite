@@ -18,12 +18,13 @@
 import angular from 'angular';
 
 import { IgniteChartController } from './controller';
+import template from './template.pug';
 
 export default angular
     .module('ignite-console.ignite-chart', [])
     .component('igniteChart', {
         controller: IgniteChartController,
-        template: '<div class="ignite-chare-placeholder"><canvas></canvas></div>',
+        template,
         bindings: {
             chartOptions: '<',
             chartData: '<'
