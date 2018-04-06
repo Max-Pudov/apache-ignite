@@ -113,11 +113,11 @@ export class IgniteChartController {
             this.config.data.datasets[datasetIndex].data.push({x: now, y: data[key]});
             this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
 
-            if (now - this.config.data.datasets[datasetIndex].data[0].x > 6 * 20 * 1000)
+            if (now - this.config.data.datasets[datasetIndex].data[0].x > 2 * 60 * 1000)
                 this.config.data.datasets[datasetIndex].data.shift();
         });
 
-        this.config.options.scales.xAxes[0].time.min = Date.now() - 6 * 20 * 1000;
+        this.config.options.scales.xAxes[0].time.min = Date.now() - 2 * 60 * 1000;
         this.chart.update();
         this.updateScope();
     }
