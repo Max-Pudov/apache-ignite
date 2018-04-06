@@ -1,0 +1,35 @@
+ignite-chart {
+  .panel-title {
+    display: flex;
+    align-items: center;
+
+    [ignite-icon] {
+      margin-left: 5px;
+    }
+
+    .dropdown-menu {
+      li {
+        a {
+          align-items: center;
+          line-height: 20px;
+          display: flex;
+
+          i {
+            color: #555;
+          }
+
+          span {
+            margin: 0px 10px;
+          }
+
+          &:hover {
+            i {
+              color: #ba120f;
+            }
+          }
+        }
+
+      }
+    }
+  }
+}

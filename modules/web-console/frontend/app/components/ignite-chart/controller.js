@@ -20,10 +20,10 @@ require('chartjs-plugin-streaming');
 
 export class IgniteChartController {
 
-    static $inject = ['$element', 'IgniteChartColors'];
+    static $inject = ['$element', 'IgniteChartColors', '$timeout', '$scope'];
 
-    constructor($element, IgniteChartColors) {
-        Object.assign(this, { $element, IgniteChartColors });
+    constructor($element, IgniteChartColors, $timeout, $scope) {
+        Object.assign(this, { $element, IgniteChartColors, $timeout, $scope });
     }
 
     $onInit() {
@@ -40,6 +40,8 @@ export class IgniteChartController {
     }
 
     initChart() {
+        this.datasetLabels = Object.keys(this.chartData);
+
         this.config = {
             type: 'line',
             data: {
@@ -91,13 +93,18 @@ export class IgniteChartController {
 
     updateChart(data) {
         Object.keys(data).forEach((key) => {
-            const datasetIndex = this.config.data.datasets.findIndex((dataset) => dataset.label === key);
+            const datasetIndex = this.findDatasetIndex(key);
             this.config.data.datasets[datasetIndex].data.push({x: Date.now(), y: data[key]});
             this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
         });
     }
 
-    toggleSeriesVisibility(seriesName) {
+    findDatasetIndex(searchedDatasetLabel) {
+        return this.config.data.datasets.findIndex((dataset) => dataset.label === searchedDatasetLabel);
+    }
 
+    toggleDatasetVisibility(dataset) {
+        dataset.hidden = !dataset.hidden;
+        this.$timeout(() => this.$scope.$apply(), 0);
     }
 }

@@ -19,6 +19,7 @@ import angular from 'angular';
 
 import { IgniteChartController } from './controller';
 import template from './template.pug';
+import './style.scss';
 
 export default angular
     .module('ignite-console.ignite-chart', [])
@@ -27,6 +28,7 @@ export default angular
         template,
         bindings: {
             chartOptions: '<',
-            chartData: '<'
+            chartData: '<',
+            chartTitle: '<'
         }
     });
