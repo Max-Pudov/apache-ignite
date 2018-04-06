@@ -27,8 +27,11 @@ ignite-chart {
               color: #ba120f;
             }
           }
-        }
 
+          & i:last-child {
+            margin-left: auto;
+          }
+        }
       }
     }
   }
