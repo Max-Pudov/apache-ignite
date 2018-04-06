@@ -31,13 +31,12 @@ export class IgniteChartController {
     }
 
     $onChanges() {
-        console.log(this.chartData);
-        // if (this.chartData) {
-        //     if (!this.chart)
-        //         this.initChart();
-        //
-        //     this.updateChart(this.chartData);
-        // }
+        if (this.chartData) {
+            if (!this.chart)
+                this.initChart();
+
+            this.updateChart(this.chartData);
+        }
     }
 
     initChart() {
@@ -49,7 +48,11 @@ export class IgniteChartController {
                 })
             },
             options: {
+                maintainAspectRatio: false,
                 responsive: true,
+                legend: {
+                    display: false
+                },
                 scales: {
                     xAxes: [{
                         type: 'realtime',
