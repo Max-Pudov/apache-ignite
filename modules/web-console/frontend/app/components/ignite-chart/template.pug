@@ -15,5 +15,17 @@
                     li.divider
                     li: a(ng-click='$hide()') Close
 
+            .ignite-chart-range
+                span Range:&nbsp;
+                    button.select-manual-caret.btn.btn-default(
+                        ng-init='timeout=timeLine[0].value'
+                        ng-model='timeout'
+                        ng-change='cpu.switchRange(timeout)'
+                        bs-options='item.value as item.label for item in timeLine'
+                        bs-select
+                    )
+
+
+
     .ignite-chart-placeholder
         canvas
