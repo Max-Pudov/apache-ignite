@@ -32,12 +32,12 @@ export class IgniteChartController {
 
     $onChanges() {
         console.log(this.chartData);
-        if (this.chartData) {
-            if (!this.chart)
-                this.initChart();
-
-            this.updateChart(this.chartData);
-        }
+        // if (this.chartData) {
+        //     if (!this.chart)
+        //         this.initChart();
+        //
+        //     this.updateChart(this.chartData);
+        // }
     }
 
     initChart() {
