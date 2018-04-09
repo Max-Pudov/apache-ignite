@@ -17,13 +17,12 @@
 
             .ignite-chart-range
                 span Range:
-                    button.select-manual-caret.btn-ignite.btn-ignite--link-success(
+                    button.btn-ignite.btn-ignite--link-success.link-primary(
                         ng-model='$ctrl.currentRange'
                         ng-change='$ctrl.changeXRange($ctrl.currentRange)'
                         bs-options='item as item.label for item in $ctrl.ranges'
                         bs-select
                     )
-                        span.icon.fa.fa-caret-down
 
     .ignite-chart-placeholder
         canvas
