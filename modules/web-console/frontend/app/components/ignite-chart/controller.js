@@ -79,7 +79,12 @@ export class IgniteChartController {
                     xAxes: [{
                         type: 'time',
                         display: true,
-                        time: {}
+                        time: {
+                            displayFormats: {
+                                second: 'hh:mm:ss'
+                            },
+                            minUnit: 'second'
+                        }
                     }],
                     yAxes: [{
                         type: 'linear',
@@ -100,6 +105,8 @@ export class IgniteChartController {
                 }
             }
         };
+
+        this.config = Object.assign(this.config, this.chartConfig);
 
         this.chart = new Chart(this.ctx, this.config);
         this.changeXRange(this.currentRange);
@@ -128,14 +135,14 @@ export class IgniteChartController {
         this.rerenderChart();
     }
 
-    rerenderChart() {
-        this.chart.update();
-        this.$timeout(() => this.$scope.$apply(), 0);
-    }
-
     changeXRange(range) {
         const deltaInMilliSeconds = range.value * 60 * 1000;
         this.config.options.scales.xAxes[0].time.min = Date.now() - deltaInMilliSeconds;
         this.rerenderChart();
+    }
+
+    rerenderChart() {
+        this.chart.update();
+        this.$timeout(() => this.$scope.$apply(), 0);
     }
 }
