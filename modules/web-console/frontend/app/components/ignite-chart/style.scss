@@ -3,6 +3,10 @@ ignite-chart {
     display: flex;
     align-items: center;
 
+    & .ignite-chart-range:last-child {
+      margin-left: auto;
+    }
+
     [ignite-icon] {
       margin-left: 5px;
     }
@@ -19,7 +23,7 @@ ignite-chart {
           }
 
           span {
-            margin: 0px 10px;
+            margin: 0 10px;
           }
 
           &:hover {

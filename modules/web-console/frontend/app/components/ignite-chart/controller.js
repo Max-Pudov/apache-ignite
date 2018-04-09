@@ -34,8 +34,6 @@ const RANGE_RATE_PRESET = [{
     value: 30
 }];
 
-
-
 export class IgniteChartController {
 
     static $inject = ['$element', 'IgniteChartColors', '$timeout', '$scope'];
@@ -43,7 +41,9 @@ export class IgniteChartController {
     constructor($element, IgniteChartColors, $timeout, $scope) {
         Object.assign(this, { $element, IgniteChartColors, $timeout, $scope });
 
-        this.minimumDelta = Date.now() - RANGE_RATE_PRESET[RANGE_RATE_PRESET.length - 1] * 1000 * 60;
+        this.ranges = RANGE_RATE_PRESET;
+        this.currentRange = this.ranges[0];
+        this.maxRangeInMilliseconds = RANGE_RATE_PRESET[RANGE_RATE_PRESET.length - 1].value * 60 * 1000;
     }
 
     $onInit() {
@@ -55,7 +55,7 @@ export class IgniteChartController {
             if (!this.chart)
                 this.initChart();
 
-            this.updateChart(this.chartData);
+            this.updateChartData(this.chartData);
         }
     }
 
@@ -79,9 +79,7 @@ export class IgniteChartController {
                     xAxes: [{
                         type: 'time',
                         display: true,
-                        time: {
-                            min: Date.now() - 2 * 60 * 1000
-                        }
+                        time: {}
                     }],
                     yAxes: [{
                         type: 'linear',
@@ -104,22 +102,21 @@ export class IgniteChartController {
         };
 
         this.chart = new Chart(this.ctx, this.config);
+        this.changeXRange(this.currentRange);
     }
 
-    updateChart(data) {
+    updateChartData(data) {
         const now = Date.now();
         Object.keys(data).forEach((key) => {
             const datasetIndex = this.findDatasetIndex(key);
             this.config.data.datasets[datasetIndex].data.push({x: now, y: data[key]});
             this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
 
-            if (now - this.config.data.datasets[datasetIndex].data[0].x > 2 * 60 * 1000)
+            if (now - this.config.data.datasets[datasetIndex].data[0].x > this.maxRangeInMilliseconds)
                 this.config.data.datasets[datasetIndex].data.shift();
         });
 
-        this.config.options.scales.xAxes[0].time.min = Date.now() - 2 * 60 * 1000;
-        this.chart.update();
-        this.updateScope();
+        this.changeXRange(this.currentRange);
     }
 
     findDatasetIndex(searchedDatasetLabel) {
@@ -128,10 +125,17 @@ export class IgniteChartController {
 
     toggleDatasetVisibility(dataset) {
         dataset.hidden = !dataset.hidden;
-        this.updateScope();
+        this.rerenderChart();
     }
 
-    updateScope() {
+    rerenderChart() {
+        this.chart.update();
         this.$timeout(() => this.$scope.$apply(), 0);
+    }
+
+    changeXRange(range) {
+        const deltaInMilliSeconds = range.value * 60 * 1000;
+        this.config.options.scales.xAxes[0].time.min = Date.now() - deltaInMilliSeconds;
+        this.rerenderChart();
     }
 }
