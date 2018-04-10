@@ -34,6 +34,8 @@ const RANGE_RATE_PRESET = [{
     value: 30
 }];
 
+const HEADER_SIZE = 81;
+
 export class IgniteChartController {
 
     static $inject = ['$element', 'IgniteChartColors', '$timeout', '$scope'];
@@ -56,6 +58,12 @@ export class IgniteChartController {
                 this.initChart();
 
             this.updateChartData(this.chartData);
+        }
+
+        if (this.changeOutlet) {
+            this.$element.find('canvas')[0].height = this.$element.parent().height() - HEADER_SIZE;
+            console.log(this.$element.parent().height());
+            this.rerenderChart();
         }
     }
 

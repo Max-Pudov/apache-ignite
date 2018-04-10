@@ -29,6 +29,7 @@ export default angular
         bindings: {
             chartOptions: '<',
             chartData: '<',
-            chartTitle: '<'
+            chartTitle: '<',
+            changeOutlet: '<'
         }
     });
