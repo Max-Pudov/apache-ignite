@@ -232,10 +232,17 @@ export default class ConfigEffects {
 
         this.loadAndEditClusterEffect$ = ConfigureState.actions$
             .let(ofType('LOAD_AND_EDIT_CLUSTER'))
-            .exhaustMap((a) => {
+            .withLatestFrom(ConfigureState.state$.let(ConfigSelectors.selectShortClustersValue()))
+            .exhaustMap(([a, shortClusters]) => {
                 if (a.clusterID === 'new') {
                     return of(
-                        {type: 'EDIT_CLUSTER', cluster: this.Clusters.getBlankCluster()},
+                        {
+                            type: 'EDIT_CLUSTER',
+                            cluster: {
+                                ...this.Clusters.getBlankCluster(),
+                                name: uniqueName('Cluster', shortClusters)
+                            }
+                        },
                         {type: 'LOAD_AND_EDIT_CLUSTER_OK'}
                     );
                 }
