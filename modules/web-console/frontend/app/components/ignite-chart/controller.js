@@ -62,7 +62,6 @@ export class IgniteChartController {
 
         if (this.changeOutlet) {
             this.$element.find('canvas')[0].height = this.$element.parent().height() - HEADER_SIZE;
-            console.log(this.$element.parent().height());
             this.rerenderChart();
         }
     }
