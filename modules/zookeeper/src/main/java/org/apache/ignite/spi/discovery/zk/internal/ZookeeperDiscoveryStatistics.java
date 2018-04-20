@@ -14,35 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.ignite.spi.discovery.zk.internal;
 
-export default ['IgniteLoading', [() => {
-    const _overlays = {};
+/**
+ *
+ */
+public class ZookeeperDiscoveryStatistics {
+    /** */
+    private int joinedNodesCnt;
 
-    const start = (key) => {
-        setTimeout(() => {
-            const loadingOverlay = _overlays[key];
+    /** */
+    private int failedNodesCnt;
 
-            loadingOverlay && loadingOverlay.addClass('loading-active');
-        });
-    };
+    /** */
+    public int joinedNodesCnt() {
+        return joinedNodesCnt;
+    }
 
-    const finish = (key) => {
-        setTimeout(() => {
-            const loadingOverlay = _overlays[key];
+    /** */
+    public int failedNodesCnt() {
+        return failedNodesCnt;
+    }
 
-            loadingOverlay && loadingOverlay.removeClass('loading-active');
-        });
-    };
+    /** */
+    public void onNodeJoined() {
+        joinedNodesCnt++;
+    }
 
-    const add = (key, element) => {
-        _overlays[key] = element;
-
-        return element;
-    };
-
-    return {
-        add,
-        start,
-        finish
-    };
-}]];
+    /** */
+    public void onNodeFailed() {
+        failedNodesCnt++;
+    }
+}
