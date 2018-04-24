@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -20,9 +20,12 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Threading.Tasks;
     using Apache.Ignite.Core.Binary;
     using Apache.Ignite.Core.Cache;
+    using Apache.Ignite.Core.Cache.Configuration;
     using Apache.Ignite.Core.Cache.Query;
     using Apache.Ignite.Core.Client;
     using Apache.Ignite.Core.Client.Cache;
@@ -37,7 +40,7 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
     /// <summary>
     /// Client cache implementation.
     /// </summary>
-    internal sealed class CacheClient<TK, TV> : ICacheClient<TK, TV>
+    internal sealed class CacheClient<TK, TV> : ICacheClient<TK, TV>, ICacheInternal
     {
         /** Scan query filter platform code: .NET filter. */
         private const byte FilterPlatformDotnet = 2;
@@ -97,6 +100,14 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<TV> GetAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutInOpAsync(ClientOp.CacheGet, w => w.WriteObject(key), UnmarshalNotNull<TV>);
+        }
+
+        /** <inheritDoc /> */
         public bool TryGet(TK key, out TV value)
         {
             IgniteArgumentCheck.NotNull(key, "key");
@@ -109,24 +120,27 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<CacheResult<TV>> TryGetAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutInOpAsync(ClientOp.CacheGet, w => w.WriteObject(key), UnmarshalCacheResult<TV>);
+        }
+
+        /** <inheritDoc /> */
         public ICollection<ICacheEntry<TK, TV>> GetAll(IEnumerable<TK> keys)
         {
             IgniteArgumentCheck.NotNull(keys, "keys");
 
-            return DoOutInOp(ClientOp.CacheGetAll, w => w.WriteEnumerable(keys), stream =>
-            {
-                var reader = _marsh.StartUnmarshal(stream, _keepBinary);
+            return DoOutInOp(ClientOp.CacheGetAll, w => w.WriteEnumerable(keys), s => ReadCacheEntries(s));
+        }
 
-                var cnt = reader.ReadInt();
-                var res = new List<ICacheEntry<TK, TV>>(cnt);
+        /** <inheritDoc /> */
+        public Task<ICollection<ICacheEntry<TK, TV>>> GetAllAsync(IEnumerable<TK> keys)
+        {
+            IgniteArgumentCheck.NotNull(keys, "keys");
 
-                for (var i = 0; i < cnt; i++)
-                {
-                    res.Add(new CacheEntry<TK, TV>(reader.ReadObject<TK>(), reader.ReadObject<TV>()));
-                }
-
-                return res;
-            });
+            return DoOutInOpAsync(ClientOp.CacheGetAll, w => w.WriteEnumerable(keys), s => ReadCacheEntries(s));
         }
 
         /** <inheritDoc /> */
@@ -135,11 +149,16 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            DoOutOp(ClientOp.CachePut, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            });
+            DoOutOp(ClientOp.CachePut, w => WriteKeyVal(w, key, val));
+        }
+
+        /** <inheritDoc /> */
+        public Task PutAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutOpAsync(ClientOp.CachePut, w => WriteKeyVal(w, key, val));
         }
 
         /** <inheritDoc /> */
@@ -151,11 +170,27 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<bool> ContainsKeyAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutInOpAsync(ClientOp.CacheContainsKey, w => w.WriteObjectDetached(key), r => r.ReadBool());
+        }
+
+        /** <inheritDoc /> */
         public bool ContainsKeys(IEnumerable<TK> keys)
         {
             IgniteArgumentCheck.NotNull(keys, "keys");
 
             return DoOutInOp(ClientOp.CacheContainsKeys, w => w.WriteEnumerable(keys), r => r.ReadBool());
+        }
+
+        /** <inheritDoc /> */
+        public Task<bool> ContainsKeysAsync(IEnumerable<TK> keys)
+        {
+            IgniteArgumentCheck.NotNull(keys, "keys");
+
+            return DoOutInOpAsync(ClientOp.CacheContainsKeys, w => w.WriteEnumerable(keys), r => r.ReadBool());
         }
 
         /** <inheritDoc /> */
@@ -188,10 +223,17 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(sqlFieldsQuery, "sqlFieldsQuery");
             IgniteArgumentCheck.NotNull(sqlFieldsQuery.Sql, "sqlFieldsQuery.Sql");
 
-            return DoOutInOp(ClientOp.QuerySqlFields, w => WriteSqlFieldsQuery(w, sqlFieldsQuery),
-                s => new ClientFieldsQueryCursor(
-                    _ignite, s.ReadLong(), _keepBinary, s, ClientOp.QuerySqlFieldsCursorGetPage,
-                    ClientFieldsQueryCursor.ReadColumns(_marsh.StartUnmarshal(s))));
+            return DoOutInOp(ClientOp.QuerySqlFields,
+                w => WriteSqlFieldsQuery(w, sqlFieldsQuery),
+                s => GetFieldsCursor(s));
+        }
+
+        /** <inheritDoc /> */
+        public IQueryCursor<T> Query<T>(SqlFieldsQuery sqlFieldsQuery, Func<IBinaryRawReader, int, T> readerFunc)
+        {
+            return DoOutInOp(ClientOp.QuerySqlFields, 
+                w => WriteSqlFieldsQuery(w, sqlFieldsQuery, false),
+                s => GetFieldsCursorNoColumnNames(s, readerFunc));
         }
 
         /** <inheritDoc /> */
@@ -200,11 +242,16 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CacheGetAndPut, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, UnmarshalCacheResult<TV>);
+            return DoOutInOp(ClientOp.CacheGetAndPut, w => WriteKeyVal(w, key, val), UnmarshalCacheResult<TV>);
+        }
+
+        /** <inheritDoc /> */
+        public Task<CacheResult<TV>> GetAndPutAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CacheGetAndPut, w => WriteKeyVal(w, key, val), UnmarshalCacheResult<TV>);
         }
 
         /** <inheritDoc /> */
@@ -213,11 +260,16 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CacheGetAndReplace, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, UnmarshalCacheResult<TV>);
+            return DoOutInOp(ClientOp.CacheGetAndReplace, w => WriteKeyVal(w, key, val), UnmarshalCacheResult<TV>);
+        }
+
+        /** <inheritDoc /> */
+        public Task<CacheResult<TV>> GetAndReplaceAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CacheGetAndReplace, w => WriteKeyVal(w, key, val), UnmarshalCacheResult<TV>);
         }
 
         /** <inheritDoc /> */
@@ -230,16 +282,30 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<CacheResult<TV>> GetAndRemoveAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutInOpAsync(ClientOp.CacheGetAndRemove, w => w.WriteObjectDetached(key),
+                UnmarshalCacheResult<TV>);
+        }
+
+        /** <inheritDoc /> */
         public bool PutIfAbsent(TK key, TV val)
         {
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CachePutIfAbsent, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, s => s.ReadBool());
+            return DoOutInOp(ClientOp.CachePutIfAbsent, w => WriteKeyVal(w, key, val), s => s.ReadBool());
+        }
+
+        /** <inheritDoc /> */
+        public Task<bool> PutIfAbsentAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CachePutIfAbsent, w => WriteKeyVal(w, key, val), s => s.ReadBool());
         }
 
         /** <inheritDoc /> */
@@ -248,11 +314,18 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CacheGetAndPutIfAbsent, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, UnmarshalCacheResult<TV>);
+            return DoOutInOp(ClientOp.CacheGetAndPutIfAbsent, w => WriteKeyVal(w, key, val),
+                UnmarshalCacheResult<TV>);
+        }
+
+        /** <inheritDoc /> */
+        public Task<CacheResult<TV>> GetAndPutIfAbsentAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CacheGetAndPutIfAbsent, w => WriteKeyVal(w, key, val),
+                UnmarshalCacheResult<TV>);
         }
 
         /** <inheritDoc /> */
@@ -261,11 +334,16 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CacheReplace, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, s => s.ReadBool());
+            return DoOutInOp(ClientOp.CacheReplace, w => WriteKeyVal(w, key, val), s => s.ReadBool());
+        }
+
+        /** <inheritDoc /> */
+        public Task<bool> ReplaceAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CacheReplace, w => WriteKeyVal(w, key, val), s => s.ReadBool());
         }
 
         /** <inheritDoc /> */
@@ -284,6 +362,21 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<bool> ReplaceAsync(TK key, TV oldVal, TV newVal)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(oldVal, "oldVal");
+            IgniteArgumentCheck.NotNull(newVal, "newVal");
+
+            return DoOutInOpAsync(ClientOp.CacheReplaceIfEquals, w =>
+            {
+                w.WriteObjectDetached(key);
+                w.WriteObjectDetached(oldVal);
+                w.WriteObjectDetached(newVal);
+            }, s => s.ReadBool());
+        }
+
+        /** <inheritDoc /> */
         public void PutAll(IEnumerable<KeyValuePair<TK, TV>> vals)
         {
             IgniteArgumentCheck.NotNull(vals, "vals");
@@ -292,9 +385,23 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> vals)
+        {
+            IgniteArgumentCheck.NotNull(vals, "vals");
+
+            return DoOutOpAsync(ClientOp.CachePutAll, w => w.WriteDictionary(vals));
+        }
+
+        /** <inheritDoc /> */
         public void Clear()
         {
             DoOutOp(ClientOp.CacheClear);
+        }
+
+        /** <inheritDoc /> */
+        public Task ClearAsync()
+        {
+            return DoOutOpAsync(ClientOp.CacheClear);
         }
 
         /** <inheritDoc /> */
@@ -306,11 +413,27 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task ClearAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutOpAsync(ClientOp.CacheClearKey, w => w.WriteObjectDetached(key));
+        }
+
+        /** <inheritDoc /> */
         public void ClearAll(IEnumerable<TK> keys)
         {
             IgniteArgumentCheck.NotNull(keys, "keys");
 
             DoOutOp(ClientOp.CacheClearKeys, w => w.WriteEnumerable(keys));
+        }
+
+        /** <inheritDoc /> */
+        public Task ClearAllAsync(IEnumerable<TK> keys)
+        {
+            IgniteArgumentCheck.NotNull(keys, "keys");
+
+            return DoOutOpAsync(ClientOp.CacheClearKeys, w => w.WriteEnumerable(keys));
         }
 
         /** <inheritDoc /> */
@@ -322,16 +445,29 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<bool> RemoveAsync(TK key)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+
+            return DoOutInOpAsync(ClientOp.CacheRemoveKey, w => w.WriteObjectDetached(key), r => r.ReadBool());
+        }
+
+        /** <inheritDoc /> */
         public bool Remove(TK key, TV val)
         {
             IgniteArgumentCheck.NotNull(key, "key");
             IgniteArgumentCheck.NotNull(val, "val");
 
-            return DoOutInOp(ClientOp.CacheRemoveIfEquals, w =>
-            {
-                w.WriteObjectDetached(key);
-                w.WriteObjectDetached(val);
-            }, r => r.ReadBool());
+            return DoOutInOp(ClientOp.CacheRemoveIfEquals, w => WriteKeyVal(w, key, val), r => r.ReadBool());
+        }
+
+        /** <inheritDoc /> */
+        public Task<bool> RemoveAsync(TK key, TV val)
+        {
+            IgniteArgumentCheck.NotNull(key, "key");
+            IgniteArgumentCheck.NotNull(val, "val");
+
+            return DoOutInOpAsync(ClientOp.CacheRemoveIfEquals, w => WriteKeyVal(w, key, val), r => r.ReadBool());
         }
 
         /** <inheritDoc /> */
@@ -343,9 +479,23 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task RemoveAllAsync(IEnumerable<TK> keys)
+        {
+            IgniteArgumentCheck.NotNull(keys, "keys");
+
+            return DoOutOpAsync(ClientOp.CacheRemoveKeys, w => w.WriteEnumerable(keys));
+        }
+
+        /** <inheritDoc /> */
         public void RemoveAll()
         {
             DoOutOp(ClientOp.CacheRemoveAll);
+        }
+
+        /** <inheritDoc /> */
+        public Task RemoveAllAsync()
+        {
+            return DoOutOpAsync(ClientOp.CacheRemoveAll);
         }
 
         /** <inheritDoc /> */
@@ -355,9 +505,21 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         }
 
         /** <inheritDoc /> */
+        public Task<long> GetSizeAsync(params CachePeekMode[] modes)
+        {
+            return DoOutInOpAsync(ClientOp.CacheGetSize, w => WritePeekModes(modes, w), s => s.ReadLong());
+        }
+
+        /** <inheritDoc /> */
         public CacheClientConfiguration GetConfiguration()
         {
             return DoOutInOp(ClientOp.CacheGetConfiguration, null, s => new CacheClientConfiguration(s));
+        }
+
+        /** <inheritDoc /> */
+        CacheConfiguration ICacheInternal.GetConfiguration()
+        {
+            return GetConfiguration().ToCacheConfiguration();
         }
 
         /** <inheritDoc /> */
@@ -380,26 +542,13 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             return new CacheClient<TK1, TV1>(_ignite, _name, true);
         }
 
-        /// <summary>
-        /// Does the out in op.
-        /// </summary>
-        private T DoOutInOp<T>(ClientOp opId, Action<BinaryWriter> writeAction,
-            Func<IBinaryStream, T> readFunc)
+        /** <inheritDoc /> */
+        [ExcludeFromCodeCoverage]
+        public T DoOutInOpExtension<T>(int extensionId, int opCode, Action<IBinaryRawWriter> writeAction,
+            Func<IBinaryRawReader, T> readFunc)
         {
-            return _ignite.Socket.DoOutInOp(opId, stream =>
-            {
-                stream.WriteInt(_id);
-                stream.WriteByte(0);  // Flags (skipStore, etc).
-
-                if (writeAction != null)
-                {
-                    var writer = _marsh.StartMarshal(stream);
-
-                    writeAction(writer);
-
-                    _marsh.FinishMarshal(writer);
-                }
-            }, readFunc, HandleError<T>);
+            // Should not be called, there are no usages for thin client.
+            throw IgniteClient.GetClientNotSupportedException();
         }
 
         /// <summary>
@@ -408,6 +557,52 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         private void DoOutOp(ClientOp opId, Action<BinaryWriter> writeAction = null)
         {
             DoOutInOp<object>(opId, writeAction, null);
+        }
+
+        /// <summary>
+        /// Does the out op.
+        /// </summary>
+        private Task DoOutOpAsync(ClientOp opId, Action<BinaryWriter> writeAction = null)
+        {
+            return DoOutInOpAsync<object>(opId, writeAction, null);
+        }
+
+        /// <summary>
+        /// Does the out in op.
+        /// </summary>
+        private T DoOutInOp<T>(ClientOp opId, Action<BinaryWriter> writeAction,
+            Func<IBinaryStream, T> readFunc)
+        {
+            return _ignite.Socket.DoOutInOp(opId, stream => WriteRequest(writeAction, stream), 
+                readFunc, HandleError<T>);
+        }
+
+        /// <summary>
+        /// Does the out in op.
+        /// </summary>
+        private Task<T> DoOutInOpAsync<T>(ClientOp opId, Action<BinaryWriter> writeAction,
+            Func<IBinaryStream, T> readFunc)
+        {
+            return _ignite.Socket.DoOutInOpAsync(opId, stream => WriteRequest(writeAction, stream), 
+                readFunc, HandleError<T>);
+        }
+
+        /// <summary>
+        /// Writes the request.
+        /// </summary>
+        private void WriteRequest(Action<BinaryWriter> writeAction, IBinaryStream stream)
+        {
+            stream.WriteInt(_id);
+            stream.WriteByte(0); // Flags (skipStore, etc).
+
+            if (writeAction != null)
+            {
+                var writer = _marsh.StartMarshal(stream);
+
+                writeAction(writer);
+
+                _marsh.FinishMarshal(writer);
+            }
         }
 
         /// <summary>
@@ -492,7 +687,8 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
         /// <summary>
         /// Writes the SQL fields query.
         /// </summary>
-        private static void WriteSqlFieldsQuery(IBinaryRawWriter writer, SqlFieldsQuery qry)
+        private static void WriteSqlFieldsQuery(IBinaryRawWriter writer, SqlFieldsQuery qry,
+            bool includeColumns = true)
         {
             Debug.Assert(qry != null);
 
@@ -513,24 +709,47 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
             writer.WriteBoolean(qry.Colocated);
             writer.WriteBoolean(qry.Lazy);
             writer.WriteTimeSpanAsLong(qry.Timeout);
+            writer.WriteBoolean(includeColumns);
 
-            // Always include field names.
-            writer.WriteBoolean(true);
+        }
 
+        /// <summary>
+        /// Gets the fields cursor.
+        /// </summary>
+        private ClientFieldsQueryCursor GetFieldsCursor(IBinaryStream s)
+        {
+            var cursorId = s.ReadLong();
+            var columnNames = ClientFieldsQueryCursor.ReadColumns(_marsh.StartUnmarshal(s));
+
+            return new ClientFieldsQueryCursor(_ignite, cursorId, _keepBinary, s,
+                ClientOp.QuerySqlFieldsCursorGetPage, columnNames);
+        }
+
+        /// <summary>
+        /// Gets the fields cursor.
+        /// </summary>
+        private ClientQueryCursorBase<T> GetFieldsCursorNoColumnNames<T>(IBinaryStream s,
+            Func<IBinaryRawReader, int, T> readerFunc)
+        {
+            var cursorId = s.ReadLong();
+            var columnCount = s.ReadInt();
+
+            return new ClientQueryCursorBase<T>(_ignite, cursorId, _keepBinary, s,
+                ClientOp.QuerySqlFieldsCursorGetPage, r => readerFunc(r, columnCount));
         }
 
         /// <summary>
         /// Handles the error.
         /// </summary>
-        private T HandleError<T>(ClientStatus status, string msg)
+        private T HandleError<T>(ClientStatusCode status, string msg)
         {
             switch (status)
             {
-                case ClientStatus.CacheDoesNotExist:
-                    throw new IgniteClientException("Cache doesn't exist: " + Name, null, (int) status);
+                case ClientStatusCode.CacheDoesNotExist:
+                    throw new IgniteClientException("Cache doesn't exist: " + Name, null, status);
 
                 default:
-                    throw new IgniteClientException(msg, null, (int) status);
+                    throw new IgniteClientException(msg, null, status);
             }
         }
 
@@ -569,6 +788,33 @@ namespace Apache.Ignite.Core.Impl.Client.Cache
                     w.WriteByte(val);
                 }
             }
+        }
+
+        /// <summary>
+        /// Reads the cache entries.
+        /// </summary>
+        private ICollection<ICacheEntry<TK, TV>> ReadCacheEntries(IBinaryStream stream)
+        {
+            var reader = _marsh.StartUnmarshal(stream, _keepBinary);
+
+            var cnt = reader.ReadInt();
+            var res = new List<ICacheEntry<TK, TV>>(cnt);
+
+            for (var i = 0; i < cnt; i++)
+            {
+                res.Add(new CacheEntry<TK, TV>(reader.ReadObject<TK>(), reader.ReadObject<TV>()));
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Writes key and value.
+        /// </summary>
+        private static void WriteKeyVal(BinaryWriter w, TK key, TV val)
+        {
+            w.WriteObjectDetached(key);
+            w.WriteObjectDetached(val);
         }
     }
 }

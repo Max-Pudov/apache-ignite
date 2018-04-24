@@ -45,6 +45,7 @@ import org.apache.ignite.internal.processors.cache.GridCacheOperation;
 import org.apache.ignite.internal.processors.cache.GridCacheReturn;
 import org.apache.ignite.internal.processors.cache.GridCacheReturnCompletableWrapper;
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
+import org.apache.ignite.internal.processors.cache.GridCacheUpdateTxResult;
 import org.apache.ignite.internal.processors.cache.KeyCacheObject;
 import org.apache.ignite.internal.processors.cache.distributed.near.GridNearCacheEntry;
 import org.apache.ignite.internal.processors.cache.transactions.IgniteInternalTx;
@@ -115,6 +116,9 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
     /** */
     @GridToStringInclude
     protected IgniteTxRemoteState txState;
+
+    /** {@code True} if tx should skip adding itself to completed version map on finish. */
+    private boolean skipCompletedVers;
 
     /**
      * Empty constructor required for {@link Externalizable}.
@@ -227,8 +231,7 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
     @Override public GridTuple<CacheObject> peek(GridCacheContext cacheCtx,
         boolean failFast,
         KeyCacheObject key)
-        throws GridCacheFilterFailedException
-    {
+        throws GridCacheFilterFailedException {
         assert false : "Method peek can only be called on user transaction: " + this;
 
         throw new IllegalStateException("Method peek can only be called on user transaction: " + this);
@@ -324,18 +327,24 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
 
     /** {@inheritDoc} */
     @Override public boolean onOwnerChanged(GridCacheEntryEx entry, GridCacheMvccCandidate owner) {
-        try {
-            if (hasWriteKey(entry.txKey())) {
-                commitIfLocked();
+        if (!hasWriteKey(entry.txKey()))
+            return false;
 
-                return true;
-            }
+        try {
+            commitIfLocked();
+
+            return true;
         }
         catch (IgniteCheckedException e) {
             U.error(log, "Failed to commit remote transaction: " + this, e);
-        }
 
-        return false;
+            invalidate(true);
+            systemInvalidate(true);
+
+            rollbackRemoteTx();
+
+            return false;
+        }
     }
 
     /** {@inheritDoc} */
@@ -474,7 +483,7 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                     cctx.database().checkpointReadLock();
 
                     try {
-                        Collection<IgniteTxEntry> entries = near() ? allEntries() : writeEntries();
+                        Collection<IgniteTxEntry> entries = near() || cctx.snapshot().needTxReadLogging() ? allEntries() : writeEntries();
 
                         List<DataEntry> dataEntries = null;
 
@@ -556,8 +565,8 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
 
                                             GridCacheVersion dhtVer = cached.isNear() ? writeVersion() : null;
 
-                                            if (!near() && cacheCtx.group().persistenceEnabled() &&
-                                                op != NOOP && op != RELOAD && op != READ) {
+                                            if (!near() && cacheCtx.group().persistenceEnabled() && cacheCtx.group().walEnabled() &&
+                                                op != NOOP && op != RELOAD && (op != READ || cctx.snapshot().needTxReadLogging())) {
                                                 if (dataEntries == null)
                                                     dataEntries = new ArrayList<>(entries.size());
 
@@ -599,7 +608,7 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                                                 else {
                                                     assert val != null : txEntry;
 
-                                                    cached.innerSet(this,
+                                                    GridCacheUpdateTxResult updRes = cached.innerSet(this,
                                                         eventNodeId(),
                                                         nodeId,
                                                         val,
@@ -621,6 +630,9 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                                                         dhtVer,
                                                         txEntry.updateCounter());
 
+                                                    if (updRes.loggedPointer() != null)
+                                                        ptr = updRes.loggedPointer();
+
                                                     // Keep near entry up to date.
                                                     if (nearCached != null) {
                                                         CacheObject val0 = cached.valueBytes();
@@ -635,7 +647,7 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                                                 }
                                             }
                                             else if (op == DELETE) {
-                                                cached.innerRemove(this,
+                                                GridCacheUpdateTxResult updRes = cached.innerRemove(this,
                                                     eventNodeId(),
                                                     nodeId,
                                                     false,
@@ -652,6 +664,9 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                                                     resolveTaskName(),
                                                     dhtVer,
                                                     txEntry.updateCounter());
+
+                                                if (updRes.loggedPointer() != null)
+                                                    ptr = updRes.loggedPointer();
 
                                                 // Keep near entry up to date.
                                                 if (nearCached != null)
@@ -745,8 +760,8 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
                             if (!near() && !F.isEmpty(dataEntries) && cctx.wal() != null)
                                 cctx.wal().log(new DataRecord(dataEntries));
 
-                            if (ptr != null)
-                                cctx.wal().fsync(ptr);
+                            if (ptr != null && !cctx.tm().logTxRecords())
+                                cctx.wal().flush(ptr, false);
                         }
                         catch (StorageException e) {
                             throw new IgniteCheckedException("Failed to log transaction record " +
@@ -856,7 +871,7 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
             // Note that we don't evict near entries here -
             // they will be deleted by their corresponding transactions.
             if (state(ROLLING_BACK) || state() == UNKNOWN) {
-                cctx.tm().rollbackTx(this, false);
+                cctx.tm().rollbackTx(this, false, skipCompletedVers);
 
                 state(ROLLED_BACK);
             }
@@ -886,6 +901,20 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
     }
 
     /**
+     * @return {@code True} if tx should skip adding itself to completed version map on finish.
+     */
+    public boolean skipCompletedVersions() {
+        return skipCompletedVers;
+    }
+
+    /**
+     * @param skipCompletedVers {@code True} if tx should skip adding itself to completed version map on finish.
+     */
+    public void skipCompletedVersions(boolean skipCompletedVers) {
+        this.skipCompletedVers = skipCompletedVers;
+    }
+
+    /**
      * Adds explicit version if there is one.
      *
      * @param e Transaction entry.
@@ -912,4 +941,5 @@ public abstract class GridDistributedTxRemoteAdapter extends IgniteTxAdapter
     @Override public String toString() {
         return GridToStringBuilder.toString(GridDistributedTxRemoteAdapter.class, this, "super", super.toString());
     }
+
 }
