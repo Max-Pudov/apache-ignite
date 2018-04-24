@@ -18,10 +18,10 @@
 import headerTemplate from '../../../../../app/primitives/ui-grid-header/index.tpl.pug';
 
 export class NotebooksListCtrl {
-    static $inject = ['IgniteNotebook', 'IgniteMessages', 'IgniteLoading', 'IgniteInput', '$scope', '$modal'];
+    static $inject = ['IgniteNotebook', 'IgniteMessages', 'IgniteLoading', 'IgniteInput', '$scope', '$modal', '$timeout'];
 
-    constructor(IgniteNotebook, IgniteMessages, IgniteLoading, IgniteInput, $scope, $modal) {
-        Object.assign(this, { IgniteNotebook, IgniteMessages, IgniteLoading, IgniteInput, $scope, $modal });
+    constructor(IgniteNotebook, IgniteMessages, IgniteLoading, IgniteInput, $scope, $modal, $timeout) {
+        Object.assign(this, { IgniteNotebook, IgniteMessages, IgniteLoading, IgniteInput, $scope, $modal, $timeout });
 
         this.notebooks = [];
 
@@ -103,6 +103,7 @@ export class NotebooksListCtrl {
             this.IgniteMessages.showError(err);
 
         } finally {
+            this.$timeout(() => this.$scope.$apply(), 0);
             await this.IgniteLoading.finish('notebooksLoading');
         }
     }
