@@ -28,7 +28,8 @@ export default angular
         template,
         bindings: {
             chartOptions: '<',
-            chartData: '<',
+            chartDataPoint: '<',
+            chartHistory: '<',
             chartTitle: '<',
             changeOutlet: '<'
         }

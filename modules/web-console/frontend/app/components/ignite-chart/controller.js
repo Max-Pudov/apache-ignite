@@ -38,10 +38,10 @@ const HEADER_SIZE = 81;
 
 export class IgniteChartController {
 
-    static $inject = ['$element', 'IgniteChartColors', '$timeout', '$scope'];
+    static $inject = ['$element', 'IgniteChartColors', '$scope'];
 
-    constructor($element, IgniteChartColors, $timeout, $scope) {
-        Object.assign(this, { $element, IgniteChartColors, $timeout, $scope });
+    constructor($element, IgniteChartColors, $scope) {
+        Object.assign(this, { $element, IgniteChartColors, $scope });
 
         this.ranges = RANGE_RATE_PRESET;
         this.currentRange = this.ranges[0];
@@ -52,12 +52,22 @@ export class IgniteChartController {
         this.ctx = this.$element.find('canvas')[0].getContext('2d');
     }
 
-    $onChanges() {
-        if (this.chartData) {
+    $onChanges(changes) {
+        if (this.chartDataPoint && changes.chartDataPoint) {
             if (!this.chart)
                 this.initChart();
 
-            this.updateChartData(this.chartData);
+            this.appendChartPoint(this.chartDataPoint);
+            this.changeXRange(this.currentRange);
+        }
+
+        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length) {
+            if (!this.chart)
+                this.initChart();
+
+            console.log('history changed');
+            this.updateHistory(changes.chartHistory.currentValue);
+            this.changeXRange(this.currentRange);
         }
 
         if (this.changeOutlet) {
@@ -67,14 +77,10 @@ export class IgniteChartController {
     }
 
     initChart() {
-        this.datasetLabels = Object.keys(this.chartData);
-
         this.config = {
             type: 'line',
             data: {
-                datasets: Object.keys(this.chartData).map((key) => {
-                    return { label: key, data: [] };
-                })
+                datasets: []
             },
             options: {
                 maintainAspectRatio: false,
@@ -119,18 +125,37 @@ export class IgniteChartController {
         this.changeXRange(this.currentRange);
     }
 
-    updateChartData(data) {
-        const now = Date.now();
-        Object.keys(data).forEach((key) => {
-            const datasetIndex = this.findDatasetIndex(key);
-            this.config.data.datasets[datasetIndex].data.push({x: now, y: data[key]});
+    appendChartPoint(dataPoint) {
+        Object.keys(dataPoint.y).forEach((key) => {
+            let datasetIndex = this.findDatasetIndex(key);
+
+            if (datasetIndex < 0) {
+                datasetIndex = this.config.data.datasets.length;
+                this.addDataset(key);
+            }
+
+            this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
             this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
-
-            if (now - this.config.data.datasets[datasetIndex].data[0].x > this.maxRangeInMilliseconds)
-                this.config.data.datasets[datasetIndex].data.shift();
         });
+    }
 
-        this.changeXRange(this.currentRange);
+    updateHistory(dataPoints) {
+        if (this.chart) {
+            this.clearDatasets();
+
+            dataPoints.forEach((dataPoint) => this.appendChartPoint(dataPoint));
+        }
+    }
+
+    clearDatasets() {
+        this.config.data.datasets = [];
+    }
+
+    addDataset(datasetName) {
+        if (this.findDatasetIndex(datasetName) >= 0)
+            throw new Error(`Dataset with name ${datasetName} is already in chart`);
+        else
+            this.config.data.datasets.push({ label: datasetName, data: [] });
     }
 
     findDatasetIndex(searchedDatasetLabel) {
@@ -150,6 +175,6 @@ export class IgniteChartController {
 
     rerenderChart() {
         this.chart.update();
-        this.$timeout(() => this.$scope.$apply(), 0);
+        this.$scope.$applyAsync();
     }
 }
