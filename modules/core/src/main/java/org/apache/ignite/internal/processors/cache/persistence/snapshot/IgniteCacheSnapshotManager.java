@@ -152,6 +152,13 @@ public class IgniteCacheSnapshotManager<T extends SnapshotOperation> extends Gri
     }
 
     /**
+     * @param cctx Cctx.
+     */
+    public void resetAtomics(GridCacheContext cctx) {
+        // No-op.
+    }
+
+    /**
      *
      */
     public void onChangeTrackerPage(
