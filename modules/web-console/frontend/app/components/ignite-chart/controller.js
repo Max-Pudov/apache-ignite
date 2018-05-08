@@ -46,9 +46,6 @@ export class IgniteChartController {
         this.ranges = RANGE_RATE_PRESET;
         this.currentRange = this.ranges[0];
         this.maxRangeInMilliseconds = RANGE_RATE_PRESET[RANGE_RATE_PRESET.length - 1].value * 60 * 1000;
-    }
-
-    $onInit() {
         this.ctx = this.$element.find('canvas')[0].getContext('2d');
     }
 
