@@ -80,6 +80,7 @@ export class IgniteChartController {
                 datasets: []
             },
             options: {
+                animation: false,
                 maintainAspectRatio: false,
                 responsive: true,
                 legend: {
