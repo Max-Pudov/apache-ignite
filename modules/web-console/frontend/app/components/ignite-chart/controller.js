@@ -18,15 +18,7 @@
 import Chart from 'chart.js';
 import _ from 'lodash';
 
-Chart.defaults.global.elements = _.merge(Chart.defaults.global.elements, {
-    line: {
-        borderWidth: 1,
-        fill: false
-    },
-    point: {
-        radius: 2
-    }
-});
+Chart.defaults.global.elements.point.radius = 2;
 
 const RANGE_RATE_PRESET = [{
     label: '1 min',
@@ -121,11 +113,10 @@ export class IgniteChartController {
                     mode: 'nearest',
                     intersect: false
                 }
-            },
-            datasetsMapping: {}
+            }
         };
 
-        this.config = _.merge(this.config, this.chartConfig);
+        this.config = _.merge(this.config, this.chartOptions);
 
         this.chart = new Chart(this.ctx, this.config);
         this.changeXRange(this.currentRange);
@@ -133,16 +124,39 @@ export class IgniteChartController {
 
     appendChartPoint(dataPoint) {
         Object.keys(dataPoint.y).forEach((key) => {
-            let datasetIndex = this.findDatasetIndex(key);
+            if (this.checkDatasetCanBeAdded(key)) {
+                let datasetIndex = this.findDatasetIndex(key);
 
-            if (datasetIndex < 0) {
-                datasetIndex = this.config.data.datasets.length;
-                this.addDataset(key);
+                if (datasetIndex < 0) {
+                    datasetIndex = this.config.data.datasets.length;
+                    this.addDataset(key);
+                }
+
+                this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
+                this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
+                this.config.data.datasets[datasetIndex].borderWidth = 2;
             }
-
-            this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
-            this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
         });
+    }
+
+    /**
+     * Checks if a key of dataset can be added to chart or should be ignored.
+     * @param dataPointKey {String}
+     * @return {Boolean}
+     */
+    checkDatasetCanBeAdded(dataPointKey) {
+        // If datasetLegendMapping is empty all keys are allowed.
+        if (!this.config.datasetLegendMapping)
+            return true;
+
+        return Object.keys(this.config.datasetLegendMapping).includes(dataPointKey);
+    }
+
+    mapDatasetKeyToName(dataPointKey) {
+        if (!this.config.datasetLegendMapping)
+            return dataPointKey;
+
+        return this.config.datasetLegendMapping[dataPointKey] || dataPointKey;
     }
 
     updateHistory(dataPoints) {
@@ -170,6 +184,11 @@ export class IgniteChartController {
 
     toggleDatasetVisibility(dataset) {
         dataset.hidden = !dataset.hidden;
+        this.rerenderChart();
+    }
+
+    showAllDatasets() {
+        this.config.data.datasets.forEach((dataset) => dataset.hidden = false);
         this.rerenderChart();
     }
 
