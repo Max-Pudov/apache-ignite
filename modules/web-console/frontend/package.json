@@ -1,6 +1,6 @@
 {
   "name": "ignite-web-console",
-  "version": "1.0.0",
+  "version": "2.5.0",
   "description": "Interactive Web console for configuration, executing SQL queries and monitoring of Apache Ignite Cluster",
   "private": true,
   "scripts": {
@@ -24,8 +24,8 @@
   ],
   "homepage": "https://ignite.apache.org/",
   "engines": {
-    "npm": "3.x.x",
-    "node": "6.x.x"
+    "npm": "5.8.x",
+    "node": "8.x.x"
   },
   "os": [
     "darwin",
@@ -90,9 +90,9 @@
     "json-loader": "0.5.7",
     "jsondiffpatch": "^0.2.5",
     "jszip": "3.1.5",
-    "lodash": "4.17.5",
+    "lodash": "4.17.10",
     "natural-compare-lite": "^1.4.0",
-    "node-sass": "4.8.3",
+    "node-sass": "4.9.0",
     "nvd3": "1.8.6",
     "outdent": "^0.5.0",
     "pako": "1.0.6",
@@ -102,15 +102,15 @@
     "resolve-url-loader": "2.1.0",
     "roboto-font": "0.1.0",
     "rxjs": "5.4.2",
-    "sass-loader": "6.0.7",
+    "sass-loader": "7.0.1",
     "socket.io-client": "1.7.3",
     "style-loader": "0.19.0",
     "svg-sprite-loader": "3.0.7",
     "tf-metatags": "2.0.0",
-    "uglifyjs-webpack-plugin": "1.2.4",
-    "webpack": "4.5.0",
-    "webpack-cli": "2.0.14",
-    "webpack-dev-server": "3.1.1",
+    "uglifyjs-webpack-plugin": "1.2.5",
+    "webpack": "4.8.3",
+    "webpack-cli": "2.1.3",
+    "webpack-dev-server": "3.1.4",
     "webpack-merge": "4.1.2",
     "worker-loader": "^1.1.1"
   },
@@ -124,7 +124,7 @@
     "@types/mocha": "^2.2.48",
     "@types/sinon": "^4.0.0",
     "@types/ui-grid": "0.0.38",
-    "@types/webpack": "^4.1.2",
+    "@types/webpack": "^4.1.6",
     "@types/webpack-merge": "^4.1.3",
     "angular-mocks": "^1.6.9",
     "app-root-path": "2.0.1",
