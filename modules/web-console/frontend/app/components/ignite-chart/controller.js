@@ -16,6 +16,17 @@
  */
 
 import Chart from 'chart.js';
+import _ from 'lodash';
+
+Chart.defaults.global.elements = _.merge(Chart.defaults.global.elements, {
+    line: {
+        borderWidth: 1,
+        fill: false
+    },
+    point: {
+        radius: 2
+    }
+});
 
 const RANGE_RATE_PRESET = [{
     label: '1 min',
@@ -99,11 +110,7 @@ export class IgniteChartController {
                     }],
                     yAxes: [{
                         type: 'linear',
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Percentage'
-                        }
+                        display: true
                     }]
                 },
                 tooltips: {
@@ -114,10 +121,11 @@ export class IgniteChartController {
                     mode: 'nearest',
                     intersect: false
                 }
-            }
+            },
+            datasetsMapping: {}
         };
 
-        this.config = Object.assign(this.config, this.chartConfig);
+        this.config = _.merge(this.config, this.chartConfig);
 
         this.chart = new Chart(this.ctx, this.config);
         this.changeXRange(this.currentRange);
