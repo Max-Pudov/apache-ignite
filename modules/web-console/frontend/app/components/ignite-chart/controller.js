@@ -18,7 +18,6 @@
 import Chart from 'chart.js';
 import _ from 'lodash';
 
-Chart.defaults.global.elements.point.radius = 2;
 
 const RANGE_RATE_PRESET = [{
     label: '1 min',
@@ -83,6 +82,14 @@ export class IgniteChartController {
                 datasets: []
             },
             options: {
+                elements: {
+                    line: {
+                        tension: 0
+                    },
+                    point: {
+                        radius: 2
+                    }
+                },
                 animation: false,
                 maintainAspectRatio: false,
                 responsive: true,
