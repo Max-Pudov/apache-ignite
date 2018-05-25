@@ -47,9 +47,13 @@ ignite-chart {
       }
   }
 
-  canvas {
-    max-height: calc(100% - 51px);
+  .ignite-chart-placeholder {
+      flex-grow: 1;
   }
+
+  // canvas {
+  //   max-height: calc(100% - 51px);
+  // }
 
   .no-data {
       position: absolute;

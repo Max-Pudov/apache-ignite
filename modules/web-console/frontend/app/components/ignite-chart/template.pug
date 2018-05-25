@@ -47,7 +47,8 @@ header
                 bs-select
             )
 
-canvas
+.ignite-chart-placeholder
+    canvas(style='height: 100%; width: 100%;')
 
 .no-data(ng-if='!$ctrl.config.data.datasets')
     | No Data #[br]
