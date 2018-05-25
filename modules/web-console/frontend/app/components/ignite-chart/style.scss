@@ -1,54 +1,67 @@
-ignite-chart {
-  display: block;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-  canvas {
-    height: 100% !important;
+ignite-chart {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+
+  header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      box-sizing: content-box;
+
+      height: 36px;
+      min-height: 36px;
+      padding: 7px 21px;
+
+      border-bottom: 1px solid #d4d4d4;
+
+      h5 {
+          margin: 0;
+
+          font-size: 16px;
+          font-weight: normal;
+          line-height: 36px;
+      }
+
+      > div {
+          display: flex;
+          align-items: center;
+      }
   }
 
-  .panel-title {
-    display: flex;
-    align-items: center;
+  canvas {
+    max-height: calc(100% - 51px);
+  }
 
-    & .ignite-chart-range:last-child {
-      margin-left: auto;
-    }
+  .no-data {
+      position: absolute;
+      top: 50%;
 
-    .ignite-chart-range button {
-      text-decoration: none;
-      font-size: 16px;
-      color: #ee2b27;
-    }
+      width: 100%;
+      padding: 0 20px;
 
-    [ignite-icon] {
-      margin-left: 5px;
-    }
-
-    .dropdown-menu {
-      li {
-        a {
-          align-items: center;
-          line-height: 20px;
-          display: flex;
-
-          i {
-            color: #555;
-          }
-
-          span {
-            margin: 0 10px;
-          }
-
-          &:hover {
-            i {
-              color: #ba120f;
-            }
-          }
-
-          & i:last-child {
-            margin-left: auto;
-          }
-        }
-      }
-    }
+      border-radius: 0 0 4px 4px;
+      
+      font-style: italic;
+      line-height: 16px;
+      text-align: center;
   }
 }
