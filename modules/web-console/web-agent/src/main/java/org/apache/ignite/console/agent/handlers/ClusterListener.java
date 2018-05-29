@@ -191,7 +191,7 @@ public class ClusterListener implements AutoCloseable {
     }
 
     /** {@inheritDoc} */
-    public void close() {
+    @Override public void close() {
         refreshTask.cancel(true);
 
         pool.shutdownNow();
