@@ -36,7 +36,7 @@ export default class InputDialog {
      * @param {Function} [toValidValue] Validator function.
      * @returns {Promise.<String>} User input.
      */
-    input(title, label, value, toValidValue) {
+    input(title, label, value, toValidValue, mode = 'input', placeholder, min, minMessage) {
         const deferred = this.$q.defer();
 
         const modal = this.$modal({
@@ -47,7 +47,11 @@ export default class InputDialog {
                     title,
                     label,
                     value,
-                    toValidValue
+                    toValidValue,
+                    mode,
+                    placeholder,
+                    min,
+                    minMessage
                 })
             },
             controller,
@@ -84,5 +88,20 @@ export default class InputDialog {
         };
 
         return this.input('Clone', 'New name', uniqueName(srcName), uniqueName);
+    }
+
+    /**
+     * Open input dialog to configure custom value in bytes.
+     *
+     * @param {String} title Dialog title.
+     * @param {String} label Input field label.
+     * @param {String} value Default value.
+     * @param {String} placeholder Message to show when input is empty.
+     * @param {Int} min Min allowed value.
+     * @param {String} minMessage Error message on min value validation.
+     * @returns {Promise.<String>} User input.
+     */
+    memory(title, label, value, placeholder, min, minMessage) {
+        return this.input(title, label, value, null, 'memory', placeholder, min, minMessage);
     }
 }

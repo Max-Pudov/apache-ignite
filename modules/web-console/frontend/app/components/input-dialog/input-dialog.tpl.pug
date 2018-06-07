@@ -27,12 +27,29 @@ include /app/helpers/jade/mixins
                      svg(ignite-icon="cross")
 
             .modal-body
-                .row
+                .row(ng-hide='{{ ctrl.mode === "memory" }}')
                     .col-100
                         +ignite-form-field-text('{{ ctrl.label }}', 'ctrl.value', '"input-field"', false, true, 'Enter value')(
                             data-ignite-form-field-input-autofocus='true'
                             ignite-on-enter='form.$valid && ctrl.confirm()'
                         )
+                .row(ng-show='{{ ctrl.mode === "memory" }}')
+                    .col-100
+                        pc-form-field-size(
+                            ng-model='ctrl.value'
+                            ng-model-options='{allowInvalid: false}'
+                            id='input-field-memory'
+                            name='memory'
+                            label='{{ ctrl.label }}'
+                            size-type='bytes'
+                            size-scale-label='mb'
+                            placeholder='{{ ctrl.placeholder }}'
+                            min='{{ ctrl.min }}'
+                            tip='Enter value'
+                            on-scale-change='scale = $event'
+                            ng-required='true'
+                        )
+                            +form-field-feedback(_, 'min', `{{ ctrl.minMessage }}`)
 
             .modal-footer
                 button#copy-btn-cancel.btn-ignite.btn-ignite--link-success(ng-click='$hide()') Cancel

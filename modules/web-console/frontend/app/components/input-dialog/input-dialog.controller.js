@@ -18,12 +18,16 @@
 export default class InputDialogController {
     static $inject = ['deferred', 'ui'];
 
-    constructor(deferred, {title, label, value, toValidValue}) {
+    constructor(deferred, {title, label, value, toValidValue, mode, placeholder, min, minMessage}) {
         this.deferred = deferred;
         this.title = title;
         this.label = label;
         this.value = value;
         this.toValidValue = toValidValue;
+        this.mode = mode;
+        this.placeholder = placeholder;
+        this.min = min;
+        this.minMessage = minMessage;
     }
 
     confirm() {
