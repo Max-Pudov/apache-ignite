@@ -17,6 +17,10 @@
 
 package org.apache.ignite.internal.processors.query.h2.dml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.binary.BinaryObjectBuilder;
@@ -26,6 +30,7 @@ import org.apache.ignite.internal.processors.query.GridQueryProperty;
 import org.apache.ignite.internal.processors.query.GridQueryTypeDescriptor;
 import org.apache.ignite.internal.processors.query.IgniteSQLException;
 import org.apache.ignite.internal.processors.query.QueryUtils;
+import org.apache.ignite.internal.processors.query.h2.UpdateResult;
 import org.apache.ignite.internal.processors.query.h2.opt.GridH2RowDescriptor;
 import org.apache.ignite.internal.processors.query.h2.opt.GridH2Table;
 import org.apache.ignite.internal.util.typedef.F;
@@ -34,10 +39,7 @@ import org.apache.ignite.lang.IgniteBiTuple;
 import org.h2.table.Column;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import static org.apache.ignite.internal.processors.query.h2.dml.UpdateMode.BULK_LOAD;
 import static org.apache.ignite.internal.processors.query.h2.opt.GridH2KeyValueRowOnheap.DEFAULT_COLUMNS_COUNT;
 
 /**
@@ -47,7 +49,7 @@ public final class UpdatePlan {
     /** Initial statement to drive the rest of the logic. */
     private final UpdateMode mode;
 
-    /** Target table to be affected by initial DML statement. */
+    /**  to be affected by initial DML statement. */
     private final GridH2Table tbl;
 
     /** Column names to set or update. */
@@ -74,6 +76,9 @@ public final class UpdatePlan {
     /** Subquery flag - {@code true} if {@link #selectQry} is an actual subquery that retrieves data from some cache. */
     private final boolean isLocSubqry;
 
+    /** Rows for query-less MERGE or INSERT. */
+    private final List<List<DmlArgument>> rows;
+
     /** Number of rows in rows based MERGE or INSERT. */
     private final int rowsNum;
 
@@ -96,6 +101,7 @@ public final class UpdatePlan {
      * @param valColIdx value column index.
      * @param selectQry Select query.
      * @param isLocSubqry Local subquery flag.
+     * @param rows Rows for query-less INSERT or MERGE.
      * @param rowsNum Rows number.
      * @param fastUpdate Fast update (if any).
      * @param distributed Distributed plan (if any)
@@ -111,12 +117,14 @@ public final class UpdatePlan {
         int valColIdx,
         String selectQry,
         boolean isLocSubqry,
+        List<List<DmlArgument>> rows,
         int rowsNum,
         @Nullable FastUpdate fastUpdate,
         @Nullable DmlDistributedPlanInfo distributed
     ) {
         this.colNames = colNames;
         this.colTypes = colTypes;
+        this.rows = rows;
         this.rowsNum = rowsNum;
 
         assert mode != null;
@@ -161,6 +169,7 @@ public final class UpdatePlan {
             -1,
             selectQry,
             false,
+            null,
             0,
             fastUpdate,
             distributed
@@ -174,6 +183,10 @@ public final class UpdatePlan {
      * @throws IgniteCheckedException if failed.
      */
     public IgniteBiTuple<?, ?> processRow(List<?> row) throws IgniteCheckedException {
+        if (mode != BULK_LOAD && row.size() != colNames.length)
+            throw new IgniteSQLException("Not enough values in a row: " + row.size() + " instead of " + colNames.length,
+                IgniteQueryErrorCode.ENTRY_PROCESSING);
+
         GridH2RowDescriptor rowDesc = tbl.rowDescriptor();
         GridQueryTypeDescriptor desc = rowDesc.type();
 
@@ -197,7 +210,8 @@ public final class UpdatePlan {
 
         if (key == null) {
             if (F.isEmpty(desc.keyFieldName()))
-                throw new IgniteSQLException("Key for INSERT or MERGE must not be null", IgniteQueryErrorCode.NULL_KEY);
+                throw new IgniteSQLException("Key for INSERT, COPY, or MERGE must not be null",
+                    IgniteQueryErrorCode.NULL_KEY);
             else
                 throw new IgniteSQLException("Null value is not allowed for column '" + desc.keyFieldName() + "'",
                     IgniteQueryErrorCode.NULL_KEY);
@@ -205,16 +219,18 @@ public final class UpdatePlan {
 
         if (val == null) {
             if (F.isEmpty(desc.valueFieldName()))
-                throw new IgniteSQLException("Value for INSERT, MERGE, or UPDATE must not be null",
+                throw new IgniteSQLException("Value for INSERT, COPY, MERGE, or UPDATE must not be null",
                     IgniteQueryErrorCode.NULL_VALUE);
             else
                 throw new IgniteSQLException("Null value is not allowed for column '" + desc.valueFieldName() + "'",
                     IgniteQueryErrorCode.NULL_VALUE);
         }
 
+        int actualColCnt = Math.min(colNames.length, row.size());
+
         Map<String, Object> newColVals = new HashMap<>();
 
-        for (int i = 0; i < colNames.length; i++) {
+        for (int i = 0; i < actualColCnt; i++) {
             if (i == keyColIdx || i == valColIdx)
                 continue;
 
@@ -229,16 +245,18 @@ public final class UpdatePlan {
             newColVals.put(colName, DmlUtils.convert(row.get(i), rowDesc, expCls, colTypes[i]));
         }
 
+        desc.setDefaults(key, val);
+
         // We update columns in the order specified by the table for a reason - table's
         // column order preserves their precedence for correct update of nested properties.
-        Column[] cols = tbl.getColumns();
+        Column[] tblCols = tbl.getColumns();
 
         // First 3 columns are _key, _val and _ver. Skip 'em.
-        for (int i = DEFAULT_COLUMNS_COUNT; i < cols.length; i++) {
+        for (int i = DEFAULT_COLUMNS_COUNT; i < tblCols.length; i++) {
             if (tbl.rowDescriptor().isKeyValueOrVersionColumn(i))
                 continue;
 
-            String colName = cols[i].getName();
+            String colName = tblCols[i].getName();
 
             if (!newColVals.containsKey(colName))
                 continue;
@@ -266,6 +284,7 @@ public final class UpdatePlan {
      *
      * @param row Row to process.
      * @throws IgniteCheckedException if failed.
+     * @return Tuple contains: [key, old value, new value]
      */
     public T3<Object, Object, Object> processRowForUpdate(List<?> row) throws IgniteCheckedException {
         GridH2RowDescriptor rowDesc = tbl.rowDescriptor();
@@ -339,6 +358,116 @@ public final class UpdatePlan {
     }
 
     /**
+     * Process fast DML operation if possible.
+     *
+     * @param args QUery arguments.
+     * @return Update result or {@code null} if fast update is not applicable for plan.
+     * @throws IgniteCheckedException If failed.
+     */
+    public UpdateResult processFast(Object[] args) throws IgniteCheckedException {
+        if (fastUpdate != null)
+            return fastUpdate.execute(cacheContext().cache(), args);
+
+        return null;
+    }
+
+    /**
+     * @return {@code True} if predefined rows exist.
+     */
+    public boolean hasRows() {
+        return !F.isEmpty(rows);
+    }
+
+    /**
+     * Extract rows from plan without performing any query.
+     *
+     * @param args Original query arguments.
+     * @return {@link List} of rows from the plan for a single query.
+     * For example, if we have multiple args in a query: <br/>
+     * {@code INSERT INTO person VALUES (k1, v1), (k2, v2), (k3, v3);} <br/>
+     * we will get a {@link List} of {@link List} with items {@code {[k1, v1], [k2, v2], [k3, v3]}}.
+     * @throws IgniteCheckedException if failed.
+     */
+    public List<List<?>> createRows(Object[] args) throws IgniteCheckedException {
+        assert rowsNum > 0 && !F.isEmpty(colNames);
+
+        List<List<?>> res = new ArrayList<>(rowsNum);
+
+        GridH2RowDescriptor desc = tbl.rowDescriptor();
+
+        extractArgsValues(args, res, desc);
+
+        return res;
+    }
+
+    /**
+     * Extract rows from plan without performing any query.
+     *
+     * @param argss Batch of arguments.
+     * @return {@link List} of rows from the plan for each query.
+     * For example, if we have a batch of queries with multiple args: <br/>
+     * <code>
+     * INSERT INTO person VALUES (k1, v1), (k2, v2), (k3, v3); <br/>
+     * INSERT INTO person VALUES (k4, v4), (k5, v5), (k6, v6);<br/>
+     * </code>
+     * we will get a {@link List} of {@link List} of {@link List} with items: <br/>
+     * <code>
+     * {[k1, v1], [k2, v2], [k3, v3]},<br/>
+     * {[k4, v4], [k5, v5], [k6, v6]}<br/>
+     *
+     * @throws IgniteCheckedException If failed.
+     */
+    public List<List<List<?>>> createRows(List<Object[]> argss) throws IgniteCheckedException {
+        assert rowsNum > 0 && !F.isEmpty(colNames);
+        assert argss != null;
+
+        List<List<List<?>>> resPerQry = new ArrayList<>(argss.size());
+
+        GridH2RowDescriptor desc = tbl.rowDescriptor();
+
+        for (Object[] args : argss) {
+            List<List<?>> res = new ArrayList<>();
+
+            resPerQry.add(res);
+
+            extractArgsValues(args, res, desc);
+        }
+
+        return resPerQry;
+    }
+
+    /**
+     * Extracts values from arguments.
+     *
+     * @param args Arguments.
+     * @param res Result list where to put values to.
+     * @param desc Row descriptor.
+     * @throws IgniteCheckedException If failed.
+     */
+    private void extractArgsValues(Object[] args, List<List<?>> res, GridH2RowDescriptor desc)
+        throws IgniteCheckedException {
+        assert res != null;
+
+        for (List<DmlArgument> row : rows) {
+            List<Object> resRow = new ArrayList<>();
+
+            for (int j = 0; j < colNames.length; j++) {
+                Object colVal = row.get(j).get(args);
+
+                if (j == keyColIdx || j == valColIdx) {
+                    Class<?> colCls = j == keyColIdx ? desc.type().keyClass() : desc.type().valueClass();
+
+                    colVal = DmlUtils.convert(colVal, desc, colCls, colTypes[j]);
+                }
+
+                resRow.add(colVal);
+            }
+
+            res.add(resRow);
+        }
+    }
+
+    /**
      * @return Update mode.
      */
     public UpdateMode mode() {
@@ -376,14 +505,7 @@ public final class UpdatePlan {
     /**
      * @return Local subquery flag.
      */
-    @Nullable public boolean isLocalSubquery() {
+    public boolean isLocalSubquery() {
         return isLocSubqry;
-    }
-
-    /**
-     * @return Fast update.
-     */
-    @Nullable public FastUpdate fastUpdate() {
-        return fastUpdate;
     }
 }
