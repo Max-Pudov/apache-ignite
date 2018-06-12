@@ -69,7 +69,7 @@ public class GridCacheFullTextQueryMultithreadedSelfTest extends GridCacheAbstra
      * @throws Exception In case of error.
      */
     @SuppressWarnings({"TooBroadScope"})
-    public void testH2Text() throws Exception {
+/*    public void testH2Text() throws Exception {
         int duration = 60 * 1000;
         final int keyCnt = 5000;
         final int logFreq = 50;
@@ -126,7 +126,7 @@ public class GridCacheFullTextQueryMultithreadedSelfTest extends GridCacheAbstra
         stop.set(true);
 
         fut2.get();
-    }
+    }*/
 
     /**
      *

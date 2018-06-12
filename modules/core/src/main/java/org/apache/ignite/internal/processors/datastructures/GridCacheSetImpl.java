@@ -413,7 +413,7 @@ public class GridCacheSetImpl<T> extends AbstractCollection<T> implements Ignite
      * @return Query future.
      */
     @SuppressWarnings("unchecked")
-    private CacheQueryFuture execIterQuery() {
+    private GridCloseableIterator<T> execIterQuery() {
         try {
             CacheQuery qry = new GridCacheQueryAdapter<>(ctx, SET, null, null,
                 new GridSetQueryPredicate<>(id, collocated), null, false, false);
@@ -422,7 +422,21 @@ public class GridCacheSetImpl<T> extends AbstractCollection<T> implements Ignite
 
             qry.projection(ctx.grid().cluster().forNodes(nodes));
 
-            return qry.execute();
+            GridCloseableIterator<T> iter = qry.execute();
+
+            CacheWeakQueryIteratorsHolder.WeakReferenceCloseableIterator<T> it =
+                ctx.itHolder().iterator(iter, new CacheIteratorConverter<T, Map.Entry<T, ?>>() {
+                    @Override protected T convert(Map.Entry<T, ?> e) {
+                        return e.getKey();
+                    }
+
+                    @Override protected void remove(T item) {
+                        GridCacheSetImpl.this.remove(item);
+                    }
+                });
+
+
+            return it;
         }
         catch (IgniteCheckedException e) {
             throw U.convertException(e);
@@ -432,9 +446,9 @@ public class GridCacheSetImpl<T> extends AbstractCollection<T> implements Ignite
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     private GridCloseableIterator<T> iterator0() {
-        final CacheQueryFuture fut = execIterQuery();
+        final GridCloseableIterator<T> iiiit = execIterQuery();
 
-        CacheWeakQueryIteratorsHolder.WeakReferenceCloseableIterator it =
+/*        CacheWeakQueryIteratorsHolder.WeakReferenceCloseableIterator it =
             ctx.itHolder().iterator(fut, new CacheIteratorConverter<T, Map.Entry<T, ?>>() {
                 @Override protected T convert(Map.Entry<T, ?> e) {
                     return e.getKey();
@@ -443,23 +457,19 @@ public class GridCacheSetImpl<T> extends AbstractCollection<T> implements Ignite
                 @Override protected void remove(T item) {
                     GridCacheSetImpl.this.remove(item);
                 }
-            }, new IgniteOutClosure() {
-                @Override public CacheQueryFuture<Map.Entry<T, ?>> apply() {
-                    return execIterQuery();
-                }
-            });
+            });*/
 
-        if (rmvd) {
+/*        if (rmvd) {
             try {
-                ctx.itHolder().removeIterator(it);
+                ctx.itHolder().removeIterator(iiiit);
             } catch (IgniteCheckedException e) {
                 throw U.convertException(e);
             }
 
             checkRemoved();
-        }
+        }*/
 
-        return it;
+        return iiiit;
     }
 
     /**
