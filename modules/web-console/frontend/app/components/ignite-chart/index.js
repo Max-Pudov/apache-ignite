@@ -30,7 +30,6 @@ export default angular
             chartOptions: '<',
             chartDataPoint: '<',
             chartHistory: '<',
-            chartTitle: '<',
-            changeOutlet: '<'
+            chartTitle: '<'
         }
     });

@@ -36,8 +36,6 @@ const RANGE_RATE_PRESET = [{
     value: 30
 }];
 
-const HEADER_SIZE = 81;
-
 export class IgniteChartController {
 
     static $inject = ['$element', 'IgniteChartColors', '$scope'];
@@ -64,14 +62,8 @@ export class IgniteChartController {
             if (!this.chart)
                 this.initChart();
 
-            console.log('history changed');
             this.updateHistory(changes.chartHistory.currentValue);
             this.changeXRange(this.currentRange);
-        }
-
-        if (this.changeOutlet) {
-            this.$element.find('canvas')[0].height = this.$element.parent().height() - HEADER_SIZE;
-            this.rerenderChart();
         }
     }
 
@@ -109,7 +101,15 @@ export class IgniteChartController {
                     }],
                     yAxes: [{
                         type: 'linear',
-                        display: true
+                        display: true,
+                        ticks: {
+                            min: 0,
+                            beginAtZero: true,
+                            callback: (value) => {
+                                if (Math.floor(value) === value)
+                                    return value;
+                            }
+                        }
                     }]
                 },
                 tooltips: {
