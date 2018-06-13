@@ -24,10 +24,8 @@ export default class IgniteChartSelectorController {
     }
 
     $onChanges(changes) {
-        if (changes && 'chartApi' in changes && changes.chartApi.currentValue) {
-            console.log(1);
+        if (changes && 'chartApi' in changes && changes.chartApi.currentValue)
             this.applyValues();
-        }
     }
 
     applyValues() {
