@@ -139,6 +139,7 @@ import passwordVisibility from './components/password-visibility';
 import progressLine from './components/progress-line';
 import formField from './components/form-field';
 import igniteChart from './components/ignite-chart';
+import igniteChartSelector from './components/ignite-chart-selector';
 
 import pageProfile from './components/page-profile';
 import pagePasswordChanged from './components/page-password-changed';
@@ -247,6 +248,7 @@ angular.module('ignite-console', [
     breadcrumbs.name,
     passwordVisibility.name,
     igniteChart.name,
+    igniteChartSelector.name,
     progressLine.name,
     formField.name,
     // Ignite modules.
