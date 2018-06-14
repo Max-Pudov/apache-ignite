@@ -48,12 +48,9 @@ ignite-chart {
   }
 
   .ignite-chart-placeholder {
-      flex-grow: 1;
+      display: block;
+      height: calc(100% - 51px);
   }
-
-  // canvas {
-  //   max-height: calc(100% - 51px);
-  // }
 
   .no-data {
       position: absolute;
@@ -63,7 +60,7 @@ ignite-chart {
       padding: 0 20px;
 
       border-radius: 0 0 4px 4px;
-      
+
       font-style: italic;
       line-height: 16px;
       text-align: center;
