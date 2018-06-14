@@ -94,7 +94,7 @@ export class IgniteChartController {
                         display: true,
                         time: {
                             displayFormats: {
-                                second: 'hh:mm:ss'
+                                second: 'HH:mm:ss'
                             },
                             minUnit: 'second'
                         }
