@@ -38,11 +38,12 @@ const RANGE_RATE_PRESET = [{
 
 export class IgniteChartController {
 
-    static $inject = ['$element', 'IgniteChartColors', '$scope'];
+    static $inject = ['$element', 'IgniteChartColors', '$scope', '$filter'];
 
-    constructor($element, IgniteChartColors, $scope) {
+    constructor($element, IgniteChartColors, $scope, $filter) {
         Object.assign(this, { $element, IgniteChartColors, $scope });
 
+        this.datePipe = $filter('date');
         this.ranges = RANGE_RATE_PRESET;
         this.currentRange = this.ranges[0];
         this.maxRangeInMilliseconds = RANGE_RATE_PRESET[RANGE_RATE_PRESET.length - 1].value * 60 * 1000;
@@ -83,7 +84,8 @@ export class IgniteChartController {
                         tension: 0
                     },
                     point: {
-                        radius: 2
+                        radius: 2,
+                        pointStyle: 'rectRounded'
                     }
                 },
                 animation: false,
@@ -130,7 +132,24 @@ export class IgniteChartController {
                 },
                 tooltips: {
                     mode: 'index',
-                    intersect: false
+                    intersect: false,
+                    xPadding: 20,
+                    yPadding: 20,
+                    bodyFontSize: 13,
+                    callbacks: {
+                        title: (tooltipItem) => {
+                            return this.datePipe(Date.parse(tooltipItem[0].xLabel), 'MMM dd HH:mm:ss');
+                        },
+                        label: (tooltipItem, data) => {
+                            const label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            return `${label}: ${tooltipItem.yLabel} per sec`;
+                        },
+                        labelColor: (tooltipItem) => {
+                            return {
+                                backgroundColor: this.chartColors[tooltipItem.datasetIndex]
+                            };
+                        }
+                    }
                 },
                 hover: {
                     mode: 'nearest',
