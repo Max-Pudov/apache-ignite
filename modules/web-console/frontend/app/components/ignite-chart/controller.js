@@ -49,6 +49,10 @@ export class IgniteChartController {
         this.ctx = this.$element.find('canvas')[0].getContext('2d');
     }
 
+    $onInit() {
+        this.chartColors = this.chartColors || this.IgniteChartColors;
+    }
+
     $onChanges(changes) {
         if (this.chartDataPoint && changes.chartDataPoint) {
             if (!this.chart)
@@ -140,8 +144,9 @@ export class IgniteChartController {
                 }
 
                 this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
-                this.config.data.datasets[datasetIndex].borderColor = this.IgniteChartColors[datasetIndex];
+                this.config.data.datasets[datasetIndex].borderColor = this.chartColors[datasetIndex];
                 this.config.data.datasets[datasetIndex].borderWidth = 2;
+                this.config.data.datasets[datasetIndex].fill = false;
             }
         });
     }
