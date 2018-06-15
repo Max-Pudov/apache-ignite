@@ -102,7 +102,8 @@ export class IgniteChartController {
                             displayFormats: {
                                 second: 'HH:mm:ss'
                             },
-                            minUnit: 'second'
+                            minUnit: 'second',
+                            stepSize: 10
                         }
                     }],
                     yAxes: [{
@@ -243,6 +244,5 @@ export class IgniteChartController {
 
     rerenderChart() {
         this.chart.update();
-        this.$scope.$applyAsync();
     }
 }
