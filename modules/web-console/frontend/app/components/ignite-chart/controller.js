@@ -109,9 +109,21 @@ export class IgniteChartController {
                         ticks: {
                             min: 0,
                             beginAtZero: true,
-                            callback: (value) => {
-                                if (Math.floor(value) === value)
+                            maxTicksLimit: 4,
+                            callback: (value, index, labels) => {
+                                if (value === 0)
+                                    return 0;
+
+                                if (_.max(labels) <= 4000 && value <= 4000)
                                     return value;
+
+                                if (_.max(labels) <= 1000000 && value <= 1000000)
+                                    return `${value / 1000}K`;
+
+                                if (_.max(labels) <= 4000000 && value >= 1000000)
+                                    return `${value / 1000}M`;
+
+                                return value;
                             }
                         }
                     }]
