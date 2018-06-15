@@ -50,7 +50,7 @@ export class IgniteChartController {
     }
 
     $onInit() {
-        this.chartColors = this.chartColors || this.IgniteChartColors;
+        this.chartColors = _.get(this.chartOptions, 'chartColors', this.IgniteChartColors);
     }
 
     $onChanges(changes) {
