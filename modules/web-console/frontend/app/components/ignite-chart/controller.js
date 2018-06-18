@@ -139,10 +139,14 @@ export class IgniteChartController {
                     bodyFontSize: 13,
                     callbacks: {
                         title: (tooltipItem) => {
-                            return this.datePipe(Date.parse(tooltipItem[0].xLabel), 'MMM dd HH:mm:ss');
+                            return this.datePipe(Date.parse(tooltipItem[0].xLabel), 'yyyy MMM dd HH:mm:ss');
                         },
                         label: (tooltipItem, data) => {
-                            const label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            let label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                            if (label)
+                                label = label[0].toUpperCase() + label.substr(1);
+
                             return `${label}: ${tooltipItem.yLabel} per sec`;
                         },
                         labelColor: (tooltipItem) => {
