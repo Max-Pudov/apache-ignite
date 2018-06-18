@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.ignite.internal.processors.cache.persistence.db.wal;
+package org.apache.ignite.internal.processors.cache.persistence.checkpoint;
 
 /**
- *
+ * Checkpoint entry types.
  */
-public class IgniteWalFlushBackgroundWithMmapBufferSelfTest extends IgniteWalFlushBackgroundSelfTest {
-    /** {@inheritDoc} */
-    @Override protected boolean mmap() {
-        return true;
-    }
+public enum CheckpointEntryType {
+    /** */
+    START,
+
+    /** */
+    END
 }
