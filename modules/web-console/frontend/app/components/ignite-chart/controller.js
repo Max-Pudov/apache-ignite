@@ -151,6 +151,9 @@ export class IgniteChartController {
                         },
                         labelColor: (tooltipItem) => {
                             return {
+                                borderColor: 'rgba(255,255,255,0.5)',
+                                borderWidth: 0,
+                                boxShadow: 'none',
                                 backgroundColor: this.chartColors[tooltipItem.datasetIndex]
                             };
                         }
