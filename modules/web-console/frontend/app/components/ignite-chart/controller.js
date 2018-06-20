@@ -70,6 +70,9 @@ export class IgniteChartController {
             this.updateHistory(changes.chartHistory.currentValue);
             this.changeXRange(this.currentRange);
         }
+
+        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length === 0)
+            this.clearDatasets();
     }
 
     initChart() {
@@ -103,7 +106,7 @@ export class IgniteChartController {
                                 second: 'HH:mm:ss'
                             },
                             minUnit: 'second',
-                            stepSize: 10
+                            stepSize: 20
                         }
                     }],
                     yAxes: [{
@@ -183,7 +186,7 @@ export class IgniteChartController {
                 }
 
                 this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
-                this.config.data.datasets[datasetIndex].borderColor = this.chartColors[datasetIndex];
+                this.config.data.datasets[datasetIndex].borderColor = this.chartOptions.chartColors[datasetIndex];
                 this.config.data.datasets[datasetIndex].borderWidth = 2;
                 this.config.data.datasets[datasetIndex].fill = false;
             }
@@ -219,7 +222,8 @@ export class IgniteChartController {
     }
 
     clearDatasets() {
-        this.config.data.datasets = [];
+        if (!_.isNil(this.config))
+            this.config.data.datasets = [];
     }
 
     addDataset(datasetName) {
