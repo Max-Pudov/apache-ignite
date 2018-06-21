@@ -120,6 +120,16 @@ web-console-header {
         &:not(:last-child) {
             margin-right: $nav-item-margin;
         }
+        .dropdown-menu {
+            a {
+                &:hover, &:focus {
+                    color: inherit;
+                }
+            }
+            li.active a {
+                color: inherit;
+            }
+        }
     }
 
     .wch-demo-toggle {
