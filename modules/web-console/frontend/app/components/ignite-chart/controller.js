@@ -126,8 +126,8 @@ export class IgniteChartController {
                                 if (_.max(labels) <= 1000000 && value <= 1000000)
                                     return `${value / 1000}K`;
 
-                                if (_.max(labels) <= 4000000 && value >= 1000000)
-                                    return `${value / 1000}M`;
+                                if ((_.max(labels) <= 4000000 && value >= 500000) || (_.max(labels) > 4000000))
+                                    return `${value / 1000000}M`;
 
                                 return value;
                             }
