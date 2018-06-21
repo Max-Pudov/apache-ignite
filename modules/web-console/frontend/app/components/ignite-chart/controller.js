@@ -107,6 +107,10 @@ export class IgniteChartController {
                             },
                             minUnit: 'second',
                             stepSize: 20
+                        },
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0
                         }
                     }],
                     yAxes: [{
