@@ -227,7 +227,8 @@ export class IgniteChartController {
 
     clearDatasets() {
         if (!_.isNil(this.config))
-            this.config.data.datasets = [];
+            this.config.data.datasets.forEach((dataset) => dataset.data = []);
+
     }
 
     addDataset(datasetName) {
