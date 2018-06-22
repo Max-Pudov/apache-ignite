@@ -18,6 +18,9 @@
 import Chart from 'chart.js';
 import _ from 'lodash';
 
+/** 
+ * @typedef {{x: number, y: {[key: string]: number}}} IgniteChartDataPoint
+ */
 
 const RANGE_RATE_PRESET = [{
     label: '1 min',
@@ -37,11 +40,26 @@ const RANGE_RATE_PRESET = [{
 }];
 
 export class IgniteChartController {
+    /** @type {import('chart.js').ChartConfiguration} */
+    chartOptions;
+    /** @type {string} */
+    chartTitle;
+    /** @type {IgniteChartDataPoint} */
+    chartDataPoint;
+    /** @type {Array<IgniteChartDataPoint>} */
+    chartHistory;
 
     static $inject = ['$element', 'IgniteChartColors', '$scope', '$filter'];
 
+    /**
+     * @param {JQLite} $element
+     * @param {ng.IScope} $scope
+     * @param {ng.IFilterService} $filter
+     */
     constructor($element, IgniteChartColors, $scope, $filter) {
-        Object.assign(this, { $element, IgniteChartColors, $scope });
+        this.$element = $element;
+        this.$scope = $scope;
+        this.IgniteChartColors = IgniteChartColors;
 
         this.datePipe = $filter('date');
         this.ranges = RANGE_RATE_PRESET;
@@ -54,6 +72,9 @@ export class IgniteChartController {
         this.chartColors = _.get(this.chartOptions, 'chartColors', this.IgniteChartColors);
     }
 
+    /**
+     * @param {{chartOptions: ng.IChangesObject<import('chart.js').ChartConfiguration>, chartTitle: ng.IChangesObject<string>, chartDataPoint: ng.IChangesObject<IgniteChartDataPoint>, chartHistory: ng.IChangesObject<Array<IgniteChartDataPoint>>}} changes
+     */
     $onChanges(changes) {
         if (this.chartDataPoint && changes.chartDataPoint) {
             if (!this.chart)
@@ -76,6 +97,7 @@ export class IgniteChartController {
     }
 
     initChart() {
+        /** @type {import('chart.js').ChartConfiguration} */
         this.config = {
             type: 'line',
             data: {
@@ -180,6 +202,9 @@ export class IgniteChartController {
         this.changeXRange(this.currentRange);
     }
 
+    /**
+     * @param {IgniteChartDataPoint} dataPoint
+     */
     appendChartPoint(dataPoint) {
         Object.keys(dataPoint.y).forEach((key) => {
             if (this.checkDatasetCanBeAdded(key)) {
@@ -218,6 +243,9 @@ export class IgniteChartController {
         return this.config.datasetLegendMapping[dataPointKey] || dataPointKey;
     }
 
+    /**
+     * @param {Array<IgniteChartDataPoint>} dataPoints
+     */
     updateHistory(dataPoints) {
         if (this.chart) {
             this.clearDatasets();

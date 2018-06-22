@@ -121,6 +121,7 @@
     "@types/angular-mocks": "^1.5.11",
     "@types/angular-strap": "^2.3.1",
     "@types/chai": "^4.1.2",
+    "@types/chart.js": "^2.7.23",
     "@types/lodash": "^4.14.77",
     "@types/mini-css-extract-plugin": "^0.2.0",
     "@types/mocha": "^2.2.48",
