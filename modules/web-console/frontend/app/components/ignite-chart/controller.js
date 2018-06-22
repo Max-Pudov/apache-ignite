@@ -140,6 +140,7 @@ export class IgniteChartController {
                 },
                 tooltips: {
                     mode: 'index',
+                    position: 'nearest',
                     intersect: false,
                     xPadding: 20,
                     yPadding: 20,
