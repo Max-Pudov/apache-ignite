@@ -592,6 +592,10 @@ public class BinaryContext {
 
                                     if (!clsName.contains("/") && !clsName.contains("\\"))
                                         clsNames.add(pkgName + '.' + clsName);
+                                    else {
+                                        clsName = clsName.replace("/", ".");
+                                        clsNames.add(pkgName + '.' + clsName);
+                                    }
                                 }
                             }
                         }
@@ -992,7 +996,7 @@ public class BinaryContext {
                     if (dotIndex > 0) {
                         String typePkgName = clsName.substring(0, dotIndex);
 
-                        if (pkgName.equals(typePkgName)) {
+                        if (typePkgName.startsWith(pkgName)) {
                             // Resolve mapper.
                             BinaryIdMapper idMapper = globalIdMapper;
 
