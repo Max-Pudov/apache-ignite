@@ -68,6 +68,11 @@ export class IgniteChartController {
         this.ctx = this.$element.find('canvas')[0].getContext('2d');
     }
 
+    $onDestroy() {
+        if (this.chart) this.chart.destroy();
+        this.$element = this.ctx = this.chart = null;
+    }
+
     $onInit() {
         this.chartColors = _.get(this.chartOptions, 'chartColors', this.IgniteChartColors);
     }
