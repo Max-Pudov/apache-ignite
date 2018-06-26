@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-connected-clusters {
-    @import "./../../../public/stylesheets/variables.scss";
+package org.apache.ignite.ml.composition.predictionsaggregator;
 
-    position: absolute;
-    top: 0;
-    right: 0;
+import java.util.Arrays;
+import org.apache.ignite.internal.util.typedef.internal.A;
 
-    display: flex;
-    align-items: center;
-    padding: 3px 10px;
-
-    color: white;
-    font-size: 12px;
-    line-height: 12px;
-
-    background-color: $text-color;
-
-    border-radius: 0 0 4px 4px;
-
-    [ignite-icon] {
-        margin-right: 6px;
+/**
+ * Predictions aggregator returning the mean value of predictions.
+ */
+public class MeanValuePredictionsAggregator implements PredictionsAggregator {
+    /** {@inheritDoc} */
+    @Override public Double apply(double[] estimations) {
+        A.notEmpty(estimations, "estimations vector");
+        return Arrays.stream(estimations).reduce(0.0, Double::sum) / estimations.length;
     }
 }
