@@ -89,7 +89,7 @@ export class IgniteChartController {
             this.changeXRange(this.currentRange);
         }
 
-        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length) {
+        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length !== changes.chartHistory.previousValue.length) {
             if (!this.chart)
                 this.initChart();
 
