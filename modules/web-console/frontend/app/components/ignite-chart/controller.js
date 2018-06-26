@@ -18,7 +18,7 @@
 import Chart from 'chart.js';
 import _ from 'lodash';
 
-/** 
+/**
  * @typedef {{x: number, y: {[key: string]: number}}} IgniteChartDataPoint
  */
 
