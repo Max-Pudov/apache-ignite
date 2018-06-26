@@ -289,6 +289,9 @@ public class ClientListenerProcessor extends GridProcessorAdapter {
         if (srv != null) {
             busyLock.block();
 
+            if (!U.IGNITE_MBEANS_DISABLED)
+                unregisterMBean();
+
             srv.stop();
 
             ctx.ports().deregisterPorts(getClass());
@@ -298,9 +301,6 @@ public class ClientListenerProcessor extends GridProcessorAdapter {
 
                 execSvc = null;
             }
-
-            if (!U.IGNITE_MBEANS_DISABLED)
-                unregisterMBean();
 
             if (log.isDebugEnabled())
                 log.debug("Client connector processor stopped.");
@@ -506,6 +506,16 @@ public class ClientListenerProcessor extends GridProcessorAdapter {
             }
 
             return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override public void blockNewConnections() {
+            //TODO: to be implemented.
+        }
+
+        /** {@inheritDoc} */
+        @Override public void unblockNewConnections() {
+            //TODO: to be implemented.
         }
 
         /**

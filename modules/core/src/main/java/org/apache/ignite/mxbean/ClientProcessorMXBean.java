@@ -36,8 +36,20 @@ public interface ClientProcessorMXBean {
     /**
      * Drop all active connections.
      */
-    @MXBeanDescription("List of active connections.")
+    @MXBeanDescription("Drop all active connections.")
     void dropAllConnections();
+
+    /**
+     * Blocks connector. All new connections will be dropped.
+     */
+    @MXBeanDescription("Blocks connector. All new connections will be dropped.")
+    void blockNewConnections();
+
+    /**
+     * Unblocks connector. Allow new connections to be established.
+     */
+    @MXBeanDescription("Unblocks connector. Allow new connections to be established.")
+    void unblockNewConnections();
 
     /**
      * Drops client connection by {@code id}, if exists.

@@ -17,6 +17,7 @@
 
 package org.apache.ignite.internal.processors.cache.distributed;
 
+import java.util.concurrent.Semaphore;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.PartitionLossPolicy;
@@ -319,12 +320,13 @@ public class IgniteCachePartitionLossPolicySelfTest extends GridCommonAbstractTe
         if (part == -1)
             throw new IllegalStateException("No partition on node: " + killNode);
 
-        final CountDownLatch[] partLost = new CountDownLatch[3];
+        final Semaphore[] partLost = new Semaphore[3];
 
         // Check events.
         for (int i = 0; i < 3; i++) {
             final CountDownLatch latch = new CountDownLatch(1);
-            partLost[i] = latch;
+            final Semaphore sem = new Semaphore(0);
+            partLost[i] = sem;
 
             final int part0 = part;
 
@@ -335,7 +337,7 @@ public class IgniteCachePartitionLossPolicySelfTest extends GridCommonAbstractTe
                     CacheRebalancingEvent cacheEvt = (CacheRebalancingEvent)evt;
 
                     if (cacheEvt.partition() == part0 && F.eq(CACHE_NAME, cacheEvt.cacheName())) {
-                        latch.countDown();
+                        sem.release();
 
                         // Auto-unsubscribe.
                         return false;
@@ -348,8 +350,8 @@ public class IgniteCachePartitionLossPolicySelfTest extends GridCommonAbstractTe
 
         ignite(3).close();
 
-        for (CountDownLatch latch : partLost)
-            assertTrue("Failed to wait for partition LOST event", latch.await(10, TimeUnit.SECONDS));
+        for (Semaphore sem : partLost)
+            assertFalse("Partition LOST event raised twice", sem.tryAcquire(2,2L, TimeUnit.SECONDS));
 
         return part;
     }
