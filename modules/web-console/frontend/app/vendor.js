@@ -54,6 +54,7 @@ import 'nvd3';
 import 'lodash';
 import 'angular-ui-carousel';
 import 'chart.js';
+import 'chartjs-plugin-streaming';
 import 'vector-object';
 
 import 'angular-gridster/dist/angular-gridster.min.css';

@@ -48,6 +48,7 @@ export class IgniteChartController {
     chartDataPoint;
     /** @type {Array<IgniteChartDataPoint>} */
     chartHistory;
+    newPoints = [];
 
     static $inject = ['$element', 'IgniteChartColors', '$scope', '$filter'];
 
@@ -85,16 +86,16 @@ export class IgniteChartController {
             if (!this.chart)
                 this.initChart();
 
-            this.appendChartPoint(this.chartDataPoint);
-            this.changeXRange(this.currentRange);
+            this.newPoints.push(this.chartDataPoint);
+            return;
         }
 
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length) {
             if (!this.chart)
                 this.initChart();
 
-            this.updateHistory(changes.chartHistory.currentValue);
-            this.changeXRange(this.currentRange);
+            this.clearDatasets();
+            this.newPoints.splice(0, this.newPoints.length, ...changes.chartHistory.currentValue);
         }
 
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length === 0)
@@ -118,7 +119,13 @@ export class IgniteChartController {
                         pointStyle: 'rectRounded'
                     }
                 },
-                animation: false,
+                animation: {
+                    duration: 0 // general animation time
+                },
+                hover: {
+                    animationDuration: 0 // duration of animations when hovering an item
+                },
+                responsiveAnimationDuration: 0, // animation duration after a resize
                 maintainAspectRatio: false,
                 responsive: true,
                 legend: {
@@ -126,7 +133,7 @@ export class IgniteChartController {
                 },
                 scales: {
                     xAxes: [{
-                        type: 'time',
+                        type: 'realtime',
                         display: true,
                         time: {
                             displayFormats: {
@@ -194,9 +201,18 @@ export class IgniteChartController {
                         }
                     }
                 },
-                hover: {
-                    mode: 'nearest',
-                    intersect: false
+                plugins: {
+                    streaming: {
+                        duration: this.currentRange.value * 1000 * 60,
+                        frameRate: 0.3,
+                        refresh: 3000,
+                        onRefresh: (chart) => {
+                            this.newPoints.forEach((point) => {
+                                this.appendChartPoint(point);
+                            });
+                            this.newPoints.splice(0, this.newPoints.length);
+                        }
+                    }
                 }
             }
         };
@@ -288,7 +304,7 @@ export class IgniteChartController {
 
     changeXRange(range) {
         const deltaInMilliSeconds = range.value * 60 * 1000;
-        this.config.options.scales.xAxes[0].time.min = Date.now() - deltaInMilliSeconds;
+        this.chart.config.options.plugins.streaming.duration = deltaInMilliSeconds;
         this.rerenderChart();
     }
 
