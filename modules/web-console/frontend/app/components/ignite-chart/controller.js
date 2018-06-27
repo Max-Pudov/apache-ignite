@@ -179,10 +179,7 @@ export class IgniteChartController {
                         label: (tooltipItem, data) => {
                             let label = data.datasets[tooltipItem.datasetIndex].label || '';
 
-                            if (label)
-                                label = label[0].toUpperCase() + label.substr(1);
-
-                            return `${label}: ${tooltipItem.yLabel} per sec`;
+                            return `${_.startCase(label)}: ${tooltipItem.yLabel} per sec`;
                         },
                         labelColor: (tooltipItem) => {
                             return {
