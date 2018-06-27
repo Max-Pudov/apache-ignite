@@ -90,7 +90,7 @@ export class IgniteChartController {
             return;
         }
 
-        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length) {
+        if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length !== changes.chartHistory.previousValue.length) {
             if (!this.chart)
                 this.initChart();
 
@@ -186,10 +186,7 @@ export class IgniteChartController {
                         label: (tooltipItem, data) => {
                             let label = data.datasets[tooltipItem.datasetIndex].label || '';
 
-                            if (label)
-                                label = label[0].toUpperCase() + label.substr(1);
-
-                            return `${label}: ${tooltipItem.yLabel} per sec`;
+                            return `${_.startCase(label)}: ${tooltipItem.yLabel} per sec`;
                         },
                         labelColor: (tooltipItem) => {
                             return {
