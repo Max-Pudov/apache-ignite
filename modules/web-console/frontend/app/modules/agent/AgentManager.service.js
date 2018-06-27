@@ -385,28 +385,26 @@ export default class AgentManager {
      */
     _sendToAgent(event, payload = {}) {
         if (!this.socket)
-            return this.$q.reject('Failed to connect to server');
+            return Promise.reject('Failed to connect to server');
 
-        const latch = this.$q.defer();
+        return new Promise((resolve, reject) => {
+            const onDisconnect = () => {
+                this.socket.removeListener('disconnect', onDisconnect);
 
-        const onDisconnect = () => {
-            this.socket.removeListener('disconnect', onDisconnect);
+                reject('Connection to server was closed');
+            };
 
-            latch.reject('Connection to server was closed');
-        };
+            this.socket.on('disconnect', onDisconnect);
 
-        this.socket.on('disconnect', onDisconnect);
+            this.socket.emit(event, payload, (err, res) => {
+                this.socket.removeListener('disconnect', onDisconnect);
 
-        this.socket.emit(event, payload, (err, res) => {
-            this.socket.removeListener('disconnect', onDisconnect);
+                if (err)
+                    return reject(err);
 
-            if (err)
-                return latch.reject(err);
-
-            latch.resolve(res);
+                resolve(res);
+            });
         });
-
-        return latch.promise;
     }
 
     drivers() {
