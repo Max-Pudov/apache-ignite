@@ -177,7 +177,7 @@ export class IgniteChartController {
                             return this.datePipe(Date.parse(tooltipItem[0].xLabel), 'yyyy MMM dd HH:mm:ss');
                         },
                         label: (tooltipItem, data) => {
-                            let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            const label = data.datasets[tooltipItem.datasetIndex].label || '';
 
                             return `${_.startCase(label)}: ${tooltipItem.yLabel} per sec`;
                         },
