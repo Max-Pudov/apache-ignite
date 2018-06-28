@@ -201,8 +201,9 @@ export class IgniteChartController {
                 plugins: {
                     streaming: {
                         duration: this.currentRange.value * 1000 * 60,
-                        frameRate: 0.3,
+                        frameRate: 1,
                         refresh: 3000,
+                        delay: 3000,
                         onRefresh: (chart) => {
                             this.newPoints.forEach((point) => {
                                 this.appendChartPoint(point);
