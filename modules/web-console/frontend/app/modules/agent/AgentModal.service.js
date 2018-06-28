@@ -37,11 +37,13 @@ export default class AgentModal {
             controllerAs: 'ctrl'
         });
 
-        $root.$on('user', (event, user) => self.user = user);
+        this.off = $root.$on('user', (event, user) => self.user = user);
     }
 
     hide() {
         this.modal.hide();
+        this.off();
+        this.off = null;
     }
 
     /**
