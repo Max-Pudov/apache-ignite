@@ -82,20 +82,24 @@ export class IgniteChartController {
      * @param {{chartOptions: ng.IChangesObject<import('chart.js').ChartConfiguration>, chartTitle: ng.IChangesObject<string>, chartDataPoint: ng.IChangesObject<IgniteChartDataPoint>, chartHistory: ng.IChangesObject<Array<IgniteChartDataPoint>>}} changes
      */
     $onChanges(changes) {
-        if (this.chartDataPoint && changes.chartDataPoint) {
-            if (!this.chart)
-                this.initChart();
-
-            this.newPoints.push(this.chartDataPoint);
-            return;
-        }
-
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length !== changes.chartHistory.previousValue.length) {
             if (!this.chart)
                 this.initChart();
 
             this.clearDatasets();
             this.newPoints.splice(0, this.newPoints.length, ...changes.chartHistory.currentValue);
+
+            this.onRefresh();
+            this.rerenderChart();
+            return;
+        }
+
+        if (this.chartDataPoint && changes.chartDataPoint) {
+            if (!this.chart)
+                this.initChart();
+
+            this.newPoints.push(this.chartDataPoint);
+
         }
 
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length === 0)
@@ -204,11 +208,8 @@ export class IgniteChartController {
                         frameRate: 1,
                         refresh: 3000,
                         delay: 3000,
-                        onRefresh: (chart) => {
-                            this.newPoints.forEach((point) => {
-                                this.appendChartPoint(point);
-                            });
-                            this.newPoints.splice(0, this.newPoints.length);
+                        onRefresh: () => {
+                            this.onRefresh();
                         }
                     }
                 }
@@ -219,6 +220,13 @@ export class IgniteChartController {
 
         this.chart = new Chart(this.ctx, this.config);
         this.changeXRange(this.currentRange);
+    }
+
+    onRefresh() {
+        this.newPoints.forEach((point) => {
+            this.appendChartPoint(point);
+        });
+        this.newPoints.splice(0, this.newPoints.length);
     }
 
     /**
@@ -288,16 +296,6 @@ export class IgniteChartController {
 
     findDatasetIndex(searchedDatasetLabel) {
         return this.config.data.datasets.findIndex((dataset) => dataset.label === searchedDatasetLabel);
-    }
-
-    toggleDatasetVisibility(dataset) {
-        dataset.hidden = !dataset.hidden;
-        this.rerenderChart();
-    }
-
-    showAllDatasets() {
-        this.config.data.datasets.forEach((dataset) => dataset.hidden = false);
-        this.rerenderChart();
     }
 
     changeXRange(range) {
