@@ -16,7 +16,7 @@
 
 include /app/helpers/jade/mixins
 
-.modal.modal--ignite.theme--ignite(tabindex='-1' role='dialog')
+.modal.modal--ignite.theme--ignite.datepicker--ignite(tabindex='-1' role='dialog')
     .modal-dialog
         form.modal-content(name='ctrl.form' novalidate)
             .modal-header
@@ -28,11 +28,11 @@ include /app/helpers/jade/mixins
 
             .modal-body
                 .row
-                    .col-100
+                    .col-50
                         +ignite-form-field-datepicker('Date:', 'ctrl.date', '"date"', null, null, 0, 'dd/MM/yyyy')
+                    .col-50
                         +ignite-form-field-timepicker('Time:', 'ctrl.time', '"time"', null, null)
 
-
-    .modal-footer
-                button#copy-btn-cancel.btn-ignite.btn-ignite--link-success(ng-click='$hide()') Cancel
-                button#copy-btn-confirm.btn-ignite.btn-ignite--success(ng-disabled='ctrl.form.$invalid' ng-click='ctrl.confirm()') Confirm
+            .modal-footer
+                        button#copy-btn-cancel.btn-ignite.btn-ignite--link-success(ng-click='$hide()') Cancel
+                        button#copy-btn-confirm.btn-ignite.btn-ignite--success(ng-disabled='ctrl.form.$invalid' ng-click='ctrl.confirm()') Confirm

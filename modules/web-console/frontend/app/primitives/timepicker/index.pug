@@ -15,6 +15,7 @@
     limitations under the License.
 
 mixin ignite-form-field-timepicker(label, model, name, mindate, maxdate, disabled, required, placeholder, tip)
+    -var trimName = name.replace(/\"/igm, '');
 
     mixin form-field-input()
         input.form-control(
@@ -35,14 +36,14 @@ mixin ignite-form-field-timepicker(label, model, name, mindate, maxdate, disable
             data-arrow-behavior='picker'
 
             data-placement='bottom'
-            data-container=`.timepicker--ignite`
+            data-container=`.form-field--${trimName}`
 
             tabindex='0'
 
             onkeydown="return false"
         )&attributes(attributes.attributes)
 
-    .timepicker--ignite.ignite-form-field
+    .timepicker--ignite.ignite-form-field(class=`form-field--${trimName}`)
         if name
             +ignite-form-field__label(label, name, required)
 

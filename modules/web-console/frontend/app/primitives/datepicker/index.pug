@@ -15,10 +15,12 @@
     limitations under the License.
 
 mixin ignite-form-field-datepicker(label, model, name, mindate, maxdate, minview = 1, format = 'MMM yyyy', disabled, required, placeholder, tip)
+    -var trimName = name.replace(/\"/igm, '');
+
     mixin form-field-input()
         input.form-control(
             id=`{{ ${name} }}Input`
-            name=`{{ ${name} }}`
+            name=``
 
             placeholder=placeholder
             
@@ -37,14 +39,14 @@ mixin ignite-form-field-datepicker(label, model, name, mindate, maxdate, minview
             data-start-view=minview
 
             data-placement='bottom'
-            data-container='.ignite-form-field'
+            data-container=`.form-field--${trimName}`
 
             tabindex='0'
 
             onkeydown='return false'
         )&attributes(attributes.attributes)
 
-    .datepicker--ignite.ignite-form-field
+    .datepicker--ignite.ignite-form-field(class=`form-field--${trimName}`)
         if name
             +ignite-form-field__label(label, name, required)
 
