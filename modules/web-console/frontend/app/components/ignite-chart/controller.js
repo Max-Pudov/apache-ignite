@@ -141,10 +141,10 @@ export class IgniteChartController {
                         display: true,
                         time: {
                             displayFormats: {
-                                second: 'HH:mm:ss'
-                            },
-                            minUnit: 'second',
-                            stepSize: 20
+                                second: 'HH:mm:ss',
+                                minute: 'HH:mm:ss',
+                                hour: 'HH:mm:ss'
+                            }
                         },
                         ticks: {
                             maxRotation: 0,
@@ -206,8 +206,8 @@ export class IgniteChartController {
                     streaming: {
                         duration: this.currentRange.value * 1000 * 60,
                         frameRate: 1,
-                        refresh: 3000,
-                        delay: 3000,
+                        refresh: this.refreshRate || 3000,
+                        delay: 500,
                         onRefresh: () => {
                             this.onRefresh();
                         }
