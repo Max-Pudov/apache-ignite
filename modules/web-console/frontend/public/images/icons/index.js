@@ -16,6 +16,7 @@
  */
 
 export csv from './csv.svg';
+export copy from './copy.svg';
 export cross from './cross.svg';
 export gear from './gear.svg';
 export clock from './clock.svg';
