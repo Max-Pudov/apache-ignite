@@ -29,8 +29,8 @@ include /app/helpers/jade/mixins
             .modal-body
                 .row
                     .col-100
-                        +ignite-form-field-datepicker('{{ ctrl.label }}', 'ctrl.date', '"date"', null, null, 0, 'dd/MM/yyyy')
-                        +ignite-form-field-timepicker(null, 'ctrl.time', '"time"', null, null)
+                        +ignite-form-field-datepicker('Date:', 'ctrl.date', '"date"', null, null, 0, 'dd/MM/yyyy')
+                        +ignite-form-field-timepicker('Time:', 'ctrl.time', '"time"', null, null)
 
 
     .modal-footer
