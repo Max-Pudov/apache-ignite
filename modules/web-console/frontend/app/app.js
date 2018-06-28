@@ -98,6 +98,7 @@ import AngularStrapSelect from './services/AngularStrapSelect.decorator';
 
 // Filters.
 import byName from './filters/byName.filter';
+import bytes from './filters/bytes.filter';
 import defaultName from './filters/default-name.filter';
 import domainsValidation from './filters/domainsValidation.filter';
 import duration from './filters/duration.filter';
@@ -304,6 +305,7 @@ angular.module('ignite-console', [
 .service('Models', Models)
 // Filters.
 .filter('byName', byName)
+.filter('bytes', bytes)
 .filter('defaultName', defaultName)
 .filter('domainsValidation', domainsValidation)
 .filter('duration', duration)
