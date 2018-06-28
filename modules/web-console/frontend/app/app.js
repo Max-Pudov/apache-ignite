@@ -139,6 +139,7 @@ import pageLanding from './components/page-landing';
 import passwordVisibility from './components/password-visibility';
 import progressLine from './components/progress-line';
 import formField from './components/form-field';
+import dateTimeDialog from './components/date-time-dialog';
 
 import pageProfile from './components/page-profile';
 import pagePasswordChanged from './components/page-password-changed';
@@ -245,7 +246,8 @@ export default angular.module('ignite-console', [
     breadcrumbs.name,
     passwordVisibility.name,
     progressLine.name,
-    formField.name
+    formField.name,
+    dateTimeDialog.name
 ])
 .service($exceptionHandler.name, $exceptionHandler)
 // Directives.
