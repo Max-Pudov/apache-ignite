@@ -63,10 +63,8 @@ public class StripedCompositeReadWriteLock implements ReadWriteLock {
         writeLock = new WriteLock();
     }
 
-    /**
-     * @return Index of current thread stripe.
-     */
-    private int curIdx() {
+    /** {@inheritDoc} */
+    @NotNull @Override public Lock readLock() {
         int idx;
 
         Thread curThread = Thread.currentThread();
@@ -85,12 +83,7 @@ public class StripedCompositeReadWriteLock implements ReadWriteLock {
         else
             idx = IDX.get();
 
-        return idx % locks.length;
-    }
-
-    /** {@inheritDoc} */
-    @NotNull @Override public Lock readLock() {
-        return locks[curIdx()].readLock();
+        return locks[idx % locks.length].readLock();
     }
 
     /** {@inheritDoc} */
@@ -106,18 +99,6 @@ public class StripedCompositeReadWriteLock implements ReadWriteLock {
      */
     public boolean isWriteLockedByCurrentThread() {
         return locks[locks.length - 1].isWriteLockedByCurrentThread();
-    }
-
-    /**
-     * Queries the number of reentrant read holds on this lock by the
-     * current thread.  A reader thread has a hold on a lock for
-     * each lock action that is not matched by an unlock action.
-     *
-     * @return the number of holds on the read lock by the current thread,
-     *         or zero if the read lock is not held by the current thread
-     */
-    public int getReadHoldCount() {
-        return locks[curIdx()].getReadHoldCount();
     }
 
     /**

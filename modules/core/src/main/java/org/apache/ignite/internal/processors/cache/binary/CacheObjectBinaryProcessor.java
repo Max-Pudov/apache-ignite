@@ -140,9 +140,8 @@ public interface CacheObjectBinaryProcessor extends IgniteCacheObjectProcessor {
 
     /**
      * @param obj Original object.
-     * @param failIfUnregistered Throw exception if class isn't registered.
      * @return Binary object (in case binary marshaller is used).
      * @throws IgniteException If failed.
      */
-    public Object marshalToBinary(Object obj, boolean failIfUnregistered) throws IgniteException;
+    public Object marshalToBinary(Object obj) throws IgniteException;
 }

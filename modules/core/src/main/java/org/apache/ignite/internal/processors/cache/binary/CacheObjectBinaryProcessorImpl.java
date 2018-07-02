@@ -296,7 +296,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
      * @throws BinaryObjectException If failed.
      */
     public byte[] marshal(@Nullable Object obj) throws BinaryObjectException {
-        byte[] arr = binaryMarsh.marshal(obj, false);
+        byte[] arr = binaryMarsh.marshal(obj);
 
         assert arr.length > 0;
 
@@ -331,10 +331,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override public Object marshalToBinary(
-        @Nullable Object obj,
-        boolean failIfUnregistered
-    ) throws BinaryObjectException {
+    @Override public Object marshalToBinary(@Nullable Object obj) throws BinaryObjectException {
         if (obj == null)
             return null;
 
@@ -347,7 +344,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
             Object[] pArr = new Object[arr.length];
 
             for (int i = 0; i < arr.length; i++)
-                pArr[i] = marshalToBinary(arr[i], failIfUnregistered);
+                pArr[i] = marshalToBinary(arr[i]);
 
             return pArr;
         }
@@ -356,11 +353,9 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
             IgniteBiTuple tup = (IgniteBiTuple)obj;
 
             if (obj instanceof T2)
-                return new T2<>(marshalToBinary(tup.get1(), failIfUnregistered),
-                    marshalToBinary(tup.get2(), failIfUnregistered));
+                return new T2<>(marshalToBinary(tup.get1()), marshalToBinary(tup.get2()));
 
-            return new IgniteBiTuple<>(marshalToBinary(tup.get1(), failIfUnregistered),
-                marshalToBinary(tup.get2(), failIfUnregistered));
+            return new IgniteBiTuple<>(marshalToBinary(tup.get1()), marshalToBinary(tup.get2()));
         }
 
         {
@@ -370,7 +365,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
                 Collection<?> col = (Collection<?>)obj;
 
                 for (Object item : col)
-                    pCol.add(marshalToBinary(item, failIfUnregistered));
+                    pCol.add(marshalToBinary(item));
 
                 return (pCol instanceof MutableSingletonList) ? U.convertToSingletonList(pCol) : pCol;
             }
@@ -383,8 +378,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
                 Map<?, ?> map = (Map<?, ?>)obj;
 
                 for (Map.Entry<?, ?> e : map.entrySet())
-                    pMap.put(marshalToBinary(e.getKey(), failIfUnregistered),
-                        marshalToBinary(e.getValue(), failIfUnregistered));
+                    pMap.put(marshalToBinary(e.getKey()), marshalToBinary(e.getValue()));
 
                 return pMap;
             }
@@ -393,14 +387,13 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
         if (obj instanceof Map.Entry) {
             Map.Entry<?, ?> e = (Map.Entry<?, ?>)obj;
 
-            return new GridMapEntry<>(marshalToBinary(e.getKey(), failIfUnregistered),
-                marshalToBinary(e.getValue(), failIfUnregistered));
+            return new GridMapEntry<>(marshalToBinary(e.getKey()), marshalToBinary(e.getValue()));
         }
 
         if (binaryMarsh.mustDeserialize(obj))
             return obj; // No need to go through marshal-unmarshal because result will be the same as initial object.
 
-        byte[] arr = binaryMarsh.marshal(obj, failIfUnregistered);
+        byte[] arr = binaryMarsh.marshal(obj);
 
         assert arr.length > 0;
 
@@ -773,7 +766,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
         if (!ctx.binaryEnabled() || binaryMarsh == null)
             return super.marshal(ctx, val);
 
-        byte[] arr = binaryMarsh.marshal(val, false);
+        byte[] arr = binaryMarsh.marshal(val);
 
         assert arr.length > 0;
 
@@ -809,7 +802,7 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
             return key;
         }
 
-        obj = toBinary(obj, false);
+        obj = toBinary(obj);
 
         if (obj instanceof BinaryObjectImpl) {
             ((BinaryObjectImpl)obj).partition(partition(ctx, cctx, obj));
@@ -822,14 +815,14 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
 
     /** {@inheritDoc} */
     @Nullable @Override public CacheObject toCacheObject(CacheObjectContext ctx, @Nullable Object obj,
-        boolean userObj, boolean failIfUnregistered) {
+        boolean userObj) {
         if (!ctx.binaryEnabled())
-            return super.toCacheObject(ctx, obj, userObj, failIfUnregistered);
+            return super.toCacheObject(ctx, obj, userObj);
 
         if (obj == null || obj instanceof CacheObject)
             return (CacheObject)obj;
 
-        obj = toBinary(obj, failIfUnregistered);
+        obj = toBinary(obj);
 
         if (obj instanceof CacheObject)
             return (CacheObject)obj;
@@ -872,20 +865,18 @@ public class CacheObjectBinaryProcessorImpl extends IgniteCacheObjectProcessorIm
      * @return Binary object.
      * @throws IgniteException In case of error.
      */
-    @Nullable public Object toBinary(@Nullable Object obj, boolean failIfUnregistered) throws IgniteException {
+    @Nullable public Object toBinary(@Nullable Object obj) throws IgniteException {
         if (obj == null)
             return null;
 
         if (isBinaryObject(obj))
             return obj;
 
-        return marshalToBinary(obj, failIfUnregistered);
+        return marshalToBinary(obj);
     }
 
     /** {@inheritDoc} */
-    @Nullable @Override public IgniteNodeValidationResult validateNode(ClusterNode rmtNode,
-        DiscoveryDataBag.JoiningNodeDiscoveryData discoData
-    ) {
+    @Nullable @Override public IgniteNodeValidationResult validateNode(ClusterNode rmtNode, DiscoveryDataBag.JoiningNodeDiscoveryData discoData) {
         IgniteNodeValidationResult res;
 
         if (getBoolean(IGNITE_SKIP_CONFIGURATION_CONSISTENCY_CHECK) || !(marsh instanceof BinaryMarshaller))

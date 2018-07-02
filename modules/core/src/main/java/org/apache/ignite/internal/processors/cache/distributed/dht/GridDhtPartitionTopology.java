@@ -59,10 +59,6 @@ public interface GridDhtPartitionTopology {
     public void readUnlock();
 
     /**
-     * @return {@code True} if locked by current thread.
-     */
-    public boolean holdsLock();
-    /**
      * Updates topology version.
      *
      * @param exchFut Exchange future.

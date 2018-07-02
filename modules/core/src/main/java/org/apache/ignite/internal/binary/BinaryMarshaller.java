@@ -79,7 +79,7 @@ public class BinaryMarshaller extends AbstractNodeNameAwareMarshaller {
 
     /** {@inheritDoc} */
     @Override protected byte[] marshal0(@Nullable Object obj) throws IgniteCheckedException {
-        return impl.marshal(obj, false);
+        return impl.marshal(obj);
     }
 
     /** {@inheritDoc} */
