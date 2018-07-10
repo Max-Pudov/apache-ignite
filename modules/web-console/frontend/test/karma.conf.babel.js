@@ -16,6 +16,10 @@
  */
 
 import path from 'path';
+import slash from 'slash';
+
+const igniteModules = process.env.IGNITE_MODULES ? path.join(process.env.IGNITE_MODULES, 'frontend') : path.resolve('ignite_modules');
+const igniteModulesTestsGlob = `${slash(igniteModules)}/{app,components}/**/*.spec.js`;
 
 import testCfg from '../webpack/webpack.test';
 
@@ -33,7 +37,8 @@ export default (config) => {
             'node_modules/angular/angular.js',
             'node_modules/angular-mocks/angular-mocks.js',
             'test/**/*.test.js',
-            'app/**/*.spec.js'
+            'app/**/*.spec.js',
+            igniteModulesTestsGlob
         ],
 
         plugins: [
@@ -47,6 +52,7 @@ export default (config) => {
         // Preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor.
         preprocessors: {
+            [igniteModulesTestsGlob]: ['webpack'],
             '{app,test}/**/*.js': ['webpack']
         },
 
