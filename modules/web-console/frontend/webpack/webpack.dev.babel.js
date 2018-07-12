@@ -63,9 +63,6 @@ export default merge(commonCfg, {
         new MiniCssExtractPlugin({filename: 'assets/css/[name].css'})
     ],
     devServer: {
-        headers: {
-            'Content-Security-Policy': `worker-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: http: https:`
-        },
         compress: true,
         historyApiFallback: true,
         disableHostCheck: true,
