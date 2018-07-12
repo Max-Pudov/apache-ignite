@@ -35,7 +35,10 @@ export default ['IgniteMessages', ['$alert', ($alert) => {
                 const msg = err.message;
                 const lastIdx = msg.lastIndexOf(' err=');
 
-                return prefix + (lastIdx >= 0 ? msg.substring(lastIdx + 5, msg.indexOf(']', lastIdx)) : msg);
+                const msgEndIdx = msg.indexOf(']', lastIdx);
+                const traceIndex = msg.indexOf(', trace=', lastIdx);
+
+                return prefix + (lastIdx >= 0 ? msg.substring(lastIdx + 5, traceIndex > 0 ? traceIndex : msgEndIdx) : msg);
             }
 
             if (nonEmpty(err.className)) {
