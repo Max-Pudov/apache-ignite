@@ -28,7 +28,7 @@ class FakeUiCanExitController {
             .map((key) => data[key])
             .find((controller) => controller[CALLBACK_NAME]);
         if (!controllerWithCallback) return;
-        const off = this.$transitions.onBefore({from: this.fromState}, (...args) => {
+        this.off = this.$transitions.onBefore({from: this.fromState}, (...args) => {
             return controllerWithCallback[CALLBACK_NAME](...args);
         });
     }
