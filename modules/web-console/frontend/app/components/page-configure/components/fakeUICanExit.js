@@ -18,8 +18,17 @@
 class FakeUiCanExitController {
     static $inject = ['$element', '$transitions'];
     static CALLBACK_NAME = 'uiCanExit';
+
+    /** @type {string} Name of state to listen exit from */
+    fromState;
+
+    /**
+     * @param {JQLite} $element
+     * @param {import('@uirouter/angularjs').TransitionService} $transitions
+     */
     constructor($element, $transitions) {
-        Object.assign(this, {$element, $transitions});
+        this.$element = $element;
+        this.$transitions = $transitions;
     }
     $onInit() {
         const data = this.$element.data();
