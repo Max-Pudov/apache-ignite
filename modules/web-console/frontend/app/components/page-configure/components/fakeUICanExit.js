@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-class FakeUiCanExitController {
+export class FakeUiCanExitController {
     static $inject = ['$element', '$transitions'];
     static CALLBACK_NAME = 'uiCanExit';
 
