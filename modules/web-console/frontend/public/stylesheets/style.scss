@@ -33,6 +33,10 @@ body {
     flex: 1 0 auto;
 }
 
+.container-full-width {
+    padding: 0 30px;
+}
+
 hr {
     margin: 20px 0;
 }
@@ -62,7 +66,7 @@ hr {
 }
 
 .table.table-vertical-middle tbody > tr > td {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .table .ui-grid-settings {
@@ -95,7 +99,7 @@ hr {
 }
 
 .tooltip {
-  word-wrap: break-word;
+    word-wrap: break-word;
 }
 
 .theme-line ul.dropdown-menu {
@@ -1387,8 +1391,8 @@ th[st-sort] {
 // element a background, we're telling Safari that it *really* needs to
 // paint the whole area. See https://github.com/ajaxorg/ace/issues/2872
 .ace_scrollbar-inner {
-	background-color: #FFF;
-	opacity: 0.01;
+    background-color: #FFF;
+    opacity: 0.01;
 
     .ace_dark & {
         background-color: #000;
@@ -1951,10 +1955,10 @@ html, body {
 }
 
 .splash:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
 }
 
 .spinner {
