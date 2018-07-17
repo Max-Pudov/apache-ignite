@@ -18,9 +18,21 @@
 queries-notebook {
     // TODO: Delete this breadcrumbs styles after template refactoring to new design.
     .notebooks-top {
-        margin-bottom: 20px;
         display: flex;
         align-items: center;
+        margin: 40px 0 30px;
+        flex-direction: row;
+
+        h1 {
+            margin: 0 !important;
+            display: flex;
+            align-items: center;
+            align-content: center;
+
+            label {
+                margin-right: 10px;
+            }
+        }
 
         breadcrumbs {
             padding-left: 0;

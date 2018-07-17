@@ -22,8 +22,6 @@ import queriesNotebook from './components/queries-notebook';
 import pageQueriesCmp from './component';
 
 import template from 'views/base2.pug';
-// This template is deprecated for notebooks view
-import legacyTemplate from 'views/base.pug';
 
 import Notebook from './notebook.service';
 
@@ -92,7 +90,7 @@ export default angular.module('ignite-console.sql', [
                 url: '/notebook/{noteId}',
                 views: {
                     '@': {
-                        template: legacyTemplate
+                        template
                     },
                     '@base.sql.tabs.notebook': {
                         component: 'queriesNotebook'
