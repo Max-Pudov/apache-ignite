@@ -31,6 +31,7 @@ queries-notebook {
             align-content: center;
 
             label {
+                font-size: 24px;
                 margin-right: 10px;
             }
         }
@@ -104,12 +105,11 @@ queries-notebook {
         }
     }
 
-    .container {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
     .notebook-top-buttons {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+
         a {
             color: rgb(57, 57, 57);
         }

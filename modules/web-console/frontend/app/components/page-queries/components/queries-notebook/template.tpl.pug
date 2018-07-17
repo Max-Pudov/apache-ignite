@@ -355,22 +355,21 @@ div(ng-if='notebook')
 
         cluster-selector
 
+        .notebook-top-buttons
+            a.dropdown-toggle(style='margin-right: 20px' data-toggle='dropdown' bs-dropdown='scrollParagraphs' data-placement='bottom-left') Scroll to query
+                span.caret
+            button.btn.btn-default(style='margin-top: 2px' ng-click='addQuery()' ignite-on-click-focus=focusId)
+                i.fa.fa-fw.fa-plus
+                | Add query
 
-.container
+            button.btn.btn-default(style='margin-top: 2px' ng-click='addScan()' ignite-on-click-focus=focusId)
+                i.fa.fa-fw.fa-plus
+                | Add scan
+
+div
     breadcrumbs
         a.link-success(ui-sref='^.') Notebooks
         span(ui-sref='.' ui-sref-active) Notebook '{{notebook.name}}'
-
-    .pull-right.notebook-top-buttons
-        a.dropdown-toggle(style='margin-right: 20px' data-toggle='dropdown' bs-dropdown='scrollParagraphs' data-placement='bottom-left') Scroll to query
-            span.caret
-        button.btn.btn-default(style='margin-top: 2px' ng-click='addQuery()' ignite-on-click-focus=focusId)
-            i.fa.fa-fw.fa-plus
-            | Add query
-
-        button.btn.btn-default(style='margin-top: 2px' ng-click='addScan()' ignite-on-click-focus=focusId)
-            i.fa.fa-fw.fa-plus
-            | Add scan
 
     -var example = `CREATE TABLE Person(ID INTEGER PRIMARY KEY, NAME VARCHAR(100));\nINSERT INTO Person(ID, NAME) VALUES (1, 'Ed'), (2, 'Ann'), (3, 'Emma');\nSELECT * FROM Person;`;
 
