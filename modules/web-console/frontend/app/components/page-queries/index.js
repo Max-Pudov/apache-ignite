@@ -21,7 +21,7 @@ import queriesNotebooksList from './components/queries-notebooks-list';
 import queriesNotebook from './components/queries-notebook';
 import pageQueriesCmp from './component';
 
-import template from 'views/base2.pug';
+import template from 'views/base.pug';
 
 import Notebook from './notebook.service';
 

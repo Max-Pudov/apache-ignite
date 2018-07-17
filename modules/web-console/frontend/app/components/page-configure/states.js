@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import base2 from 'views/base2.pug';
+import base2 from 'views/base.pug';
 import pageConfigureAdvancedClusterComponent from '../page-configure-advanced/components/page-configure-advanced-cluster/component';
 import pageConfigureAdvancedModelsComponent from '../page-configure-advanced/components/page-configure-advanced-models/component';
 import pageConfigureAdvancedCachesComponent from '../page-configure-advanced/components/page-configure-advanced-caches/component';

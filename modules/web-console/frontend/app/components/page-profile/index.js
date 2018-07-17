@@ -18,7 +18,7 @@
 import angular from 'angular';
 
 import component from './component';
-import template from 'views/base2.pug';
+import template from 'views/base.pug';
 
 import './style.scss';
 

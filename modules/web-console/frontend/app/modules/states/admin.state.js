@@ -17,7 +17,7 @@
 
 import angular from 'angular';
 
-import template from 'views/base2.pug';
+import template from 'views/base.pug';
 
 angular
 .module('ignite-console.states.admin', [
