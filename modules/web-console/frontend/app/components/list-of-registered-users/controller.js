@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+import _ from 'lodash';
+
 import headerTemplate from 'app/primitives/ui-grid-header/index.tpl.pug';
 
 import columnDefs from './column-defs';
@@ -55,7 +57,7 @@ export default class IgniteListOfRegisteredUsersCtrl {
         User.read().then((user) => $ctrl.user = user);
 
         const becomeUser = () => {
-            const user = this.gridApi.selection.getSelectedRows()[0];
+            const user = this.gridApi.selection.legacyGetSelectedRows()[0];
 
             AdminData.becomeUser(user._id)
                 .then(() => User.load())
@@ -64,7 +66,7 @@ export default class IgniteListOfRegisteredUsersCtrl {
         };
 
         const removeUser = () => {
-            const user = this.gridApi.selection.getSelectedRows()[0];
+            const user = this.gridApi.selection.legacyGetSelectedRows()[0];
 
             Confirm.confirm(`Are you sure you want to remove user: "${user.userName}"?`)
                 .then(() => AdminData.removeUser(user))
@@ -83,7 +85,7 @@ export default class IgniteListOfRegisteredUsersCtrl {
         };
 
         const toggleAdmin = () => {
-            const user = this.gridApi.selection.getSelectedRows()[0];
+            const user = this.gridApi.selection.legacyGetSelectedRows()[0];
 
             if (user.adminChanging)
                 return;
@@ -99,7 +101,7 @@ export default class IgniteListOfRegisteredUsersCtrl {
         };
 
         const showActivities = () => {
-            const user = this.gridApi.selection.getSelectedRows()[0];
+            const user = this.gridApi.selection.legacyGetSelectedRows()[0];
 
             return new ActivitiesUserDialog({ user });
         };
@@ -239,10 +241,10 @@ export default class IgniteListOfRegisteredUsersCtrl {
     }
 
     _updateSelected() {
-        const ids = this.gridApi.selection.getSelectedRows().map(({ _id }) => _id).sort();
+        const ids = this.gridApi.selection.legacyGetSelectedRows().map(({ _id }) => _id).sort();
 
         if (ids.length) {
-            const user = this.gridApi.selection.getSelectedRows()[0];
+            const user = this.gridApi.selection.legacyGetSelectedRows()[0];
             const other = this.user._id !== user._id;
 
             this.actionOptions[1].available = other && user.admin;
