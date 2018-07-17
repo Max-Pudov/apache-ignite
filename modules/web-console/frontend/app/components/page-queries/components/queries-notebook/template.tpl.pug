@@ -341,44 +341,43 @@ mixin paragraph-query
                     i.fa.fa-chevron-circle-right
                     a Next
 
-.docs-content
-    div(ng-if='notebook')
-        .notebooks-top
-            h1(ng-hide='notebook.edit')
-                label {{notebook.name}}
-                .btn-group(ng-if='!demo')
-                    +btn-toolbar('fa-pencil', 'notebook.edit = true;notebook.editName = notebook.name', 'Rename notebook')
-                    +btn-toolbar('fa-trash', 'removeNotebook(notebook)', '{{$ctrl.isDemo ? "Demo notebook cannot be deleted" : "Remove notebook"}}')
+div(ng-if='notebook')
+    .notebooks-top
+        h1(ng-hide='notebook.edit')
+            label {{notebook.name}}
+            .btn-group(ng-if='!demo')
+                +btn-toolbar('fa-pencil', 'notebook.edit = true;notebook.editName = notebook.name', 'Rename notebook')
+                +btn-toolbar('fa-trash', 'removeNotebook(notebook)', '{{$ctrl.isDemo ? "Demo notebook cannot be deleted" : "Remove notebook"}}')
 
-            h1(ng-show='notebook.edit')
-                input.form-control(ng-model='notebook.editName' required ignite-on-enter='renameNotebook(notebook.editName)' ignite-on-escape='notebook.edit = false;')
-                i.btn.fa.fa-floppy-o(ng-show='notebook.editName' ng-click='renameNotebook(notebook.editName)' bs-tooltip data-title='Save notebook name' data-trigger='hover')
+        h1(ng-show='notebook.edit')
+            input.form-control(ng-model='notebook.editName' required ignite-on-enter='renameNotebook(notebook.editName)' ignite-on-escape='notebook.edit = false;')
+            i.btn.fa.fa-floppy-o(ng-show='notebook.editName' ng-click='renameNotebook(notebook.editName)' bs-tooltip data-title='Save notebook name' data-trigger='hover')
 
-            cluster-selector
+        cluster-selector
 
-        .docs-header.notebook-header
-            breadcrumbs
-                a.link-success(ui-sref='^.') Notebooks
-                span(ui-sref='.' ui-sref-active) Notebook '{{notebook.name}}'
 
-            h1.pull-right
-                a.dropdown-toggle(style='margin-right: 20px' data-toggle='dropdown' bs-dropdown='scrollParagraphs' data-placement='bottom-right') Scroll to query
-                    span.caret
-                button.btn.btn-default(style='margin-top: 2px' ng-click='addQuery()' ignite-on-click-focus=focusId)
-                    i.fa.fa-fw.fa-plus
-                    | Add query
+.container
+    breadcrumbs
+        a.link-success(ui-sref='^.') Notebooks
+        span(ui-sref='.' ui-sref-active) Notebook '{{notebook.name}}'
 
-                button.btn.btn-default(style='margin-top: 2px' ng-click='addScan()' ignite-on-click-focus=focusId)
-                    i.fa.fa-fw.fa-plus
-                    | Add scan
+    .pull-right.notebook-top-buttons
+        a.dropdown-toggle(style='margin-right: 20px' data-toggle='dropdown' bs-dropdown='scrollParagraphs' data-placement='bottom-left') Scroll to query
+            span.caret
+        button.btn.btn-default(style='margin-top: 2px' ng-click='addQuery()' ignite-on-click-focus=focusId)
+            i.fa.fa-fw.fa-plus
+            | Add query
+
+        button.btn.btn-default(style='margin-top: 2px' ng-click='addScan()' ignite-on-click-focus=focusId)
+            i.fa.fa-fw.fa-plus
+            | Add scan
 
     -var example = `CREATE TABLE Person(ID INTEGER PRIMARY KEY, NAME VARCHAR(100));\nINSERT INTO Person(ID, NAME) VALUES (1, 'Ed'), (2, 'Ann'), (3, 'Emma');\nSELECT * FROM Person;`;
 
-.container
     ignite-information(
-    data-title='With query notebook you can'
-    style='margin-bottom: 30px'
-    ng-init=`example = "${example}"`
+        data-title='With query notebook you can'
+        style='margin-bottom: 30px'
+        ng-init=`example = "${example}"`
     )
         ul
             li Create any number of queries
@@ -393,16 +392,16 @@ mixin paragraph-query
                     label Examples:
                 .group-content
                     .sql-editor(ignite-ace='{\
-                            onLoad: aceInit({}),\
-                            theme: "chrome",\
-                            mode: "sql",\
-                            require: ["ace/ext/language_tools"],\
-                            showGutter: false,\
-                            advanced: {\
-                                enableSnippets: false,\
-                                enableBasicAutocompletion: true,\
-                                enableLiveAutocompletion: true\
-                            }}'
+                                       onLoad: aceInit({}),\
+                                       theme: "chrome",\
+                                       mode: "sql",\
+                                       require: ["ace/ext/language_tools"],\
+                                       showGutter: false,\
+                                       advanced: {\
+                                           enableSnippets: false,\
+                                           enableBasicAutocompletion: true,\
+                                           enableLiveAutocompletion: true\
+                                       }}'
                     ng-model='example'
                     readonly='true'
                     )
@@ -419,4 +418,3 @@ mixin paragraph-query
                         +paragraph-scan
                     .panel.panel-default(ng-if='paragraph.qryType === "query"')
                         +paragraph-query
-

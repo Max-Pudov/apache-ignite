@@ -64,8 +64,9 @@ web-console-header {
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
-        padding: 18.5px 30px;
+        padding: 18px 30px;
         position: relative;
+        min-height: 81px;
     }
 
     .wch-logo {
