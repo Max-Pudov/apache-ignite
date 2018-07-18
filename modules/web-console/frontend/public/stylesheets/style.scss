@@ -35,6 +35,10 @@ body {
 
 .container--responsive {
     padding: 0 30px;
+
+    .gridster-wrapper {
+        margin: -20px !important;
+    }
 }
 
 hr {
