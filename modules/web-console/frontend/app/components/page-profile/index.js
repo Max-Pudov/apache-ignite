@@ -18,7 +18,6 @@
 import angular from 'angular';
 
 import component from './component';
-import template from 'views/base.pug';
 
 import './style.scss';
 
@@ -30,14 +29,7 @@ export default angular
         // set up the states
         $stateProvider.state('base.settings.profile', {
             url: '/profile',
-            views: {
-                '@': {
-                    template
-                },
-                '@base.settings.profile': {
-                    component: 'pageProfile'
-                }
-            },
+            views: { '': { component: 'pageProfile' } },
             permission: 'profile',
             tfMetaTags: {
                 title: 'User profile'
