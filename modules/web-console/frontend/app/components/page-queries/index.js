@@ -60,15 +60,7 @@ export default angular.module('ignite-console.sql', [
         // set up the states
         $stateProvider
             .state('base.sql', {
-                abstract: true,
-                views: {
-                    '@': {
-                        template
-                    },
-                    '@base.sql': {
-                        template: '<ui-view></ui-view>'
-                    }
-                }
+                abstract: true
             })
             .state('base.sql.tabs', {
                 url: '/queries',

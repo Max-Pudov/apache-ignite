@@ -29,7 +29,7 @@ export default angular
         // set up the states
         $stateProvider.state('base.settings.profile', {
             url: '/profile',
-            views: { '': { component: 'pageProfile' } },
+            component: 'pageProfile',
             permission: 'profile',
             tfMetaTags: {
                 title: 'User profile'
