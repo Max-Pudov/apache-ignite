@@ -50,7 +50,7 @@ $disabled-color: #c5c5c5;
                 }
 
                 .ace_focus {
-                    border-color: #0065b6;
+                    border-color: #0067b9;
                 }
             }
         }
@@ -63,6 +63,15 @@ $disabled-color: #c5c5c5;
 
         & > div {
             width: 50%;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+
+            input {
+                margin: 0 !important;
+            }
         }
 
         .show-message {
