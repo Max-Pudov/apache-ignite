@@ -358,12 +358,12 @@ div(ng-if='notebook')
         .notebook-top-buttons
             a.dropdown-toggle(style='margin-right: 20px' data-toggle='dropdown' bs-dropdown='scrollParagraphs' data-placement='bottom-left') Scroll to query
                 span.caret
-            button.btn.btn-default(style='margin-top: 2px' ng-click='addQuery()' ignite-on-click-focus=focusId)
-                i.fa.fa-fw.fa-plus
+            button.btn-ignite.btn-ignite--primary(ng-click='addQuery()' ignite-on-click-focus=focusId)
+                svg.icon-left(ignite-icon='plus')
                 | Add query
 
-            button.btn.btn-default(style='margin-top: 2px' ng-click='addScan()' ignite-on-click-focus=focusId)
-                i.fa.fa-fw.fa-plus
+            button.btn-ignite.btn-ignite--primary(ng-click='addScan()' ignite-on-click-focus=focusId)
+                svg.icon-left(ignite-icon='plus')
                 | Add scan
 
 div
