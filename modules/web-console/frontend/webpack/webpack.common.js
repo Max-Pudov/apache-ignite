@@ -125,13 +125,18 @@ const config = {
             },
             {
                 test: /\.(ttf|eot|svg|woff(2)?)(\?v=[\d.]+)?(\?[a-z0-9#-]+)?$/,
-                exclude: [contentBase],
+                exclude: [contentBase, /\.icon\.svg$/],
                 use: 'file?name=assets/fonts/[name].[ext]'
             },
             {
-                test: /^(?:(?!url\.svg$).)*\.svg$/,
-                include: [contentBase],
-                use: 'svg-sprite-loader'
+                test: /\.icon\.svg$/,
+                use: {
+                    loader: 'svg-sprite-loader',
+                    options: {
+                        symbolRegExp: /\w+(?=\.icon\.\w+$)/,
+                        symbolId: '[0]'
+                    }
+                }
             },
             {
                 test: /.*\.url\.svg$/,
