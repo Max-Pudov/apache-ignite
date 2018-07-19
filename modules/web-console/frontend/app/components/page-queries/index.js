@@ -21,8 +21,6 @@ import queriesNotebooksList from './components/queries-notebooks-list';
 import queriesNotebook from './components/queries-notebook';
 import pageQueriesCmp from './component';
 
-import template from 'views/base.pug';
-
 import Notebook from './notebook.service';
 
 export default angular.module('ignite-console.sql', [
@@ -76,16 +74,9 @@ export default angular.module('ignite-console.sql', [
                     title: 'Notebooks'
                 }
             })
-            .state('base.sql.tabs.notebook', {
+            .state('base.sql.notebook', {
                 url: '/notebook/{noteId}',
-                views: {
-                    '@': {
-                        template
-                    },
-                    '@base.sql.tabs.notebook': {
-                        component: 'queriesNotebook'
-                    }
-                },
+                component: 'queriesNotebook',
                 permission: 'query',
                 tfMetaTags: {
                     title: 'Query notebook'
