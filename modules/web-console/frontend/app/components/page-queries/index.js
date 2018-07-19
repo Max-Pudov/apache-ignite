@@ -47,11 +47,9 @@ export default angular.module('ignite-console.sql', [
             }
 
             $postLink() {
-                this.$timeout(() => {
-                    this.$transclude((clone) => {
-                        this.pageQueries[this.slotName].empty();
-                        clone.appendTo(this.pageQueries[this.slotName]);
-                    });
+                this.$transclude((clone) => {
+                    this.pageQueries[this.slotName].empty();
+                    clone.appendTo(this.pageQueries[this.slotName]);
                 });
             }
         },
