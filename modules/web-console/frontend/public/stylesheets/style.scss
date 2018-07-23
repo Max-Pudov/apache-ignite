@@ -2093,15 +2093,25 @@ header.header-with-selector {
 
     div {
         display: flex;
-    }
 
-    .btn-ignite + .btn-ignite-group {
-        position: relative;
-        margin-left: 20px;
+        &:nth-child(2) {
+            .btn-ignite {
+                margin-left: 20px;
+            }
 
-        ul.dropdown-menu {
-            min-width: 100%;
-            font-family: Roboto;
+            .btn-ignite + .btn-ignite-group {
+                position: relative;
+                margin-left: 20px;
+
+                button {
+                    margin-left: 0;
+                }
+
+                ul.dropdown-menu {
+                    min-width: 100%;
+                    font-family: Roboto;
+                }
+            }
         }
     }
 }
