@@ -2099,6 +2099,12 @@ header.header-with-selector {
                 margin-left: 20px;
             }
 
+            .btn-ignite-group {
+                .btn-ignite {
+                    margin-left: 0;
+                }
+            }
+
             .btn-ignite + .btn-ignite-group {
                 position: relative;
                 margin-left: 20px;
