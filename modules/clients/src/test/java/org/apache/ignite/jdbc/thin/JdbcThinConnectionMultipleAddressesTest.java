@@ -134,13 +134,7 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
     public void testMultipleAddressesConnect() throws Exception {
         try (Connection conn = DriverManager.getConnection(url())) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.execute("SELECT 1");
-
-                ResultSet rs = stmt.getResultSet();
-
-                assertTrue(rs.next());
-
-                assertEquals(1, rs.getInt(1));
+                execDummyStatement(stmt);
             }
         }
     }
@@ -151,13 +145,7 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
     public void testPortRangeConnect() throws Exception {
         try (Connection conn = DriverManager.getConnection(URL_PORT_RANGE)) {
             try (Statement stmt = conn.createStatement()) {
-                stmt.execute("SELECT 1");
-
-                ResultSet rs = stmt.getResultSet();
-
-                assertTrue(rs.next());
-
-                assertEquals(1, rs.getInt(1));
+                execDummyStatement(stmt);
             }
         }
     }
@@ -303,6 +291,96 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
     }
 
     /**
+     * @throws Exception If failed.
+     */
+    public void testBlockNewConnections() throws Exception {
+        Connection conn = DriverManager.getConnection(URL_PORT_RANGE);
+
+        try {
+            final Statement stmt0 = conn.createStatement();
+
+            execDummyStatement(stmt0);
+
+            ClientProcessorMXBean serverMxBean = null;
+
+            for (int i = 0; i < NODES_CNT; i++) {
+                serverMxBean = clientProcessorBean(i);
+
+                serverMxBean.blockNewConnections();
+            }
+
+            assertNotNull("No ClientConnections MXBean found.", serverMxBean);
+
+            assertFalse(getActiveClients().isEmpty());
+
+            execDummyStatement(stmt0);
+
+            // New connection should be blocked.
+            GridTestUtils.assertThrows(log, new Callable<Object>() {
+                @Override public Object call() throws Exception {
+                    try (Connection conn1 = DriverManager.getConnection(URL_PORT_RANGE)) {
+                        final Statement stmt1 = conn1.createStatement();
+
+                        execDummyStatement(stmt1);
+                    }
+
+                    return null;
+                }
+            }, SQLException.class, "Failed to connect to Ignite cluster");
+
+            // Earlier established connection shouldn't be blocked.
+            execDummyStatement(stmt0);
+
+            for (int i = 0; i < NODES_CNT; i++) {
+                serverMxBean = clientProcessorBean(i);
+
+                serverMxBean.unblockNewConnections();
+            }
+
+            assertEquals(1, getActiveClients().size());
+
+            // New connection should be unblocked.
+            try (Connection conn1 = DriverManager.getConnection(URL_PORT_RANGE)) {
+                final Statement stmt1 = conn1.createStatement();
+
+                execDummyStatement(stmt1);
+            }
+
+            execDummyStatement(stmt0);
+
+            stmt0.close();
+        }
+        finally {
+            conn.close();
+        }
+
+        boolean allClosed = GridTestUtils.waitForCondition(new GridAbsPredicate() {
+            @Override public boolean apply() {
+                return getActiveClients().isEmpty();
+            }
+        }, 10_000);
+
+        assertTrue(allClosed);
+    }
+
+    /**
+     * Execute dummy statement.
+     * @param stmt0 statement object.
+     * @return result set.
+     * @throws SQLException if fails.
+     */
+    @NotNull protected ResultSet execDummyStatement(Statement stmt0) throws SQLException {
+        stmt0.execute("SELECT 1");
+
+        ResultSet rs0 = stmt0.getResultSet();
+
+        assertTrue(rs0.next());
+        assertEquals(1, rs0.getInt(1));
+
+        return rs0;
+    }
+
+    /**
      * Return active client list.
      *
      * @return clients.
@@ -387,12 +465,8 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
         try (Connection conn = DriverManager.getConnection(url)) {
             final Statement stmt0 = conn.createStatement();
 
-            stmt0.execute("SELECT 1");
+            ResultSet rs0 = execDummyStatement(stmt0);
 
-            ResultSet rs0 = stmt0.getResultSet();
-
-            assertTrue(rs0.next());
-            assertEquals(1, rs0.getInt(1));
             assertFalse(rs0.isClosed());
 
             stop(conn, allNodes);
@@ -412,12 +486,7 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
 
             final Statement stmt1 = conn.createStatement();
 
-            stmt1.execute("SELECT 1");
-
-            ResultSet rs1 = stmt1.getResultSet();
-
-            assertTrue(rs1.next());
-            assertEquals(1, rs1.getInt(1));
+            execDummyStatement(stmt1);
         }
     }
 
@@ -432,12 +501,8 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
         try (Connection conn = DriverManager.getConnection(url)) {
             final Statement stmt0 = conn.createStatement();
 
-            stmt0.execute("SELECT 1");
+            final ResultSet rs0 = execDummyStatement(stmt0);
 
-            final ResultSet rs0 = stmt0.getResultSet();
-
-            assertTrue(rs0.next());
-            assertEquals(1, rs0.getInt(1));
             assertFalse(rs0.isClosed());
 
             stop(conn, allNodes);
@@ -457,12 +522,7 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
 
             final Statement stmt1 = conn.createStatement();
 
-            stmt1.execute("SELECT 1");
-
-            ResultSet rs1 = stmt1.getResultSet();
-
-            assertTrue(rs1.next());
-            assertEquals(1, rs1.getInt(1));
+            execDummyStatement(stmt1);
         }
     }
 
@@ -485,7 +545,7 @@ public class JdbcThinConnectionMultipleAddressesTest extends JdbcThinAbstractSel
 
             stop(conn, allNodes);
 
-            final int [] id = {0};
+            final int[] id = {0};
 
             GridTestUtils.assertThrows(log, new Callable<Object>() {
                 @Override public Object call() throws Exception {

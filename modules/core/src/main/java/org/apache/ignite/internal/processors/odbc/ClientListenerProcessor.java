@@ -510,12 +510,12 @@ public class ClientListenerProcessor extends GridProcessorAdapter {
 
         /** {@inheritDoc} */
         @Override public void blockNewConnections() {
-            //TODO: to be implemented.
+            srv.pause();
         }
 
         /** {@inheritDoc} */
         @Override public void unblockNewConnections() {
-            //TODO: to be implemented.
+            srv.resume();
         }
 
         /**

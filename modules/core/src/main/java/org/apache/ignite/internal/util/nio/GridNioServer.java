@@ -166,6 +166,9 @@ public class GridNioServer<T> {
     /** Closed flag. */
     private volatile boolean closed;
 
+    /** Closed flag. */
+    private volatile boolean paused;
+
     /** Flag indicating if this server should use direct buffers. */
     private final boolean directBuf;
 
@@ -443,6 +446,14 @@ public class GridNioServer<T> {
 
         for (IgniteThread thread : clientThreads)
             thread.start();
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
     }
 
     /**
@@ -2971,8 +2982,13 @@ public class GridNioServer<T> {
                     // The key indexes into the selector so we
                     // can retrieve the socket that's ready for I/O
                     ServerSocketChannel srvrCh = (ServerSocketChannel)key.channel();
-
                     SocketChannel sockCh = srvrCh.accept();
+
+                    if(paused && !sockCh.isRegistered()){
+                        sockCh.close();
+
+                        continue;
+                    }
 
                     sockCh.configureBlocking(false);
                     sockCh.socket().setTcpNoDelay(tcpNoDelay);
