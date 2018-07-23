@@ -166,7 +166,7 @@ public class GridNioServer<T> {
     /** Closed flag. */
     private volatile boolean closed;
 
-    /** Closed flag. */
+    /** Paused flag. */
     private volatile boolean paused;
 
     /** Flag indicating if this server should use direct buffers. */
@@ -448,11 +448,21 @@ public class GridNioServer<T> {
             thread.start();
     }
 
+    /**
+     * Blocks new incoming connections.
+     */
     public void pause() {
+        assert acceptWorker != null : "NIO server pause feature is not supported.";
+
         paused = true;
     }
 
+    /**
+     * Unblocks new incoming connections.
+     */
     public void resume() {
+        assert acceptWorker != null : "NIO server pause feature is not supported.";
+
         paused = false;
     }
 
