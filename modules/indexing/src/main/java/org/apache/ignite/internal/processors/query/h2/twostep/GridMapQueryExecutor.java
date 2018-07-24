@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -467,66 +468,83 @@ public class GridMapQueryExecutor {
 
         final List<Integer> cacheIds = req.caches();
 
-        int segments = explain || replicated || F.isEmpty(cacheIds) ? 1 :
-            findFirstPartitioned(cacheIds).config().getQueryParallelism();
-
         final Object[] params = req.parameters();
 
-        for (int i = 1; i < segments; i++) {
-            assert !F.isEmpty(cacheIds);
+        int parallelismLvl = explain || replicated || F.isEmpty(cacheIds) ? 1 :
+            findFirstPartitioned(cacheIds).config().getQueryParallelism();
 
-            final int segment = i;
+        final int firstSegment;
 
-            if (lazy) {
-                onQueryRequest0(node,
-                    req.requestId(),
-                    segment,
-                    req.schemaName(),
-                    req.queries(),
-                    cacheIds,
-                    req.topologyVersion(),
-                    partsMap,
-                    parts,
-                    req.pageSize(),
-                    joinMode,
-                    enforceJoinOrder,
-                    false, // Replicated is always false here (see condition above).
-                    req.timeout(),
-                    params,
-                    true); // Lazy = true.
+        if(parallelismLvl > 1) {
+            BitSet segments = new BitSet(parallelismLvl);
+
+            if(qryParts != null) {
+                for (int i = 0; i < qryParts.length; i++)
+                    segments.set(H2Utils.segmentForPartition(qryParts[i], parallelismLvl));
             }
-            else {
-                ctx.closure().callLocal(
-                    new Callable<Void>() {
-                        @Override
-                        public Void call() throws Exception {
-                            onQueryRequest0(node,
-                                req.requestId(),
-                                segment,
-                                req.schemaName(),
-                                req.queries(),
-                                cacheIds,
-                                req.topologyVersion(),
-                                partsMap,
-                                parts,
-                                req.pageSize(),
-                                joinMode,
-                                enforceJoinOrder,
-                                false,
-                                req.timeout(),
-                                params,
-                                false); // Lazy = false.
+            else
+                segments.set(0, parallelismLvl);
 
-                            return null;
+            firstSegment =  segments.nextSetBit(0);
+
+            for (int i = segments.nextSetBit(firstSegment + 1); i >= 0; i = segments.nextSetBit(i+1)) {
+                assert !F.isEmpty(cacheIds);
+
+                final int segment = i;
+
+                if (lazy) {
+                    onQueryRequest0(node,
+                        req.requestId(),
+                        segment,
+                        req.schemaName(),
+                        req.queries(),
+                        cacheIds,
+                        req.topologyVersion(),
+                        partsMap,
+                        parts,
+                        req.pageSize(),
+                        joinMode,
+                        enforceJoinOrder,
+                        false, // Replicated is always false here (see condition above).
+                        req.timeout(),
+                        params,
+                        true); // Lazy = true.
+                }
+                else {
+                    ctx.closure().callLocal(
+                        new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                onQueryRequest0(node,
+                                    req.requestId(),
+                                    segment,
+                                    req.schemaName(),
+                                    req.queries(),
+                                    cacheIds,
+                                    req.topologyVersion(),
+                                    partsMap,
+                                    parts,
+                                    req.pageSize(),
+                                    joinMode,
+                                    enforceJoinOrder,
+                                    false,
+                                    req.timeout(),
+                                    params,
+                                    false); // Lazy = false.
+
+                                return null;
+                            }
                         }
-                    }
-                    , QUERY_POOL);
+                        , QUERY_POOL);
+                }
             }
         }
+        else
+            firstSegment = 0;
 
         onQueryRequest0(node,
             req.requestId(),
-            0,
+            firstSegment,
             req.schemaName(),
             req.queries(),
             cacheIds,

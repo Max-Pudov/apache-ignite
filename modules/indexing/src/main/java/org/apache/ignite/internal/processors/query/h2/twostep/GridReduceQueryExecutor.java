@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,6 +102,7 @@ import org.h2.value.Value;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.apache.ignite.internal.processors.affinity.AffinityTopologyVersion.NONE;
 import static org.apache.ignite.internal.processors.cache.query.GridCacheSqlQuery.EMPTY_PARAMS;
 import static org.apache.ignite.internal.processors.query.h2.opt.DistributedJoinMode.OFF;
@@ -345,8 +347,11 @@ public class GridReduceQueryExecutor {
 
         if (msg.retry() != null)
             retry(r, msg.retry(), node.id());
-        else if (msg.page() == 0) // Do count down on each first page received.
+        else if (msg.page() == 0) { // Do count down on each first page received.
+            assert r.latch().getCount() > 0;
+
             r.latch().countDown();
+        }
     }
 
     /**
@@ -575,7 +580,7 @@ public class GridReduceQueryExecutor {
 
             List<Integer> cacheIds = qry.cacheIds();
 
-            Collection<ClusterNode> nodes;
+            Map<ClusterNode, Integer> nodeSources;
 
             // Explicit partition mapping for unstable topology.
             Map<ClusterNode, IntArray> partsMap = null;
@@ -599,30 +604,35 @@ public class GridReduceQueryExecutor {
                     throw new CacheException("Partitions are not supported for replicated caches");
             }
 
-            if (qry.isLocal())
-                nodes = singletonList(ctx.discovery().localNode());
-            else {
-                NodesForPartitionsResult nodesParts = nodesForPartitions(cacheIds, topVer, parts, isReplicatedOnly);
+            final int parallelismLvl = qry.explain() || isReplicatedOnly ? 1 :
+                findFirstPartitioned(cacheIds).config().getQueryParallelism();
 
-                nodes = nodesParts.nodes();
+            if (qry.isLocal())
+                nodeSources = singletonMap(ctx.discovery().localNode(), parallelismLvl);
+            else {
+                NodesForPartitionsResult nodesParts = nodesForPartitions(cacheIds, topVer, parts, isReplicatedOnly, parallelismLvl);
+
+                nodeSources = nodesParts.nodesSources();
                 partsMap = nodesParts.partitionsMap();
                 qryMap = nodesParts.queryPartitionsMap();
 
-                if (nodes == null)
+                if (nodeSources == null)
                     continue; // Retry.
 
-                assert !nodes.isEmpty();
+                assert !nodeSources.isEmpty();
 
                 if (isReplicatedOnly || qry.explain()) {
                     ClusterNode locNode = ctx.discovery().localNode();
 
                     // Always prefer local node if possible.
-                    if (nodes.contains(locNode))
-                        nodes = singletonList(locNode);
+                    if (nodeSources.containsKey(locNode))
+                        nodeSources = singletonMap(locNode, nodeSources.get(locNode));
                     else {
                         // Select random data node to run query on a replicated data or
                         // get EXPLAIN PLAN from a single node.
-                        nodes = singletonList(F.rand(nodes));
+                        ClusterNode node = F.rand(nodeSources.keySet());
+
+                        nodeSources = singletonMap(node, nodeSources.get(node));
                     }
                 }
             }
@@ -631,12 +641,9 @@ public class GridReduceQueryExecutor {
 
             final boolean skipMergeTbl = !qry.explain() && qry.skipMergeTable();
 
-            final int segmentsPerIndex = qry.explain() || isReplicatedOnly ? 1 :
-                findFirstPartitioned(cacheIds).config().getQueryParallelism();
-
             int replicatedQrysCnt = 0;
 
-            final Collection<ClusterNode> finalNodes = nodes;
+            final Collection<ClusterNode> finalNodes = nodeSources.keySet();
 
             for (GridCacheSqlQuery mapQry : qry.mapQueries()) {
                 GridMergeIndex idx;
@@ -660,24 +667,32 @@ public class GridReduceQueryExecutor {
 
                 // If the query has only replicated tables, we have to run it on a single node only.
                 if (!mapQry.isPartitioned()) {
-                    ClusterNode node = F.rand(nodes);
+                    ClusterNode node = F.rand(nodeSources.keySet());
 
                     mapQry.node(node.id());
 
                     replicatedQrysCnt++;
 
-                    idx.setSources(singletonList(node), 1); // Replicated tables can have only 1 segment.
+                    idx.setSources(singletonMap(node, 1)); // Replicated tables can have only 1 segment.
                 }
                 else
-                    idx.setSources(nodes, segmentsPerIndex);
+                    idx.setSources(nodeSources);
+
 
                 idx.setPageSize(r.pageSize());
 
                 r.indexes().add(idx);
             }
 
+            int sourcesCnt = 0;
+
+            if(!isReplicatedOnly) {
+                for (Integer nodeSrcCnt : nodeSources.values())
+                    sourcesCnt += nodeSrcCnt;
+            }
+
             r.latch(new CountDownLatch(isReplicatedOnly ? 1 :
-                (r.indexes().size() - replicatedQrysCnt) * nodes.size() * segmentsPerIndex + replicatedQrysCnt));
+                (r.indexes().size() - replicatedQrysCnt) * sourcesCnt + replicatedQrysCnt));
 
             runs.put(qryReqId, r);
 
@@ -743,8 +758,8 @@ public class GridReduceQueryExecutor {
                     .timeout(timeoutMillis)
                     .schemaName(schemaName);
 
-                if (send(nodes, req, parts == null ? null : new ExplicitPartitionsSpecializer(qryMap), false)) {
-                    awaitAllReplies(r, nodes, cancel);
+                if (send(nodeSources.keySet(), req, parts == null ? null : new ExplicitPartitionsSpecializer(qryMap), false)) {
+                    awaitAllReplies(r, nodeSources.keySet(), cancel);
 
                     Object state = r.state();
 
@@ -885,14 +900,16 @@ public class GridReduceQueryExecutor {
     ) {
         AffinityTopologyVersion topVer = h2.readyTopologyVersion();
 
-        NodesForPartitionsResult nodesParts = nodesForPartitions(cacheIds, topVer, parts, isReplicatedOnly);
+        final int parallelismLvl = isReplicatedOnly ? 1 : findFirstPartitioned(cacheIds).config().getQueryParallelism();
+
+        NodesForPartitionsResult nodesParts = nodesForPartitions(cacheIds, topVer, parts, isReplicatedOnly, parallelismLvl);
 
         final long reqId = qryIdGen.incrementAndGet();
 
         final GridRunningQueryInfo qryInfo = new GridRunningQueryInfo(reqId, selectQry, GridCacheQueryType.SQL_FIELDS,
             schemaName, U.currentTimeMillis(), cancel, false);
 
-        Collection<ClusterNode> nodes = nodesParts.nodes();
+        Collection<ClusterNode> nodes = nodesParts.nodesSources.keySet();
 
         if (nodes == null)
             throw new CacheException("Failed to determine nodes participating in the update. " +
@@ -1475,35 +1492,52 @@ public class GridReduceQueryExecutor {
      * @param topVer Topology version.
      * @param parts Partitions array.
      * @param isReplicatedOnly Allow only replicated caches.
+     * @param parallelismLvl Query parallelism level.
      * @return Result.
      */
     private NodesForPartitionsResult nodesForPartitions(List<Integer> cacheIds, AffinityTopologyVersion topVer,
-        int[] parts, boolean isReplicatedOnly) {
-        Collection<ClusterNode> nodes = null;
+        int[] parts, boolean isReplicatedOnly, int parallelismLvl) {
+        Map<ClusterNode, Integer> nodesSegments = null;
         Map<ClusterNode, IntArray> partsMap = null;
         Map<ClusterNode, IntArray> qryMap = null;
 
         if (isPreloadingActive(cacheIds)) {
-            if (isReplicatedOnly)
-                nodes = replicatedUnstableDataNodes(cacheIds);
+            if (isReplicatedOnly) {
+                Collection<ClusterNode> nodes = replicatedUnstableDataNodes(cacheIds);
+
+                 nodesSegments = new HashMap<>(nodes.size());
+
+                for (ClusterNode node : nodes)
+                    nodesSegments.put(node, 1);
+            }
             else {
                 partsMap = partitionedUnstableDataNodes(cacheIds);
 
-                if (partsMap != null) {
+                if (partsMap != null)
                     qryMap = narrowForQuery(partsMap, parts);
-
-                    nodes = qryMap == null ? null : qryMap.keySet();
-                }
             }
         }
-        else {
+        else
             qryMap = stableDataNodes(isReplicatedOnly, topVer, cacheIds, parts);
 
-            if (qryMap != null)
-                nodes = qryMap.keySet();
+        if (qryMap != null) {
+            nodesSegments = new HashMap<>(qryMap.size());
+
+            for (Map.Entry<ClusterNode, IntArray> e : qryMap.entrySet()) {
+                BitSet segments = new BitSet();
+
+                IntArray nodeParts = e.getValue();
+
+                for (int i = 0; i < nodeParts.size(); i++)
+                    segments.set(H2Utils.segmentForPartition(nodeParts.get(i), parallelismLvl));
+
+                assert !segments.isEmpty();
+
+                nodesSegments.put(e.getKey(), segments.cardinality());
+            }
         }
 
-        return new NodesForPartitionsResult(nodes, partsMap, qryMap);
+        return new NodesForPartitionsResult(nodesSegments, partsMap, qryMap);
     }
 
     /**
@@ -1713,7 +1747,7 @@ public class GridReduceQueryExecutor {
      */
     static class NodesForPartitionsResult {
         /** */
-        final Collection<ClusterNode> nodes;
+        final Map<ClusterNode, Integer> nodesSources;
 
         /** */
         final Map<ClusterNode, IntArray> partsMap;
@@ -1722,18 +1756,18 @@ public class GridReduceQueryExecutor {
         final Map<ClusterNode, IntArray> qryMap;
 
         /** */
-        NodesForPartitionsResult(Collection<ClusterNode> nodes, Map<ClusterNode, IntArray> partsMap,
+        NodesForPartitionsResult(Map<ClusterNode, Integer> nodesSources, Map<ClusterNode, IntArray> partsMap,
             Map<ClusterNode, IntArray> qryMap) {
-            this.nodes = nodes;
+            this.nodesSources = nodesSources;
             this.partsMap = partsMap;
             this.qryMap = qryMap;
         }
 
         /**
-         * @return Collection of nodes a message shall be sent to.
+         * @return nodes source segments number that a message shall be sent to.
          */
-        Collection<ClusterNode> nodes() {
-            return nodes;
+        Map<ClusterNode, Integer> nodesSources() {
+            return nodesSources;
         }
 
         /**

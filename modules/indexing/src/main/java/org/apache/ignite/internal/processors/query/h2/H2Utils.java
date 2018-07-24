@@ -283,4 +283,13 @@ public class H2Utils {
 
         return resCur;
     }
+
+    /**
+     * @param partition Partition idx.
+     * @param parallelismLvl Query parallelism level.
+     * @return Segment ID for given key
+     */
+    public static int segmentForPartition(int partition, int parallelismLvl){
+        return parallelismLvl == 1 ? 0 : (partition % parallelismLvl);
+    }
 }
