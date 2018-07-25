@@ -17,6 +17,7 @@
 header.header-with-selector
     div
         h1 Configuration
+        version-picker
     div
         a.btn-ignite.btn-ignite--primary(
             type='button'
@@ -35,9 +36,10 @@ header.header-with-selector
         on-action='$ctrl.onClustersAction($event)'
         max-rows-to-show='10'
         one-way-selection='::false'
+        selected-row-id='$ctrl.selectedRowsIDs$|async:this'
         on-selection-change='$ctrl.selectedRows$.next($event)'
         actions-menu='$ctrl.actions$|async:this'
     )
         footer-slot(ng-hide='($ctrl.shortClusters$|async:this).length' style='font-style: italic')
             | You have no cluster configurations.
-            a.link-success(ui-sref='base.configuration.edit.basic({clusterID: "new"})')  Create one?
+            a.link-success(ui-sref='base.configuration.edit.basic({clusterID: "new"})') Create one?
