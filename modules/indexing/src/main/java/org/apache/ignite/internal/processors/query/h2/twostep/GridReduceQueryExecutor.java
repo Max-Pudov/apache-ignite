@@ -1528,12 +1528,16 @@ public class GridReduceQueryExecutor {
 
                 IntArray nodeParts = e.getValue();
 
-                for (int i = 0; i < nodeParts.size(); i++)
-                    segments.set(H2Utils.segmentForPartition(nodeParts.get(i), parallelismLvl));
+                if (nodeParts != null) {
+                    for (int i = 0; i < nodeParts.size(); i++)
+                        segments.set(H2Utils.segmentForPartition(nodeParts.get(i), parallelismLvl));
 
-                assert !segments.isEmpty();
+                    assert !segments.isEmpty();
 
-                nodesSegments.put(e.getKey(), segments.cardinality());
+                    nodesSegments.put(e.getKey(), segments.cardinality());
+                }
+                else
+                    nodesSegments.put(e.getKey(), parallelismLvl);
             }
         }
 
