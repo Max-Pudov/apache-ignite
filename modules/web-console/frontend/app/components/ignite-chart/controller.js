@@ -82,7 +82,7 @@ export class IgniteChartController {
     /**
      * @param {{chartOptions: ng.IChangesObject<import('chart.js').ChartConfiguration>, chartTitle: ng.IChangesObject<string>, chartDataPoint: ng.IChangesObject<IgniteChartDataPoint>, chartHistory: ng.IChangesObject<Array<IgniteChartDataPoint>>}} changes
      */
-    $onChanges(changes) {
+    async $onChanges(changes) {
         if (this.chart && _.get(changes, 'refreshRate.currentValue'))
             this.onRefreshRateChanged(_.get(changes, 'refreshRate.currentValue'));
 
@@ -94,7 +94,7 @@ export class IgniteChartController {
 
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length !== changes.chartHistory.previousValue.length) {
             if (!this.chart)
-                this.initChart();
+                await this.initChart();
 
             this.clearDatasets();
             this.localHistory = [...changes.chartHistory.currentValue];
