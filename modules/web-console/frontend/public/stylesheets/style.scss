@@ -1067,7 +1067,15 @@ button.form-control {
     position: absolute;
     z-index: 1030;
     min-width: 305px;
-    max-width: 355px;
+    max-width: 335px;
+
+    .node-display {
+        max-width: 285px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        position: relative;
+        top: 5px;
+    }
 
     .popover-title {
         color: black;
