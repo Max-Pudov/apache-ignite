@@ -1069,6 +1069,10 @@ button.form-control {
     min-width: 305px;
     max-width: 335px;
 
+    treecontrol li {
+        line-height: 16px;
+    }
+
     .node-display {
         max-width: 280px;
         text-overflow: ellipsis;
