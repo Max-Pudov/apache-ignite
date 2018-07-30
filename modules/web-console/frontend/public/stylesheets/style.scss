@@ -1070,15 +1070,24 @@ button.form-control {
     max-width: 335px;
 
     treecontrol li {
-        line-height: 14px;
+        line-height: 16px;
+    }
+
+    treeitem ul {
+        margin-top: -2px;
+        margin-bottom: 2px;
     }
 
     .node-display {
-        max-width: 280px;
-        text-overflow: ellipsis;
-        overflow: hidden;
         position: relative;
         top: 0;
+
+        max-width: 280px;
+
+        text-overflow: ellipsis;
+        line-height: 12px;
+
+        overflow: hidden;
     }
 
     .popover-title {
