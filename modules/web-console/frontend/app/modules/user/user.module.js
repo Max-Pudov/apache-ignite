@@ -78,13 +78,8 @@ angular.module('ignite-console.user', [
 
         return trans.injector().get('User').read()
             .then(() => {
-                if (AclService.can(permission)) {
-                    Activities.post({action: $state.href(name, trans.params('to'))});
-
-                    return;
-                }
-
-                return $state.target(trans.to().failState || '403');
+                if (!AclService.can(permission))
+                    return $state.target(trans.to().failState || '403');
             })
             .catch(() => {
                 return $state.target(trans.to().failState || '403');

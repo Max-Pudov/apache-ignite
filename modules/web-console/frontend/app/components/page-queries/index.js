@@ -22,8 +22,20 @@ import angular from 'angular';
 import queriesNotebooksList from './components/queries-notebooks-list';
 import queriesNotebook from './components/queries-notebook';
 import pageQueriesCmp from './component';
+import {default as ActivitiesData} from 'app/core/activities/Activities.data';
 
 import Notebook from './notebook.service';
+
+/**
+ * @param {ActivitiesData} ActivitiesData
+ * @param {uirouter.UIRouter} $uiRouter
+ */
+function registerActivitiesHook(ActivitiesData, $uiRouter) {
+    $uiRouter.transitionService.onSuccess({to: 'base.sql.**'}, (transition) => {
+        ActivitiesData.post({group: 'sql', action: transition.targetState().name()});
+    });
+}
+registerActivitiesHook.$inject = ['IgniteActivitiesData', '$uiRouter'];
 
 export default angular.module('ignite-console.sql', [
     'ui.router',
@@ -84,4 +96,5 @@ export default angular.module('ignite-console.sql', [
                     title: 'Query notebook'
                 }
             });
-    }]);
+    }])
+    .run(registerActivitiesHook);

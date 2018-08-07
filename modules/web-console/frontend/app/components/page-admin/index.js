@@ -18,6 +18,7 @@
 import './style.scss';
 
 import templateUrl from './template.tpl.pug';
+import {default as ActivitiesData} from 'app/core/activities/Activities.data';
 
 class PageAdminCtrl {
     static $inject = ['UserNotifications'];
@@ -31,9 +32,21 @@ class PageAdminCtrl {
     }
 }
 
+/**
+ * @param {ActivitiesData} ActivitiesData
+ * @param {uirouter.UIRouter} $uiRouter
+ */
+function registerActivitiesHook(ActivitiesData, $uiRouter) {
+    $uiRouter.transitionService.onSuccess({to: 'base.settings.**'}, (transition) => {
+        ActivitiesData.post({group: 'settings', action: transition.targetState().name()});
+    });
+}
+registerActivitiesHook.$inject = ['IgniteActivitiesData', '$uiRouter'];
+
 export default angular
     .module('ignite-console.page-admin', [])
     .component('pageAdmin', {
         templateUrl,
         controller: PageAdminCtrl
-    });
+    })
+    .run(registerActivitiesHook);

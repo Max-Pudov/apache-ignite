@@ -41,7 +41,12 @@ export default {
     '/queries/add/scan': 'Add scan',
     '/queries/demo': 'SQL demo',
     '/queries/notebook/': 'Query notebook',
+    'base.sql.tabs.notebooks-list': 'Query notebooks',
+    'base.sql.notebook': 'Query notebook',
+    'base.settings.profile': 'User profile',
     '/settings/profile': 'User profile',
     '/settings/admin': 'Admin panel',
-    '/logout': 'Logout'
+    'base.settings.admin': 'Admin panel',
+    '/logout': 'Logout',
+    'configuration/import/model': 'Import cluster models'
 };
