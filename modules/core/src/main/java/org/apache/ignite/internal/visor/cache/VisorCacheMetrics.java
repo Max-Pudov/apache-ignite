@@ -196,6 +196,9 @@ public class VisorCacheMetrics extends VisorDataTransferObject {
     /** Gets query metrics for cache. */
     private VisorQueryMetrics qryMetrics;
 
+    /** Checks whether statistics collection is enabled in this cache. */
+    private boolean statisticsEnabled;
+
     /**
      * Calculate rate of metric per second.
      *
@@ -290,6 +293,8 @@ public class VisorCacheMetrics extends VisorDataTransferObject {
         rebalancingBytesRate = m.getRebalancingBytesRate();
 
         qryMetrics = new VisorQueryMetrics(c.queryMetrics());
+
+        statisticsEnabled = m.isStatisticsEnabled();
     }
 
     /**
@@ -672,9 +677,16 @@ public class VisorCacheMetrics extends VisorDataTransferObject {
         return rebalancingBytesRate;
     }
 
+    /**
+     * @return Checks whether statistics collection is enabled in this cache.
+     */
+    public boolean isStatisticsEnabled() {
+        return statisticsEnabled;
+    }
+
     /** {@inheritDoc} */
     @Override public byte getProtocolVersion() {
-        return V2;
+        return V3;
     }
 
     /** {@inheritDoc} */
@@ -738,6 +750,7 @@ public class VisorCacheMetrics extends VisorDataTransferObject {
 
         out.writeLong(rebalancedKeys);
         out.writeLong(estimatedRebalancingKeys);
+        out.writeBoolean(statisticsEnabled);
     }
 
     /** {@inheritDoc} */
@@ -803,6 +816,9 @@ public class VisorCacheMetrics extends VisorDataTransferObject {
             rebalancedKeys = in.readLong();
             estimatedRebalancingKeys = in.readLong();
         }
+
+        if (protoVer > V2)
+            statisticsEnabled = in.readBoolean();
     }
 
     /** {@inheritDoc} */
