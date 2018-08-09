@@ -19,6 +19,8 @@ package org.apache.ignite.internal.visor.node;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.ignite.IgniteFileSystem;
 import org.apache.ignite.DataRegionMetrics;
@@ -27,11 +29,13 @@ import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.FileSystemConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.managers.discovery.GridDiscoveryManager;
+import org.apache.ignite.internal.processors.cache.CacheGroupContext;
 import org.apache.ignite.internal.processors.cache.GridCacheAdapter;
 import org.apache.ignite.internal.processors.cache.GridCachePartitionExchangeManager;
 import org.apache.ignite.internal.processors.cache.GridCacheProcessor;
 import org.apache.ignite.internal.processors.igfs.IgfsProcessorAdapter;
 import org.apache.ignite.internal.util.ipc.IpcServerEndpoint;
+import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.internal.visor.VisorJob;
@@ -181,7 +185,26 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
 
             GridCacheProcessor cacheProc = ignite.context().cache();
 
+            SortedSet<String> cacheGrps = new TreeSet<>();
+
+            for (CacheGroupContext cg : cacheProc.cacheGroups()) {
+                String name = cg.name();
+
+                if (name != null)
+                    cacheGrps.add(cg.name());
+            }
+
             List<VisorCache> resCaches = res.getCaches();
+
+            String cacheGrp = arg.getCacheGroup();
+
+            boolean collectByGrp = cacheGrp != null;
+
+            // Set first group as default value.
+            if (!collectByGrp && !cacheGrps.isEmpty()) {
+                collectByGrp = true;
+                cacheGrp = cacheGrps.first();
+            }
 
             int partitions = 0;
             double total = 0;
@@ -191,7 +214,9 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                 if (proxyCache(cacheName))
                     continue;
 
-                if (arg.getSystemCaches() || !(isSystemCache(cacheName) || isIgfsCache(cfg, cacheName))) {
+                boolean sysCache = isSystemCache(cacheName);
+
+                if (arg.getSystemCaches() || !(sysCache || isIgfsCache(cfg, cacheName))) {
                     long start0 = U.currentTimeMillis();
 
                     try {
@@ -213,7 +238,8 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                         total += partTotal;
                         ready += partReady;
 
-                        resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
+                        if (!collectByGrp || F.eq(cacheGrp, ca.configuration().getGroupName()))
+                            resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
                     }
                     catch(IllegalStateException | IllegalArgumentException e) {
                         if (debug && ignite.log() != null)
