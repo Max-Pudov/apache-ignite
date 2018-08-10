@@ -91,11 +91,11 @@ public class VisorCacheStoreConfiguration extends VisorDataTransferObject {
     public VisorCacheStoreConfiguration(IgniteEx ignite, CacheConfiguration ccfg) {
         IgniteCacheProxy<Object, Object> c = ignite.context().cache().jcache(ccfg.getName());
 
-        CacheStore cstore = c != null && c.context().started() ? c.context().store().configuredStore() : null;
+        CacheStore store = c != null && c.context().started() ? c.context().store().configuredStore() : null;
 
-        jdbcStore = cstore instanceof CacheAbstractJdbcStore;
+        jdbcStore = store instanceof CacheAbstractJdbcStore;
 
-        store = compactClass(cstore);
+        this.store = compactClass(store);
         storeFactory = compactClass(ccfg.getCacheStoreFactory());
 
         readThrough = ccfg.isReadThrough();

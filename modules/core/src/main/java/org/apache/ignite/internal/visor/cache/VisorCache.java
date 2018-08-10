@@ -318,6 +318,13 @@ public class VisorCache extends VisorDataTransferObject {
         sys = protoVer > V1 ? in.readBoolean() : metrics != null && metrics.isSystem();
     }
 
+    /**
+     * @return Peek onheapprimary.
+     */
+    public CachePeekMode[] peekONHEAPPRIMARY() {
+        return PEEK_ONHEAP_PRIMARY;
+    }
+
     /** {@inheritDoc} */
     @Override public String toString() {
         return S.toString(VisorCache.class, this);

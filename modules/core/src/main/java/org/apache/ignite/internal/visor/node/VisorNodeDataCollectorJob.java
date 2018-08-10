@@ -50,6 +50,7 @@ import org.apache.ignite.lang.IgniteProductVersion;
 import static org.apache.ignite.internal.processors.cache.GridCacheUtils.isIgfsCache;
 import static org.apache.ignite.internal.processors.cache.GridCacheUtils.isSystemCache;
 import static org.apache.ignite.internal.visor.compute.VisorComputeMonitoringHolder.COMPUTE_MONITORING_HOLDER_KEY;
+import static org.apache.ignite.internal.visor.node.VisorNodeDataCollectorTaskArg.CACHES_WITHOUT_GROUPS;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.EVT_MAPPER;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.VISOR_TASK_EVTS;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.checkExplicitTaskMonitoring;
@@ -163,7 +164,7 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
             List<VisorMemoryMetrics> memoryMetrics = res.getMemoryMetrics();
 
             // TODO: Should be really fixed in IGNITE-7111.
-            if (ignite.active()) {
+            if (ignite.cluster().active()) {
                 for (DataRegionMetrics m : ignite.dataRegionMetrics())
                     memoryMetrics.add(new VisorMemoryMetrics(m));
             }
@@ -238,7 +239,12 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                         total += partTotal;
                         ready += partReady;
 
-                        if (!collectByGrp || F.eq(cacheGrp, ca.configuration().getGroupName()))
+                        String cacheGrpName = ca.configuration().getGroupName();
+
+                        if (cacheGrpName == null)
+                            cacheGrpName = CACHES_WITHOUT_GROUPS;
+
+                        if (!collectByGrp || F.eq(cacheGrp, cacheGrpName))
                             resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
                     }
                     catch(IllegalStateException | IllegalArgumentException e) {
