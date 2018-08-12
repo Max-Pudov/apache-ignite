@@ -86,7 +86,7 @@ public class GridStringLogger implements IgniteLogger {
     /**
      * @param msg Message to log.
      */
-    private synchronized void log(String msg) {
+    protected synchronized void log(String msg) {
         buf.append(msg).append(U.nl());
 
         if (echo != null)
