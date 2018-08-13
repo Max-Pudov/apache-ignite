@@ -195,21 +195,17 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                     cacheGrps.add(cg.name());
             }
 
-            List<VisorCache> resCaches = res.getCaches();
+            String cacheGrpToCollect = F.isEmpty(cacheGrps)
+                ? null
+                : (F.isEmpty(arg.getCacheGroup()) ? cacheGrps.first() : arg.getCacheGroup());
 
-            String cacheGrp = arg.getCacheGroup();
-
-            boolean collectByGrp = cacheGrp != null;
-
-            // Set first group as default value.
-            if (!collectByGrp && !cacheGrps.isEmpty()) {
-                collectByGrp = true;
-                cacheGrp = cacheGrps.first();
-            }
+            boolean collectAll = cacheGrpToCollect == null;
 
             int partitions = 0;
             double total = 0;
             double ready = 0;
+
+            List<VisorCache> resCaches = res.getCaches();
 
             for (String cacheName : cacheProc.cacheNames()) {
                 if (proxyCache(cacheName))
@@ -239,12 +235,12 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                         total += partTotal;
                         ready += partReady;
 
-                        String cacheGrpName = ca.configuration().getGroupName();
+                        String cacheGrp = ca.configuration().getGroupName();
 
-                        if (cacheGrpName == null)
-                            cacheGrpName = CACHES_WITHOUT_GROUPS;
+                        if (cacheGrp == null)
+                            cacheGrp = CACHES_WITHOUT_GROUPS;
 
-                        if (!collectByGrp || F.eq(cacheGrp, cacheGrpName))
+                        if (collectAll || F.eq(cacheGrpToCollect, cacheGrp))
                             resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
                     }
                     catch(IllegalStateException | IllegalArgumentException e) {
