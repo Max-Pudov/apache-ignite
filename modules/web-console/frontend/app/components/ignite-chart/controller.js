@@ -261,7 +261,7 @@ export class IgniteChartController {
                     this.config.data.datasets[datasetIndex].data.splice(0, this.config.data.datasets[datasetIndex].length - this.maxPointsNumber);
 
                 this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
-                this.config.data.datasets[datasetIndex].borderColor = this.chartOptions.chartColors[datasetIndex];
+                this.config.data.datasets[datasetIndex].borderColor = this.chartColors[datasetIndex];
                 this.config.data.datasets[datasetIndex].borderWidth = 2;
                 this.config.data.datasets[datasetIndex].fill = false;
             }
