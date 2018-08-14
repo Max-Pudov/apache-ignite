@@ -64,7 +64,7 @@ export default class IgniteUiGrid {
             enableRowHashing: false,
             fastWatch: true,
             showTreeExpandNoChildren: false,
-            multiSelect: true,
+            modifierKeysToMultiSelect: true,
             selectionRowHeaderWidth: 30,
             exporterCsvFilename: `${_.camelCase([this.tabName, this.tableTitle])}.csv`,
             onRegisterApi: (api) => {
@@ -97,15 +97,20 @@ export default class IgniteUiGrid {
         if (hasChanged('items') && this.grid) {
             this.grid.data = changes.items.currentValue;
             this.gridApi.grid.modifyRows(this.grid.data);
-
             this.adjustHeight();
 
-            if (this.onSelectionChange)
-                this.applyIncomingSelection(this.selectedRows);
+            // Without property existence check non-set selectedRowId binding might cause
+            // unwanted behavior, like unchecking rows during any items change, even if
+            // nothing really changed.
+            if ('selectedRows' in this)
+                this.applyIncomingSelectionRows(this.selectedRows);
         }
+
+        if (hasChanged('selectedRows') && this.grid && this.grid.data)
+            this.applyIncomingSelectionRows(changes.selectedRows.currentValue);
     }
 
-    applyIncomingSelection(selected = []) {
+    applyIncomingSelectionRows(selected = []) {
         this.gridApi.selection.clearSelectedRows({ ignore: true });
 
         const rows = this.grid.data.filter((r) =>
@@ -118,11 +123,13 @@ export default class IgniteUiGrid {
     }
 
     onRowsSelectionChange = debounce((rows, e = {}) => {
-        if (e.ignore) return;
-        this.selectedRows = this.gridApi.selection.legacyGetSelectedRows();
+        if (e.ignore)
+            return;
+
+        const selected = this.gridApi.selection.legacyGetSelectedRows();
 
         if (this.onSelectionChange)
-            this.onSelectionChange({ $event: this.selectedRows });
+            this.onSelectionChange({ $event: selected });
     });
 
     adjustHeight() {

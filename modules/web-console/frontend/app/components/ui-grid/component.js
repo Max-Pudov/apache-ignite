@@ -31,6 +31,7 @@ export default {
         categories: '<',
         oneWaySelection: '<?',
         rowIdentityKey: '@?',
+        selectedRows: '<?',
 
         // Output events.
         onSelectionChange: '&?'
