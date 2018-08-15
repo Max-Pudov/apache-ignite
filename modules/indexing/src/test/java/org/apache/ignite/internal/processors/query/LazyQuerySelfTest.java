@@ -41,7 +41,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Tests for lazy query execution.
  */
 public class LazyQuerySelfTest extends GridCommonAbstractTest {
-    /** Keys ocunt. */
+    /** Keys count. */
     private static final int KEY_CNT = 200;
 
     /** Base query argument. */
@@ -55,7 +55,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
 
     private static  int cnt = 0;
 
-    private static boolean lazy = false;
+    private static boolean lazy = true;
 
     /** {@inheritDoc} */
     @Override protected void afterTest() throws Exception {
@@ -64,8 +64,6 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
 
     @Override protected void afterTestsStopped() throws Exception {
         super.afterTestsStopped();
-
-        GridDebug.dumpHeap("lazy-" + lazy+ "-" + (cnt++) + ".hprof", true);
     }
 
 
@@ -74,7 +72,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      *
      * @throws Exception If failed.
      */
-    public void testSingleNode() throws Exception {
+    public void _testSingleNode() throws Exception {
         checkSingleNode(1);
     }
 
@@ -83,7 +81,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      *
      * @throws Exception If failed.
      */
-    public void testSingleNodeWithParallelism() throws Exception {
+    public void _testSingleNodeWithParallelism() throws Exception {
         checkSingleNode(4);
     }
 
@@ -92,7 +90,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      *
      * @throws Exception If failed.
      */
-    public void testMultipleNodes() throws Exception {
+    public void _testMultipleNodes() throws Exception {
         checkMultipleNodes(1);
     }
 
@@ -101,8 +99,34 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      *
      * @throws Exception If failed.
      */
-    public void testMultipleNodesWithParallelism() throws Exception {
+    public void _testMultipleNodesWithParallelism() throws Exception {
         checkMultipleNodes(4);
+    }
+
+    /**
+     * @throws Exception If failed.
+     */
+    public void testDbg() throws Exception {
+//        while(true) {
+            Ignite srv3 = startGrid(3);
+
+            srv3.createCache(cacheConfiguration(4));
+
+            populateBaseQueryData(srv3);
+
+            FieldsQueryCursor<List<?>> cursor = execute(srv3, baseQuery().setPageSize(PAGE_SIZE_SMALL));
+
+            Iterator<List<?>> iter = cursor.iterator();
+
+            for (int i = 0; i < 30; i++)
+                iter.next();
+
+            stopGrid(3);
+
+            assertNoWorkers();
+
+            GridDebug.dumpHeap(String.format("lazy-" + lazy + "-%03d.hprof", cnt++), true);
+//        }
     }
 
     /**
@@ -163,18 +187,18 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
         assertNoWorkers();
 
         // Test server node leave with active worker.
-        cursor = execute(srv1, baseQuery().setPageSize(PAGE_SIZE_SMALL));
+        FieldsQueryCursor<List<?>> cursor2 = execute(srv1, baseQuery().setPageSize(PAGE_SIZE_SMALL));
 
         try {
-            iter = cursor.iterator();
+            Iterator<List<?>> iter2 = cursor2.iterator();
 
             for (int i = 0; i < 30; i++)
-                iter.next();
+                iter2.next();
 
             stopGrid(2);
         }
         finally {
-            cursor.close();
+            cursor2.close();
         }
 
         assertNoWorkers();
@@ -244,10 +268,10 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
                     iterIter.remove();
             }
         }
-//
-//        checkHoldLazyQuery(node);
-//
-//        checkShortLazyQuery(node);
+
+        checkHoldLazyQuery(node);
+
+        checkShortLazyQuery(node);
     }
 
     /**
@@ -262,13 +286,14 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
         // Do many concurrent queries to Test full iteration.
         GridTestUtils.runMultiThreaded(new Runnable() {
             @Override public void run() {
-                for (int i = 0; i < 10; ++i) {
-                    FieldsQueryCursor<List<?>> cursor = execute(node, query(10).setPageSize(PAGE_SIZE_SMALL));
+                for (int i = 0; i < 5; ++i) {
+                    FieldsQueryCursor<List<?>> cursor = execute(node, query(KEY_CNT - PAGE_SIZE_SMALL + 1)
+                        .setPageSize(PAGE_SIZE_SMALL));
 
                     cursor.getAll();
                 }
             }
-        }, 20, "usr-qry");
+        }, 5, "usr-qry");
 
         for (List<?> row : cursor0)
             rows.add(row);
@@ -337,7 +362,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      * @return Query.
      */
     private static SqlFieldsQuery query(long arg) {
-        return new SqlFieldsQuery("SELECT id, name FROM Person WHERE id >= ?").setArgs(arg);
+        return new SqlFieldsQuery("SELECT id, name FROM Person WHERE id >= " + arg);
     }
 
     /**

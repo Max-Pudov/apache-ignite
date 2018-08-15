@@ -328,6 +328,7 @@ public class IgniteH2Indexing implements GridQueryIndexing {
 
             try {
                 c = DriverManager.getConnection(dbUrl);
+                log.info("+++ new " + c);
             }
             catch (SQLException e) {
                 throw new IgniteSQLException("Failed to initialize DB connection: " + dbUrl, e);
