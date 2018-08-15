@@ -1350,13 +1350,6 @@ public class GridCacheUtils {
     }
 
     /**
-     * TODO GG-13195 Temporary compilation fix. Should be removed.
-     */
-    public static boolean clientNode(ClusterNode node) {
-        return false;
-    }
-
-    /**
      * @param node Node.
      * @param filter Node filter.
      * @return {@code True} if node is not client node and pass given filter.
