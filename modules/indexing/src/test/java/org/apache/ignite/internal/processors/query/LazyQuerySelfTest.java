@@ -27,6 +27,7 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.internal.IgniteKernal;
 import org.apache.ignite.internal.processors.query.h2.IgniteH2Indexing;
 import org.apache.ignite.internal.processors.query.h2.twostep.MapQueryLazyWorker;
+import org.apache.ignite.internal.util.GridDebug;
 import org.apache.ignite.internal.util.lang.GridAbsPredicate;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
@@ -52,10 +53,21 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
     /** Cache name. */
     private static final String CACHE_NAME = "cache";
 
+    private static  int cnt = 0;
+
+    private static boolean lazy = false;
+
     /** {@inheritDoc} */
     @Override protected void afterTest() throws Exception {
         stopAllGrids();
     }
+
+    @Override protected void afterTestsStopped() throws Exception {
+        super.afterTestsStopped();
+
+        GridDebug.dumpHeap("lazy-" + lazy+ "-" + (cnt++) + ".hprof", true);
+    }
+
 
     /**
      * Test local query execution.
@@ -232,8 +244,55 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
                     iterIter.remove();
             }
         }
+//
+//        checkHoldLazyQuery(node);
+//
+//        checkShortLazyQuery(node);
+    }
+
+    /**
+     * @param node Ignite node.
+     * @throws Exception If failed.
+     */
+    public void checkHoldLazyQuery(Ignite node) throws Exception {
+        ArrayList rows = new ArrayList<>();
+
+        FieldsQueryCursor<List<?>> cursor0 = execute(node, query(BASE_QRY_ARG).setPageSize(PAGE_SIZE_SMALL));
+
+        // Do many concurrent queries to Test full iteration.
+        GridTestUtils.runMultiThreaded(new Runnable() {
+            @Override public void run() {
+                for (int i = 0; i < 10; ++i) {
+                    FieldsQueryCursor<List<?>> cursor = execute(node, query(10).setPageSize(PAGE_SIZE_SMALL));
+
+                    cursor.getAll();
+                }
+            }
+        }, 20, "usr-qry");
+
+        for (List<?> row : cursor0)
+            rows.add(row);
+
+        assertBaseQueryResults(rows);
+    }
+
+    /**
+     * @param node Ignite node.
+     * @throws Exception If failed.
+     */
+    public void checkShortLazyQuery(Ignite node) throws Exception {
+        ArrayList rows = new ArrayList<>();
+
+        FieldsQueryCursor<List<?>> cursor0 = execute(node, query(KEY_CNT - PAGE_SIZE_SMALL + 1).setPageSize(PAGE_SIZE_SMALL));
+
+        Iterator<List<?>> it = cursor0.iterator();
 
         assertNoWorkers();
+
+        while (it.hasNext())
+            rows.add(it.next());
+
+        assertQueryResults(rows, KEY_CNT - PAGE_SIZE_SMALL + 1);
     }
 
     /**
@@ -287,13 +346,23 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      * @param rows Result rows.
      */
     private static void assertBaseQueryResults(List<List<?>> rows) {
-        assertEquals(KEY_CNT - BASE_QRY_ARG, rows.size());
+        assertQueryResults(rows, BASE_QRY_ARG);
+    }
+
+    /**
+     * Assert base query results.
+     *
+     * @param rows Result rows.
+     * @param resSize Result size.
+     */
+    private static void assertQueryResults(List<List<?>> rows, int resSize) {
+        assertEquals(KEY_CNT - resSize, rows.size());
 
         for (List<?> row : rows) {
             Long id = (Long)row.get(0);
             String name = (String)row.get(1);
 
-            assertTrue(id >= BASE_QRY_ARG);
+            assertTrue(id >= resSize);
             assertEquals(nameForId(id), name);
         }
     }
@@ -317,7 +386,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      */
     @SuppressWarnings("unchecked")
     private static FieldsQueryCursor<List<?>> execute(Ignite node, SqlFieldsQuery qry) {
-        return cache(node).query(qry.setLazy(true));
+        return cache(node).query(qry.setLazy(lazy));
     }
 
     /**
