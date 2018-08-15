@@ -82,7 +82,7 @@ export class IgniteChartController {
     /**
      * @param {{chartOptions: ng.IChangesObject<import('chart.js').ChartConfiguration>, chartTitle: ng.IChangesObject<string>, chartDataPoint: ng.IChangesObject<IgniteChartDataPoint>, chartHistory: ng.IChangesObject<Array<IgniteChartDataPoint>>}} changes
      */
-    $onChanges(changes) {
+    async $onChanges(changes) {
         if (this.chart && _.get(changes, 'refreshRate.currentValue'))
             this.onRefreshRateChanged(_.get(changes, 'refreshRate.currentValue'));
 
@@ -94,7 +94,7 @@ export class IgniteChartController {
 
         if (changes.chartHistory && changes.chartHistory.currentValue && changes.chartHistory.currentValue.length !== changes.chartHistory.previousValue.length) {
             if (!this.chart)
-                this.initChart();
+                await this.initChart();
 
             this.clearDatasets();
             this.localHistory = [...changes.chartHistory.currentValue];
@@ -261,7 +261,7 @@ export class IgniteChartController {
                     this.config.data.datasets[datasetIndex].data.splice(0, this.config.data.datasets[datasetIndex].length - this.maxPointsNumber);
 
                 this.config.data.datasets[datasetIndex].data.push({x: dataPoint.x, y: dataPoint.y[key]});
-                this.config.data.datasets[datasetIndex].borderColor = this.chartOptions.chartColors[datasetIndex];
+                this.config.data.datasets[datasetIndex].borderColor = this.chartColors[datasetIndex];
                 this.config.data.datasets[datasetIndex].borderWidth = 2;
                 this.config.data.datasets[datasetIndex].fill = false;
             }
@@ -290,7 +290,7 @@ export class IgniteChartController {
         if (this.findDatasetIndex(datasetName) >= 0)
             throw new Error(`Dataset with name ${datasetName} is already in chart`);
         else
-            this.config.data.datasets.push({ label: datasetName, data: [] });
+            this.config.data.datasets.push({ label: datasetName, data: [], hidden: true });
     }
 
     findDatasetIndex(searchedDatasetLabel) {
