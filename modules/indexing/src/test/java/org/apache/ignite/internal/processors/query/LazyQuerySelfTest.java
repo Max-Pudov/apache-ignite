@@ -107,7 +107,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
      * @throws Exception If failed.
      */
     public void testDbg() throws Exception {
-//        while(true) {
+        while(true) {
             Ignite srv3 = startGrid(3);
 
             srv3.createCache(cacheConfiguration(4));
@@ -126,7 +126,7 @@ public class LazyQuerySelfTest extends GridCommonAbstractTest {
             assertNoWorkers();
 
             GridDebug.dumpHeap(String.format("lazy-" + lazy + "-%03d.hprof", cnt++), true);
-//        }
+        }
     }
 
     /**
