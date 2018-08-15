@@ -290,7 +290,7 @@ export class IgniteChartController {
         if (this.findDatasetIndex(datasetName) >= 0)
             throw new Error(`Dataset with name ${datasetName} is already in chart`);
         else
-            this.config.data.datasets.push({ label: datasetName, data: [] });
+            this.config.data.datasets.push({ label: datasetName, data: [], hidden: true });
     }
 
     findDatasetIndex(searchedDatasetLabel) {
