@@ -206,8 +206,8 @@ public class GridMapQueryExecutor {
     public void stop() {
         cancelLazyWorkers();
 
-//        for (MapNodeResults res : qryRess.values())
-//            res.cancelAll();
+        for (MapNodeResults res : qryRess.values())
+            res.cancelAll();
     }
 
     /**
@@ -714,8 +714,6 @@ public class GridMapQueryExecutor {
                 .lazyWorker(worker);
 
             Connection conn = h2.connectionForSchema(schemaName);
-
-            log.info("+++ LAZY " + conn);
 
             H2Utils.setupConnection(conn, distributedJoinMode != OFF, enforceJoinOrder);
 
