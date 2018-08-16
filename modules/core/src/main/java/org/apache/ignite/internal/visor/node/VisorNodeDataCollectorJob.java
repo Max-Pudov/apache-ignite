@@ -19,6 +19,8 @@ package org.apache.ignite.internal.visor.node;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.ignite.IgniteFileSystem;
 import org.apache.ignite.DataRegionMetrics;
@@ -27,11 +29,13 @@ import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.FileSystemConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.managers.discovery.GridDiscoveryManager;
+import org.apache.ignite.internal.processors.cache.CacheGroupContext;
 import org.apache.ignite.internal.processors.cache.GridCacheAdapter;
 import org.apache.ignite.internal.processors.cache.GridCachePartitionExchangeManager;
 import org.apache.ignite.internal.processors.cache.GridCacheProcessor;
 import org.apache.ignite.internal.processors.igfs.IgfsProcessorAdapter;
 import org.apache.ignite.internal.util.ipc.IpcServerEndpoint;
+import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.internal.visor.VisorJob;
@@ -46,6 +50,7 @@ import org.apache.ignite.lang.IgniteProductVersion;
 import static org.apache.ignite.internal.processors.cache.GridCacheUtils.isIgfsCache;
 import static org.apache.ignite.internal.processors.cache.GridCacheUtils.isSystemCache;
 import static org.apache.ignite.internal.visor.compute.VisorComputeMonitoringHolder.COMPUTE_MONITORING_HOLDER_KEY;
+import static org.apache.ignite.internal.visor.node.VisorNodeDataCollectorTaskArg.CACHES_WITHOUT_GROUPS;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.EVT_MAPPER;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.VISOR_TASK_EVTS;
 import static org.apache.ignite.internal.visor.util.VisorTaskUtils.checkExplicitTaskMonitoring;
@@ -159,7 +164,7 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
             List<VisorMemoryMetrics> memoryMetrics = res.getMemoryMetrics();
 
             // TODO: Should be really fixed in IGNITE-7111.
-            if (ignite.active()) {
+            if (ignite.cluster().active()) {
                 for (DataRegionMetrics m : ignite.dataRegionMetrics())
                     memoryMetrics.add(new VisorMemoryMetrics(m));
             }
@@ -181,17 +186,34 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
 
             GridCacheProcessor cacheProc = ignite.context().cache();
 
-            List<VisorCache> resCaches = res.getCaches();
+            SortedSet<String> cacheGrps = new TreeSet<>();
+
+            for (CacheGroupContext cg : cacheProc.cacheGroups()) {
+                String name = cg.name();
+
+                if (name != null)
+                    cacheGrps.add(cg.name());
+            }
+
+            String cacheGrpToCollect = F.isEmpty(cacheGrps)
+                ? null
+                : (F.isEmpty(arg.getCacheGroup()) ? cacheGrps.first() : arg.getCacheGroup());
+
+            boolean collectAll = cacheGrpToCollect == null;
 
             int partitions = 0;
             double total = 0;
             double ready = 0;
 
+            List<VisorCache> resCaches = res.getCaches();
+
             for (String cacheName : cacheProc.cacheNames()) {
                 if (proxyCache(cacheName))
                     continue;
 
-                if (arg.getSystemCaches() || !(isSystemCache(cacheName) || isIgfsCache(cfg, cacheName))) {
+                boolean sysCache = isSystemCache(cacheName);
+
+                if (arg.getSystemCaches() || !(sysCache || isIgfsCache(cfg, cacheName))) {
                     long start0 = U.currentTimeMillis();
 
                     try {
@@ -213,7 +235,13 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                         total += partTotal;
                         ready += partReady;
 
-                        resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
+                        String cacheGrp = ca.configuration().getGroupName();
+
+                        if (cacheGrp == null)
+                            cacheGrp = CACHES_WITHOUT_GROUPS;
+
+                        if (collectAll || F.eq(cacheGrpToCollect, cacheGrp))
+                            resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
                     }
                     catch(IllegalStateException | IllegalArgumentException e) {
                         if (debug && ignite.log() != null)
