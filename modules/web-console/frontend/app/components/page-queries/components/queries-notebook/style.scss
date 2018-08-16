@@ -139,3 +139,20 @@ queries-notebook {
         overflow-y: auto;
     }
 }
+
+.popover.settings.refresh-rate {
+    width: 200px;
+
+    [ignite-icon] {
+        height: 12px;
+    }
+
+    .popover-title {
+        padding-left: 7px;
+        font-size: 14px;
+    }
+
+    .actions button:first-child {
+        margin-left: 0;
+    }
+}

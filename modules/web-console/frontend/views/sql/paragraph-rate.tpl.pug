@@ -14,18 +14,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
-.popover.settings(tabindex='-1' style='width: 200px')
-    .arrow
-    h3.popover-title(style='color: black') Refresh rate
-    button.close(id='paragraph-rate-close' ng-click='$hide()') &times;
+.popover.settings.refresh-rate(tabindex='-1')
+    h3.popover-title Refresh rate
+    button.close(ng-click='$hide()')
+        svg(ignite-icon='cross')
     .popover-content
-        form(name='popoverForm' novalidate)
-            .form-group(style='padding: 5px')
-                .col-sm-4
-                    input.form-control(id='paragraph-rate' ng-init='value = paragraph.rate.value' ng-model='value' type='number' min='1' required ignite-auto-focus)
-                .col-sm-8(style='padding-left: 5px')
-                    button.form-control.select-toggle(id='paragraph-unit' ng-init='unit = paragraph.rate.unit' ng-model='unit' required placeholder='Time unit' bs-select bs-options='item.value as item.label for item in timeUnit' tabindex='0')
-            .form-actions(style='margin-top: 30px; padding: 5px')
-                button.btn.btn-primary(id='paragraph-rate-start' ng-disabled='popoverForm.$invalid' ng-click='startRefresh(paragraph, value, unit); $hide()') Start
-                button.btn.btn-primary.btn-default(id='paragraph-rate-stop' ng-click='stopRefresh(paragraph); $hide()' ng-disabled='!paragraph.rate.installed') Stop
+        form.theme--ignite(name='popoverForm' novalidate)
+            .row.form-field.form-field__text.ignite-form-field
+                .col-35.form-field__control
+                    input(ng-init='value = paragraph.rate.value' ng-model='value' type='number' min='1' required ignite-auto-focus)
+                .col-65.form-field__control
+                    button.select-toggle(ng-init='unit = paragraph.rate.unit' ng-model='unit' required placeholder='Time unit' bs-select bs-options='item.value as item.label for item in timeUnit' tabindex='0')
+            .row.form-field.form-field__text.ignite-form-field
+                .col-100.actions
+                    button.btn-ignite.btn-ignite--primary(ng-disabled='popoverForm.$invalid' ng-click='startRefresh(paragraph, value, unit); $hide()') Start
+                    button.btn-ignite.btn-ignite--primary(ng-click='stopRefresh(paragraph); $hide()' ng-disabled='!paragraph.rate.installed') Stop
 
