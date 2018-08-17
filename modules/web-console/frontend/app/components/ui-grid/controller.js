@@ -34,16 +34,18 @@ export default class IgniteUiGrid {
     /** @type */
     onSelectionChange;
 
-    static $inject = ['$scope', '$element', 'gridUtil'];
+    static $inject = ['$scope', '$element', '$timeout', 'gridUtil'];
 
     /**
      * @param {ng.IScope} $scope
      */
-    constructor($scope, $element, gridUtil) {
+    constructor($scope, $element, $timeout, gridUtil) {
         this.$scope = $scope;
         this.$element = $element;
+        this.$timeout = $timeout;
         this.gridUtil = gridUtil;
         this.selectedRows = [];
+        this.selectedRowsId = [];
 
         this.rowIdentityKey = '_id';
     }
@@ -83,6 +85,10 @@ export default class IgniteUiGrid {
                         this.onRowsSelectionChange(rows, e);
                     });
                 }
+
+                this.$timeout(() => {
+                    if (this.selectedRowsId) this.applyIncomingSelectionRowsId(this.selectedRowsId);
+                });
             }
         };
 
@@ -104,10 +110,16 @@ export default class IgniteUiGrid {
             // nothing really changed.
             if ('selectedRows' in this)
                 this.applyIncomingSelectionRows(this.selectedRows);
+
+            if ('selectedRowsId' in this)
+                this.applyIncomingSelectionRowsId(this.selectedRowsId);
         }
 
         if (hasChanged('selectedRows') && this.grid && this.grid.data)
             this.applyIncomingSelectionRows(changes.selectedRows.currentValue);
+
+        if (hasChanged('selectedRowsId') && this.grid && this.grid.data)
+            this.applyIncomingSelectionRowsId(changes.selectedRowsId.currentValue);
     }
 
     applyIncomingSelectionRows(selected = []) {
@@ -116,6 +128,17 @@ export default class IgniteUiGrid {
         const rows = this.grid.data.filter((r) =>
             selected.map((row) =>
                 row[this.rowIdentityKey]).includes(r[this.rowIdentityKey]));
+
+        rows.forEach((r) => {
+            this.gridApi.selection.selectRow(r, { ignore: true });
+        });
+    }
+
+    applyIncomingSelectionRowsId(selected = []) {
+        this.gridApi.selection.clearSelectedRows({ ignore: true });
+
+        const rows = this.grid.data.filter((r) =>
+            selected.includes(r[this.rowIdentityKey]));
 
         rows.forEach((r) => {
             this.gridApi.selection.selectRow(r, { ignore: true });

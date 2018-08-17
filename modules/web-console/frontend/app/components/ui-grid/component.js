@@ -24,14 +24,16 @@ export default {
     controller,
     bindings: {
         gridApi: '=?',
+        gridTreeView: '<?',
 
         // Input Events.
         items: '<',
         columnDefs: '<',
-        categories: '<',
+        categories: '<?',
         oneWaySelection: '<?',
         rowIdentityKey: '@?',
         selectedRows: '<?',
+        selectedRowsId: '<?',
 
         // Output events.
         onSelectionChange: '&?'

@@ -14,7 +14,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 
-div(ng-if='$ctrl.onSelectionChange')
+div(ng-if='$ctrl.gridTreeView')
+    .grid.ui-grid--ignite(
+        ui-grid='$ctrl.grid'
+        ui-grid-resize-columns
+        ui-grid-filters
+        ui-grid-selection
+        ui-grid-exporter
+        ui-grid-pinning
+        ui-grid-tree-view
+    )
+
+div(ng-if='!$ctrl.gridTreeView && $ctrl.onSelectionChange')
     .grid.ui-grid--ignite(
         ui-grid='$ctrl.grid'
         ui-grid-resize-columns
@@ -24,7 +35,7 @@ div(ng-if='$ctrl.onSelectionChange')
         ui-grid-pinning
     )
 
-div(ng-if='!$ctrl.onSelectionChange')
+div(ng-if='!$ctrl.gridTreeView && !$ctrl.onSelectionChange')
     .grid.ui-grid--ignite(
         ui-grid='$ctrl.grid'
         ui-grid-resize-columns

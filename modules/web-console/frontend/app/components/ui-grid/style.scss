@@ -19,6 +19,11 @@ ignite-grid-table {
 	@import 'public/stylesheets/variables';
 
     .ui-grid.ui-grid--ignite {
+        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-plus-squared,
+        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-minus-squared {
+            top: 14px;
+        }
+
         // Start section row height.
         .ui-grid-row {
             height: 48px;
@@ -30,6 +35,8 @@ ignite-grid-table {
 
         .ui-grid-cell .ui-grid-cell-contents {
             padding: 14px 20px;
+            min-height: 47px;
+            max-height: 47px;
         }
 
         // Set force header height.
