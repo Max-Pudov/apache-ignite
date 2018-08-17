@@ -34,6 +34,12 @@ export default class IgniteUiGrid {
     /** @type */
     onSelectionChange;
 
+    /** @type */
+    selectedRows;
+
+    /** @type */
+    selectedRowsId;
+
     static $inject = ['$scope', '$element', '$timeout', 'gridUtil'];
 
     /**
@@ -44,8 +50,6 @@ export default class IgniteUiGrid {
         this.$element = $element;
         this.$timeout = $timeout;
         this.gridUtil = gridUtil;
-        this.selectedRows = [];
-        this.selectedRowsId = [];
 
         this.rowIdentityKey = '_id';
     }
