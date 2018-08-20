@@ -21,10 +21,6 @@ include ../../primitives/dropdown/index
 include ../../primitives/switcher/index
 include ../../primitives/form-field/index
 
-//- Mixin for feedback on IP address violation.
-mixin ipaddress-feedback(name)
-    +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
-
 //- Mixin for feedback on port of IP address violation.
 mixin ipaddress-port-feedback(name)
     +form-field__error({ error: 'ipaddressPort', message: 'Invalid port!' })
@@ -172,7 +168,7 @@ mixin text-ip-address(label, model, name, enabled, placeholder, tip)
         placeholder,
         tip
     })(data-ipaddress='true')
-        +ipaddress-feedback(name)
+        +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
 
 //- Mixin for text field with IP address and port range check.
 mixin text-ip-address-with-port-range(label, model, name, enabled, placeholder, tip)
@@ -188,7 +184,7 @@ mixin text-ip-address-with-port-range(label, model, name, enabled, placeholder, 
         data-ipaddress-with-port='true'
         data-ipaddress-with-port-range='true'
     )
-        +ipaddress-feedback(name)
+        +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
         +ipaddress-port-feedback(name)
         +ipaddress-port-range-feedback(name)
 
@@ -518,7 +514,7 @@ mixin list-addresses({ items, name, tip, withPortRange = true })
                 data-ignite-form-field-input-autofocus='true'
             )
                 +form-field__error({ error: 'igniteUnique', message: 'Such IP address already exists!' })
-                +ipaddress-feedback('"address"')
+                +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
                 +ipaddress-port-feedback('"address"')
                 +ipaddress-port-range-feedback('"address"')
                 +form-field__error({ error: 'required', message: 'IP address:port could not be empty!' })
