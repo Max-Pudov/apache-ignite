@@ -194,7 +194,9 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                 if (proxyCache(cacheName))
                     continue;
 
-                if (arg.getSystemCaches() || !(isSystemCache(cacheName) || isIgfsCache(cfg, cacheName))) {
+                boolean sysCache = isSystemCache(cacheName);
+
+                if (arg.getSystemCaches() || !(sysCache || isIgfsCache(cfg, cacheName))) {
                     long start0 = U.currentTimeMillis();
 
                     try {
@@ -216,7 +218,9 @@ public class VisorNodeDataCollectorJob extends VisorJob<VisorNodeDataCollectorTa
                         total += partTotal;
                         ready += partReady;
 
-                        if (F.eq(cacheGrpToCollect, ca.configuration().getGroupName()))
+                        String cacheGrp = ca.configuration().getGroupName();
+
+                        if (F.eq(cacheGrpToCollect, cacheGrp))
                             resCaches.add(new VisorCache(ignite, ca, arg.isCollectCacheMetrics()));
                     }
                     catch(IllegalStateException | IllegalArgumentException e) {
