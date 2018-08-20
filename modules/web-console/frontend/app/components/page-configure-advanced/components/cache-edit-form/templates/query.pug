@@ -86,14 +86,22 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available(["1.0.0", "2.0.0"])')
-                +checkbox('Snapshotable index', `${model}.snapshotableIndex`, '"snapshotableIndex"',
-                    'Flag indicating whether SQL indexes should support snapshots')
+                +form-field__checkbox({
+                    label: 'Snapshotable index',
+                    model: `${model}.snapshotableIndex`,
+                    name: '"snapshotableIndex"',
+                    tip: 'Flag indicating whether SQL indexes should support snapshots'
+                })
 
             .pc-form-grid-col-60
-                +checkbox('Escape table and filed names', `${model}.sqlEscapeAll`, '"sqlEscapeAll"',
-                    'If enabled than all schema, table and field names will be escaped with double quotes (for example: "tableName"."fieldName").<br/>\
-                    This enforces case sensitivity for field names and also allows having special characters in table and field names.<br/>\
-                    Escaped names will be used for creation internal structures in Ignite SQL engine.')
+                +form-field__checkbox({
+                    label: 'Escape table and filed names',
+                    model: `${model}.sqlEscapeAll`,
+                    name: '"sqlEscapeAll"',
+                    tip: 'If enabled than all schema, table and field names will be escaped with double quotes (for example: "tableName"."fieldName").<br/>\
+                         This enforces case sensitivity for field names and also allows having special characters in table and field names.<br/>\
+                         Escaped names will be used for creation internal structures in Ignite SQL engine.'
+                })
 
             //- Since ignite 2.0
             .pc-form-grid-col-30(ng-if-start='$ctrl.available("2.0.0")')

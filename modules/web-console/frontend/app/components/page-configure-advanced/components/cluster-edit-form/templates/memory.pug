@@ -27,7 +27,7 @@ panel-collapsible(
 )
     panel-title Memory configuration
     panel-description
-        | Page memory is a manageable off-heap based memory architecture that is split into pages of fixed size. 
+        | Page memory is a manageable off-heap based memory architecture that is split into pages of fixed size.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/durable-memory" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`$ctrl.available(["2.0.0", "2.3.0"]) && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -176,10 +176,14 @@ panel-collapsible(
                                     .pc-form-grid-col-30(ng-if-end)
                                         +number('Rate time interval:', '$item.rateTimeInterval', '"MemoryPolicyRateTimeInterval"',
                                             'true', '60000', '1000', 'Time interval for allocation rate and eviction rate monitoring purposes')
-                                            
+
                                     .pc-form-grid-col-60
-                                        +checkbox('Metrics enabled', '$item.metricsEnabled', '"MemoryPolicyMetricsEnabled"',
-                                        'Whether memory metrics are enabled by default on node startup')
+                                        +form-field__checkbox({
+                                            label: 'Metrics enabled',
+                                            model: '$item.metricsEnabled',
+                                            name: '"MemoryPolicyMetricsEnabled"',
+                                            tip: 'Whether memory metrics are enabled by default on node startup'
+                                        })
 
                                 list-editable-no-items
                                     list-editable-add-item-button(

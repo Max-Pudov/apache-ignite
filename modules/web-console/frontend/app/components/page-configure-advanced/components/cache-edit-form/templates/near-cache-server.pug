@@ -26,9 +26,9 @@ panel-collapsible(
 )
     panel-title Near cache on server node
     panel-description
-        | Near cache settings. 
-        | Near cache is a small local cache that stores most recently or most frequently accessed data. 
-        | Should be used in case when it is impossible to send computations to remote nodes. 
+        | Near cache settings.
+        | Near cache is a small local cache that stores most recently or most frequently accessed data.
+        | Should be used in case when it is impossible to send computations to remote nodes.
         a.link-success(href="https://apacheignite.readme.io/docs/near-caches" target="_blank") More info
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -36,7 +36,12 @@ panel-collapsible(
             -var enabled = `${nearCfg}.enabled`
 
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"nearCacheEnabled"', 'Flag indicating whether to configure near cache')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"nearCacheEnabled"',
+                    tip: 'Flag indicating whether to configure near cache'
+                })
             .pc-form-grid-col-60
                 +number('Start size:', `${nearCfg}.nearStartSize`, '"nearStartSize"', enabled, '375000', '0',
                     'Initial cache size for near cache which will be used to pre-create internal hash table after start')

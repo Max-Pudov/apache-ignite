@@ -22,7 +22,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Memory
     panel-description
-        | Cache memory settings. 
+        | Cache memory settings.
         a.link-success(
             href="https://apacheignite.readme.io/v1.9/docs/off-heap-memory"
             target="_blank"
@@ -37,8 +37,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +checkbox('Onheap cache enabled', model + '.onheapCacheEnabled', '"OnheapCacheEnabled"', 'Checks if the on-heap cache is enabled for the off-heap based page memory')
-
+                +form-field__checkbox({
+                    label: 'Onheap cache enabled',
+                    model: model + '.onheapCacheEnabled',
+                    name: '"OnheapCacheEnabled"',
+                    tip: 'Checks if the on-heap cache is enabled for the off-heap based page memory'
+                })
             //- Since ignite 2.0 deprecated in ignite 2.3
             .pc-form-grid-col-60(ng-if='$ctrl.available(["2.0.0", "2.3.0"])')
                 +text('Memory policy name:', model + '.memoryPolicyName', '"MemoryPolicyName"', 'false', 'default',
@@ -152,7 +156,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     For example, if you expect to load 10 million entries into cache, you can set this property to 10 000 000.\
                     This will save you from cache internal map resizes.')
             .pc-form-grid-col-60(ng-if-end)
-                +checkbox('Swap enabled', `${model}.swapEnabled`, '"swapEnabled"', 'Flag indicating whether swap storage is enabled or not for this cache')
+                +form-field__checkbox({
+                    label: 'Swap enabled',
+                    model: `${model}.swapEnabled`,
+                    name: '"swapEnabled"',
+                    tip: 'Flag indicating whether swap storage is enabled or not for this cache'
+                })
 
         .pca-form-column-6
             +preview-xml-java(model, 'cacheMemory')

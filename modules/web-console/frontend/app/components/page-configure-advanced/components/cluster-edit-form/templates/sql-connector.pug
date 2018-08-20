@@ -31,7 +31,12 @@ panel-collapsible(
     panel-content.pca-form-row(ng-if=`$ctrl.available(["2.1.0", "2.3.0"]) && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Enabled', connectionEnabled, '"SqlConnectorEnabled"', 'Flag indicating whether to configure SQL connector configuration')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: connectionEnabled,
+                    name: '"SqlConnectorEnabled"',
+                    tip: 'Flag indicating whether to configure SQL connector configuration'
+                })
             .pc-form-grid-col-60
                 +text-enabled('Host:', `${connectionModel}.host`, '"SqlConnectorHost"', connectionEnabled, 'false', 'localhost')
             .pc-form-grid-col-30

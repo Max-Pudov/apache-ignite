@@ -26,7 +26,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             -var enabled = `${model}.fragmentizerEnabled`
 
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"fragmentizerEnabled"', 'Fragmentizer enabled flag')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"fragmentizerEnabled"',
+                    tip: 'Fragmentizer enabled flag'
+                })
             .pc-form-grid-col-30
                 +number('Concurrent files:', `${model}.fragmentizerConcurrentFiles`, '"fragmentizerConcurrentFiles"', enabled, '0', '0', 'Number of files to process concurrently by fragmentizer')
             .pc-form-grid-col-30

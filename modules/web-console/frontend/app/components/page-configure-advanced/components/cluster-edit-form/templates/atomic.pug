@@ -26,7 +26,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Atomic configuration
     panel-description
         | Configuration for atomic data structures.
-        | Atomics are distributed across the cluster, essentially enabling performing atomic operations (such as increment-and-get or compare-and-set) with the same globally-visible value. 
+        | Atomics are distributed across the cluster, essentially enabling performing atomic operations (such as increment-and-get or compare-and-set) with the same globally-visible value.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/atomic-types" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -66,8 +66,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')
                     .pc-form-grid-col-60(ng-if-end)
-                        +checkbox('Exclude neighbors', `${affModel}.Rendezvous.excludeNeighbors`, '"RendExcludeNeighbors"',
-                            'Exclude same - host - neighbors from being backups of each other and specified number of backups')
+                        +form-field__checkbox({
+                            label: 'Exclude neighbors',
+                            model: `${affModel}.Rendezvous.excludeNeighbors`,
+                            name: '"RendExcludeNeighbors"',
+                            tip: 'Exclude same - host - neighbors from being backups of each other and specified number of backups'
+                        })
                     .pc-form-grid-col-60(ng-if=customAff)
                         +java-class('Class name:', `${affModel}.Custom.className`, '"AffCustomClassName"', 'true', customAff,
                             'Custom key affinity function implementation class name')

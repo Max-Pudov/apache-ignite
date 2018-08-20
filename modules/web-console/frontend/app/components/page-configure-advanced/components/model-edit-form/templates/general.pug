@@ -23,13 +23,18 @@ include /app/helpers/jade/mixins
 panel-collapsible(opened=`::true` ng-form=form)
     panel-title General
     panel-description
-        | Domain model properties common for Query and Store. 
-        a.link-success(href="https://apacheignite.readme.io/docs/cache-queries" target="_blank") More info about query configuration. 
+        | Domain model properties common for Query and Store.
+        a.link-success(href="https://apacheignite.readme.io/docs/cache-queries" target="_blank") More info about query configuration.
         a.link-success(href="https://apacheignite.readme.io/docs/3rd-party-store" target="_blank") More info about store.
     panel-content.pca-form-row
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Generate POJO classes', generatePojo, '"generatePojo"', 'If selected then POJO classes will be generated from database tables')
+                +form-field__checkbox({
+                    label: 'Generate POJO classes',
+                    model: generatePojo,
+                    name: '"generatePojo"',
+                    tip: 'If selected then POJO classes will be generated from database tables'
+                })
             .pc-form-grid-col-30
                 +form-field__dropdown({
                     label: 'Caches:',

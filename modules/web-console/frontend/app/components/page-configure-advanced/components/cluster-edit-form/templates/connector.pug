@@ -24,12 +24,17 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Connector configuration
     panel-description
-        | Configure HTTP REST configuration to enable HTTP server features. 
+        | Configure HTTP REST configuration to enable HTTP server features.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/rest-api#general-configuration" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"restEnabled"', 'Flag indicating whether to configure connector configuration')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"restEnabled"',
+                    tip: 'Flag indicating whether to configure connector configuration'
+                })
             .pc-form-grid-col-60
                 +text-enabled('Jetty configuration path:', `${model}.jettyPath`, '"connectorJettyPath"', enabled, 'false', 'Input path to Jetty configuration',
                     'Path, either absolute or relative to IGNITE_HOME, to Jetty XML configuration file<br/>\

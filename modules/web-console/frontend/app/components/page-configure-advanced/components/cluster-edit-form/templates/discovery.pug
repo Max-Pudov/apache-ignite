@@ -89,9 +89,18 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-60
                 +java-class('Node authenticator:', `${model}.authenticator`, '"authenticator"', 'true', 'false', 'Class name of node authenticator implementation')
             .pc-form-grid-col-60
-                +checkbox('Force server mode', `${model}.forceServerMode`, '"forceServerMode"', 'Force start TCP/IP discovery in server mode')
+                +form-field__checkbox({
+                    label: 'Force server mode',
+                    model: `${model}.forceServerMode`,
+                    name: '"forceServerMode"',
+                    tip: 'Force start TCP/IP discovery in server mode'
+                })
             .pc-form-grid-col-60
-                +checkbox('Client reconnect disabled', `${model}.clientReconnectDisabled`, '"clientReconnectDisabled"',
-                    'Disable try of client to reconnect after server detected client node failure')
+                +form-field__checkbox({
+                    label: 'Client reconnect disabled',
+                    model: `${model}.clientReconnectDisabled`,
+                    name: '"clientReconnectDisabled"',
+                    tip: 'Disable try of client to reconnect after server detected client node failure'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterDiscovery')

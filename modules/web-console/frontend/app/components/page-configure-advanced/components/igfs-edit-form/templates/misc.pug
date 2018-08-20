@@ -56,16 +56,30 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 +number('Trash purge timeout:', `${model}.trashPurgeTimeout`, '"trashPurgeTimeout"', 'true', '1000', '0', 'Maximum timeout awaiting for trash purging in case data cache oversize is detected')
 
             .pc-form-grid-col-60
-                +checkbox('Colocate metadata', `${model}.colocateMetadata`, '"colocateMetadata"', 'Whether to co-locate metadata on a single node')
+                +form-field__checkbox({
+                    label: 'Colocate metadata',
+                    model: `${model}.colocateMetadata`,
+                    name: '"colocateMetadata"',
+                    tip: 'Whether to co-locate metadata on a single node'
+                })
             .pc-form-grid-col-60
-                +checkbox('Relaxed consistency', `${model}.relaxedConsistency`, '"relaxedConsistency"',
-                    'If value of this flag is <b>true</b>, IGFS will skip expensive consistency checks<br/>\
-                    It is recommended to set this flag to <b>false</b> if your application has conflicting\
-                    operations, or you do not know how exactly users will use your system')
+                +form-field__checkbox({
+                    label: 'Relaxed consistency',
+                    model: `${model}.relaxedConsistency`,
+                    name: '"relaxedConsistency"',
+                    tip: 'If value of this flag is <b>true</b>, IGFS will skip expensive consistency checks<br/>\
+                         It is recommended to set this flag to <b>false</b> if your application has conflicting\
+                         operations, or you do not know how exactly users will use your system'
+                })
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +checkbox('Update file length on flush', model + '.updateFileLengthOnFlush', '"updateFileLengthOnFlush"', 'Update file length on flush flag')
+                +form-field__checkbox({
+                    label: 'Update file length on flush',
+                    model: model + '.updateFileLengthOnFlush',
+                    name: '"updateFileLengthOnFlush"',
+                    tip: 'Update file length on flush flag'
+                })
 
             .pc-form-grid-col-60
                 mixin igfs-misc-path-modes

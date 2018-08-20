@@ -28,7 +28,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             -var enabled = `${model}.ipcEndpointEnabled`
 
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"ipcEndpointEnabled"', 'IPC endpoint enabled flag')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"ipcEndpointEnabled"',
+                    tip: 'IPC endpoint enabled flag'
+                })
             .pc-form-grid-col-60
                 +dropdown('Type:', `${ipcEndpointConfiguration}.type`, '"ipcEndpointConfigurationType"', enabled, 'TCP',
                     '[\
