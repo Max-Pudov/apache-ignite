@@ -31,9 +31,6 @@ public class VisorNodeDataCollectorTaskArg extends VisorDataTransferObject {
     /** */
     private static final long serialVersionUID = 0L;
 
-    /** Use this special value for cacheGroup property to collect info about caches without groups. */
-    public static final String CACHES_WITHOUT_GROUPS = "VISOR_CACHES_WITHOUT_GROUPS";
-
     /** Whether task monitoring should be enabled. */
     private boolean taskMonitoringEnabled;
 
@@ -100,7 +97,7 @@ public class VisorNodeDataCollectorTaskArg extends VisorDataTransferObject {
         boolean sysCaches,
         boolean collectCacheMetrics
     ) {
-        this(taskMonitoringEnabled, evtOrderKey, evtThrottleCntrKey, sysCaches, true, null);
+        this(taskMonitoringEnabled, evtOrderKey, evtThrottleCntrKey, sysCaches, collectCacheMetrics, null);
     }
 
     /**
