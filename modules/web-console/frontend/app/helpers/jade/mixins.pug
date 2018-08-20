@@ -21,10 +21,6 @@ include ../../primitives/dropdown/index
 include ../../primitives/switcher/index
 include ../../primitives/form-field/index
 
-//- Mixin for feedback on UUID violation.
-mixin uuid-feedback(name)
-    +form-field__error({ error: 'uuid', message: 'Invalid node ID!' })
-
 //- Function that convert enabled state to corresponding disabled state.
 -var enabledToDisabled = function (enabled) {
 -    return (enabled === false || enabled === true) ? !enabled : '!(' + enabled + ')';
