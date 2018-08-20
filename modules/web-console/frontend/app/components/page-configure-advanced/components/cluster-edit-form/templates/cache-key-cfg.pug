@@ -36,7 +36,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                 ignite-unique=model
                                 ignite-unique-property='typeName'
                             )
-                                +unique-feedback(`cacheKeyTypeName`, 'Type name should be unique.')
+                                +form-field__error({ error: 'igniteUnique', message: 'Type name should be unique.' })
                         .pc-form-grid-col-60
                             +form-field__text({
                                 label: 'Affinity key field name:',

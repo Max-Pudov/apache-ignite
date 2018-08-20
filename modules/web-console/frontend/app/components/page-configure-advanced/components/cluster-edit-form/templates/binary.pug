@@ -22,7 +22,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Binary configuration
     panel-description
-        | Configuration of specific binary types. 
+        | Configuration of specific binary types.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/binary-marshaller" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -48,7 +48,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                     ignite-unique=items
                                     ignite-unique-property='typeName'
                                 )
-                                    +unique-feedback(`$item.typeName`, 'Type name should be unique.')
+                                    +form-field__error({ error: 'igniteUnique', message: 'Type name should be unique.' })
                             .pc-form-grid-col-60
                                 +java-class('ID mapper:', '$item.idMapper', '"idMapper"', 'true', 'false',
                                     'Maps given from BinaryNameMapper type and filed name to ID that will be used by Ignite in internals<br/>\

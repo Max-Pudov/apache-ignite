@@ -21,8 +21,8 @@ include /app/helpers/jade/mixins
 
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Queries & Indexing
-    panel-description 
-        | Cache queries settings. 
+    panel-description
+        | Cache queries settings.
         a.link-success(href="https://apacheignite-sql.readme.io/docs/select" target="_blank") More info
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -59,7 +59,6 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 mixin caches-query-list-sql-functions()
                     .ignite-form-field
                         -let items = `${model}.sqlFunctionClasses`;
-                        -let uniqueTip = 'SQL function with such class name already exists!'
 
                         list-editable(
                             ng-model=items
@@ -72,7 +71,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
                             list-editable-item-edit
                                 +list-java-class-field('SQL function', '$item', '"sqlFunction"', items)
-                                    +unique-feedback('"sqlFunction"', uniqueTip)
+                                    +form-field__error({ error: 'igniteUnique', message: 'SQL function with such class name already exists!' })
 
                             list-editable-no-items
                                 list-editable-add-item-button(

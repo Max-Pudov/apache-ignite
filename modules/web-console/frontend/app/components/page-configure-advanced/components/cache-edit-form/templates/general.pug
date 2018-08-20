@@ -22,7 +22,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(opened=`::true` ng-form=form)
     panel-title General
     panel-description
-        | Common cache configuration. 
+        | Common cache configuration.
         a.link-success(href="https://apacheignite.readme.io/docs/data-grid" target="_blank") More info
     panel-content.pca-form-row
         .pca-form-column-6.pc-form-grid-row
@@ -38,7 +38,7 @@ panel-collapsible(opened=`::true` ng-form=form)
                     ignite-unique-property='name'
                     ignite-unique-skip=`["_id", ${model}]`
                 )
-                    +unique-feedback(`${model}.name`, 'Cache name should be unique')
+                    +form-field__error({ error: 'igniteUnique', message: 'Cache name should be unique' })
             .pc-form-grid-col-60
                 +form-field__dropdown({
                     label: 'Domain models:',

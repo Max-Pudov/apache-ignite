@@ -21,10 +21,6 @@ include ../../primitives/dropdown/index
 include ../../primitives/switcher/index
 include ../../primitives/form-field/index
 
-//- Mixin for feedback on unique violation.
-mixin unique-feedback(name, errorMessage)
-    +form-field__error({ error: 'igniteUnique', message: errorMessage })
-
 //- Mixin for feedback on IP address violation.
 mixin ipaddress-feedback(name)
     +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
@@ -511,7 +507,7 @@ mixin list-addresses({ items, name, tip, withPortRange = true })
             +form-field__text({
                 label: 'Address',
                 model: 'address',
-                name: '"address"', 
+                name: '"address"',
                 required: true,
                 placeholder: 'IP address:port'
             })(
@@ -521,7 +517,7 @@ mixin list-addresses({ items, name, tip, withPortRange = true })
                 data-ignite-unique=items
                 data-ignite-form-field-input-autofocus='true'
             )
-                +unique-feedback('"address"', 'Such IP address already exists!')
+                +form-field__error({ error: 'igniteUnique', message: 'Such IP address already exists!' })
                 +ipaddress-feedback('"address"')
                 +ipaddress-port-feedback('"address"')
                 +ipaddress-port-range-feedback('"address"')
@@ -692,7 +688,7 @@ mixin list-pair-edit({ items, keyLbl, valLbl, itemName, itemsName })
                         data-ignite-unique-property='name'
                         ignite-auto-focus
                     )
-                        +unique-feedback('"name"', 'Property with such name already exists!')
+                        +form-field__error({ error: 'igniteUnique', message: 'Property with such name already exists!' })
                 .pc-form-grid-col-30
                     +form-field__text({
                         label: valLbl,

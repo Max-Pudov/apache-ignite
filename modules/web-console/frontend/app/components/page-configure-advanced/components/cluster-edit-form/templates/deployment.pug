@@ -62,7 +62,6 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 mixin clusters-deployment-packages
                     .ignite-form-field
                         -let items = exclude
-                        -var uniqueTip = 'Such package already exists!'
 
                         list-editable(
                             ng-model=items
@@ -87,7 +86,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                     data-ignite-unique=items
                                     data-ignite-form-field-input-autofocus='true'
                                 )
-                                    +unique-feedback('"packageName"', uniqueTip)
+                                    +form-field__error({ error: 'igniteUnique', message: 'Such package already exists!' })
 
                             list-editable-no-items
                                 list-editable-add-item-button(
@@ -125,7 +124,6 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     mixin clusters-deployment-uri
                         .ignite-form-field
                             -let items = uriListModel
-                            -var uniqueTip = 'Such URI already configured!'
 
                             list-editable(
                                 ng-model=items
@@ -139,7 +137,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
                                 list-editable-item-edit
                                     +list-url-field('URL', '$item', '"url"', items)
-                                        +unique-feedback('"url"', uniqueTip)
+                                        +form-field__error({ error: 'igniteUnique', message: 'Such URI already configured!' })
 
                                 list-editable-no-items
                                     list-editable-add-item-button(
@@ -159,7 +157,6 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     mixin clusters-deployment-scanner
                         .ignite-form-field
                             -let items = scannerModel
-                            -var uniqueTip = 'Such scanner already configured!'
 
                             list-editable(
                                 ng-model=items
@@ -170,7 +167,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
                                 list-editable-item-edit
                                     +list-java-class-field('Scanner', '$item', '"scanner"', items)
-                                        +unique-feedback('"scanner"', uniqueTip)
+                                        +form-field__error({ error: 'igniteUnique', message: 'Such scanner already configured!' })
 
                                 list-editable-no-items
                                     list-editable-add-item-button(

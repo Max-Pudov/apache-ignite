@@ -49,7 +49,7 @@ mixin list-db-field-edit({ items, itemName, itemsName })
                         ignite-unique=items
                         ignite-unique-property='databaseFieldName'
                     )
-                        +unique-feedback(_, 'DB name should be unique')
+                        +form-field__error({ error: 'igniteUnique', message: 'DB name should be unique' })
                 .pc-form-grid-col-30
                     +dropdown-required('DB type:', '$item.databaseFieldType', '"databaseFieldType"', true, true, 'Choose DB type', 'supportedJdbcTypes')
                 .pc-form-grid-col-30(divider='/')
@@ -64,7 +64,7 @@ mixin list-db-field-edit({ items, itemName, itemsName })
                         ignite-unique=items
                         ignite-unique-property='javaFieldName'
                     )
-                        +unique-feedback(_, 'Java name should be unique')
+                        +form-field__error({ error: 'igniteUnique', message: 'Java name should be unique' })
                 .pc-form-grid-col-30
                     +dropdown-required('Java type:', '$item.javaFieldType', '"javaFieldType"', true, true, 'Choose Java type', 'supportedJavaTypes')
 
@@ -78,7 +78,7 @@ mixin list-db-field-edit({ items, itemName, itemsName })
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title#store-title Domain model for cache store
     panel-description
-        | Domain model properties for binding database with cache via POJO cache store. 
+        | Domain model properties for binding database with cache via POJO cache store.
         a.link-success(href="https://apacheignite.readme.io/docs/3rd-party-store" target="_blank") More info
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row

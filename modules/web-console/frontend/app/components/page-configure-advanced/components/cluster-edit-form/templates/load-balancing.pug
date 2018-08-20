@@ -25,7 +25,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Load balancing configuration
     panel-description
-        | Load balancing component balances job distribution among cluster nodes. 
+        | Load balancing component balances job distribution among cluster nodes.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/load-balancing" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6
@@ -59,7 +59,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                     ignite-unique=`${loadBalancingSpi}`
                                     ignite-unique-property='kind'
                                 )
-                                    +unique-feedback('"loadBalancingKind"', 'Load balancing SPI of that type is already configured')
+                                    +form-field__error({ error: 'igniteUnique', message: 'Load balancing SPI of that type is already configured' })
                             .settings-row(ng-show='$item.kind === "RoundRobin"')
                                 +checkbox('Per task', '$item.RoundRobin.perTask', '"loadBalancingRRPerTask"', 'A new round robin order should be created for every task flag')
                             .settings-row(ng-show='$item.kind === "Adaptive"')

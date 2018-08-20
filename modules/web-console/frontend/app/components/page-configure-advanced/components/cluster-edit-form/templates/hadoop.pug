@@ -25,8 +25,6 @@ include /app/helpers/jade/mixins
 -var libs = model + '.nativeLibraryNames'
 
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
-    -var uniqueTip = 'Such native library already exists!'
-
     panel-title Hadoop configuration
     panel-description Hadoop Accelerator configuration.
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
@@ -81,7 +79,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     })(
                         list-editable-cols=`::[{name: 'Native libraries:'}]`
                     )
-                        +unique-feedback(_, `${uniqueTip}`)
+                        +form-field__error({ error: 'igniteUnique', message: 'Such native library already exists!' })
 
         .pca-form-column-6
             +preview-xml-java(model, 'clusterHadoop')
