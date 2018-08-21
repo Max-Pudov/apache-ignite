@@ -58,6 +58,11 @@ panel-collapsible(
                 +number('Pool size:', `${connectionModel}.threadPoolSize`, '"SqlConnectorThreadPoolSize"', connectionEnabled, 'max(8, availableProcessors)', '1',
                     'Size of thread pool that is in charge of processing SQL requests')
             .pc-form-grid-col-60
-                +checkbox-enabled('TCP_NODELAY option', `${connectionModel}.tcpNoDelay`, '"SqlConnectorTcpNoDelay"', connectionEnabled)
+                +form-field__checkbox({
+                    label: 'TCP_NODELAY option',
+                    model: `${connectionModel}.tcpNoDelay`,
+                    name: '"SqlConnectorTcpNoDelay"',
+                    disabled: `!${connectionEnabled}`
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterQuery')

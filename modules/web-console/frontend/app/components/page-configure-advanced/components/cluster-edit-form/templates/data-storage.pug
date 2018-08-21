@@ -298,9 +298,21 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                 +number('WAL auto archive after inactivity:', `${model}.walAutoArchiveAfterInactivity`, '"DataStorageWalAutoArchiveAfterInactivity"', 'true', '-1', '-1',
                     'Time in millis to run auto archiving segment after last record logging')
             .pc-form-grid-col-60
-                +checkbox-enabled('Metrics enabled', `${model}.metricsEnabled`, '"DataStorageMetricsEnabled"', 'true', 'Flag indicating whether persistence metrics collection is enabled')
+                +form-field__checkbox({
+                    label: 'Metrics enabled',
+                    model: `${model}.metricsEnabled`,
+                    name: '"DataStorageMetricsEnabled"',
+                    disabled: 'false',
+                    tip: 'Flag indicating whether persistence metrics collection is enabled'
+                })
             .pc-form-grid-col-60
-                +checkbox-enabled('Always write full pages', `${model}.alwaysWriteFullPages`, '"DataStorageAlwaysWriteFullPages"', 'true', 'Flag indicating whether always write full pages')
+                +form-field__checkbox({
+                    label: 'Always write full pages',
+                    model: `${model}.alwaysWriteFullPages`,
+                    name: '"DataStorageAlwaysWriteFullPages"',
+                    disabled: 'false',
+                    tip: 'Flag indicating whether always write full pages'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Write throttling enabled',

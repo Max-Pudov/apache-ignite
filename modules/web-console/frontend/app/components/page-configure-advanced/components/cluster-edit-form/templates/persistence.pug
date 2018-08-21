@@ -42,9 +42,21 @@ panel-collapsible(
                 +text-enabled('Store path:', `${model}.persistentStorePath`, '"PersistenceStorePath"', enabled, 'false', 'Input store path',
                 'A path the root directory where the Persistent Store will persist data and indexes')
             .pc-form-grid-col-60
-                +checkbox-enabled('Metrics enabled', `${model}.metricsEnabled`, '"PersistenceMetricsEnabled"', enabled, 'Flag indicating whether persistence metrics collection is enabled')
+                +form-field__checkbox({
+                    label: 'Metrics enabled',
+                    model: `${model}.metricsEnabled`,
+                    name: '"PersistenceMetricsEnabled"',
+                    disabled: `!${enabled}`,
+                    tip: 'Flag indicating whether persistence metrics collection is enabled'
+                })
             .pc-form-grid-col-60
-                +checkbox-enabled('Always write full pages', `${model}.alwaysWriteFullPages`, '"PersistenceAlwaysWriteFullPages"', enabled, 'Flag indicating whether always write full pages')
+                +form-field__checkbox({
+                    label: 'Always write full pages',
+                    model: `${model}.alwaysWriteFullPages`,
+                    name: '"PersistenceAlwaysWriteFullPages"',
+                    disabled: `!${enabled}`,
+                    tip: 'Flag indicating whether always write full pages'
+                })
             .pc-form-grid-col-60
                 +number('Checkpointing frequency:', `${model}.checkpointingFrequency`, '"PersistenceCheckpointingFrequency"', enabled, '180000', '1',
                 'Frequency which is a minimal interval when the dirty pages will be written to the Persistent Store')

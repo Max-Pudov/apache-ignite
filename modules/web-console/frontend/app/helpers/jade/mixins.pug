@@ -26,16 +26,6 @@ include ../../primitives/form-field/index
 -    return (enabled === false || enabled === true) ? !enabled : '!(' + enabled + ')';
 -}
 
-//- Mixin for checkbox with enabled condition.
-mixin checkbox-enabled(label, model, name, enabled, tip)
-    +form-field__checkbox({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        tip
-    })
-
 //- Mixin for Java class name field with auto focus condition.
 mixin java-class-autofocus-placholder(label, model, name, enabled, required, autofocus, placeholder, tip, validationActive)
     -var errLbl = label.substring(0, label.length - 1)

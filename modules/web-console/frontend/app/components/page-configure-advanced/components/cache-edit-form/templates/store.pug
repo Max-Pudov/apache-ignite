@@ -297,7 +297,13 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
                 //- Since ignite 2.0
                 .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                    +checkbox-enabled('Write coalescing', model + '.writeBehindCoalescing', '"WriteBehindCoalescing"', enabled, 'Write coalescing flag for write-behind cache store')
+                    +form-field__checkbox({
+                        label: 'Write coalescing',
+                        model: model + '.writeBehindCoalescing',
+                        name: '"WriteBehindCoalescing"',
+                        disabled: `!${enabled}`,
+                        tip: 'Write coalescing flag for write-behind cache store'
+                    })
 
         .pca-form-column-6
             +preview-xml-java(model, 'cacheStore', 'domains')

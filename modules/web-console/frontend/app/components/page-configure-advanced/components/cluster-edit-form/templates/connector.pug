@@ -72,15 +72,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     'REST TCP server send queue limit<br/>\
                     If the limit exceeds, all successive writes will block until the queue has enough capacity')
             .pc-form-grid-col-60
-                +checkbox-enabled('Direct buffer', `${model}.directBuffer`, '"connectorDirectBuffer"', enabled,
-                    'Flag indicating whether REST TCP server should use direct buffers<br/>\
-                    A direct buffer is a buffer that is allocated and accessed using native system calls, without using JVM heap<br/>\
-                    Enabling direct buffer may improve performance and avoid memory issues(long GC pauses due to huge buffer size)')
+                +form-field__checkbox({
+                    label: 'Direct buffer',
+                    model: `${model}.directBuffer`,
+                    name: '"connectorDirectBuffer"',
+                    disabled: `!${enabled}`,
+                    tip: 'Flag indicating whether REST TCP server should use direct buffers<br/>\
+                          A direct buffer is a buffer that is allocated and accessed using native system calls, without using JVM heap<br/>\
+                          Enabling direct buffer may improve performance and avoid memory issues(long GC pauses due to huge buffer size)'
+                })
             .pc-form-grid-col-60
-                +checkbox-enabled('TCP_NODELAY option', `${model}.noDelay`, '"connectorNoDelay"', enabled,
-                    'Flag indicating whether TCP_NODELAY option should be set for accepted client connections<br/>\
-                    Setting this option reduces network latency and should be enabled in majority of cases<br/>\
-                    For more information, see Socket#setTcpNoDelay(boolean)')
+                +form-field__checkbox({
+                    label: 'TCP_NODELAY option',
+                    model: `${model}.noDelay`,
+                    name: '"connectorNoDelay"',
+                    disabled: `!${enabled}`,
+                    tip: 'Flag indicating whether TCP_NODELAY option should be set for accepted client connections<br/>\
+                          Setting this option reduces network latency and should be enabled in majority of cases<br/>\
+                          For more information, see Socket#setTcpNoDelay(boolean)'
+                })
             .pc-form-grid-col-30
                 +number('Selector count:', `${model}.selectorCount`, '"connectorSelectorCount"', enabled, 'min(4, availableProcessors)', '1',
                     'Number of selector threads in REST TCP server<br/>\
@@ -95,9 +105,21 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-60
                 +text-enabled('Secret key:', `${model}.secretKey`, '"connectorSecretKey"', enabled, 'false', 'Specify to enable authentication', 'Secret key to authenticate REST requests')
             .pc-form-grid-col-60
-                +checkbox-enabled('Enable SSL', `${model}.sslEnabled`, '"connectorSslEnabled"', enabled, 'Enables/disables SSL for REST TCP binary protocol')
+                +form-field__checkbox({
+                    label: 'Enable SSL',
+                    model: `${model}.sslEnabled`,
+                    name: '"connectorSslEnabled"',
+                    disabled: `!${enabled}`,
+                    tip: 'Enables/disables SSL for REST TCP binary protocol'
+                })
             .pc-form-grid-col-60
-                +checkbox-enabled('Enable SSL client auth', `${model}.sslClientAuth`, '"connectorSslClientAuth"', sslEnabled, 'Flag indicating whether or not SSL client authentication is required')
+                +form-field__checkbox({
+                    label: 'Enable SSL client auth',
+                    model: `${model}.sslClientAuth`,
+                    name: '"connectorSslClientAuth"',
+                    disabled: `!(${sslEnabled})`,
+                    tip: 'Flag indicating whether or not SSL client authentication is required'
+                })
             .pc-form-grid-col-60
                 +java-class('SSL factory:', `${model}.sslFactory`, '"connectorSslFactory"', sslEnabled, sslEnabled,
                     'Instance of Factory that will be used to create an instance of SSLContext for Secure Socket Layer on TCP binary protocol')
