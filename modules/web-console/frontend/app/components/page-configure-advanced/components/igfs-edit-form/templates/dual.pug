@@ -37,6 +37,11 @@ panel-collapsible(
             .settings-row
                 +java-class('Put executor service:', `${model}.dualModePutExecutorService`, '"dualModePutExecutorService"', 'true', 'false', 'DUAL mode put operation executor service')
             .settings-row
-                +checkbox('Put executor service shutdown', `${model}.dualModePutExecutorServiceShutdown`, '"dualModePutExecutorServiceShutdown"', 'DUAL mode put operation executor service shutdown flag')
+                +form-field__checkbox({
+                    label: 'Put executor service shutdown',
+                    model: `${model}.dualModePutExecutorServiceShutdown`,
+                    name: '"dualModePutExecutorServiceShutdown"',
+                    tip: 'DUAL mode put operation executor service shutdown flag'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'igfsDualMode')

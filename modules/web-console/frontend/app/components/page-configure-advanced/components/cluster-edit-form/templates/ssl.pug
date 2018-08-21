@@ -30,7 +30,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"sslEnabled"', 'Flag indicating whether to configure SSL configuration')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"sslEnabled"',
+                    tip: 'Flag indicating whether to configure SSL configuration'
+                })
             .pc-form-grid-col-60
                 +text-options('Algorithm to create a key manager:', `${model}.keyAlgorithm`, '"keyAlgorithm"', '["SumX509", "X509"]', enabled, 'false', 'SumX509',
                     'Sets key manager algorithm that will be used to create a key manager<br/>\

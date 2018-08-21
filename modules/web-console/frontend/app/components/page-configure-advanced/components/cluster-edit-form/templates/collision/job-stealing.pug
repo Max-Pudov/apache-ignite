@@ -32,8 +32,12 @@ include /app/helpers/jade/mixins
     +number('Maximum stealing attempts:', `${model}.maximumStealingAttempts`, '"jsMaximumStealingAttempts"', 'true', '5', '1',
         'Maximum number of attempts to steal job by another node')
 .pc-form-grid-col-60
-    +checkbox('Stealing enabled', `${model}.stealingEnabled`, '"jsStealingEnabled"',
-        'Node should attempt to steal jobs from other nodes')
+    +form-field__checkbox({
+        label: 'Stealing enabled',
+        model: `${model}.stealingEnabled`,
+        name: '"jsStealingEnabled"',
+        tip: 'Node should attempt to steal jobs from other nodes'
+    })
 .pc-form-grid-col-60
     +java-class('External listener:', `${model}.externalCollisionListener`, '"jsExternalCollisionListener"', 'true', 'false',
         'Listener to be set for notification of external collision events', '$ctrl.clonedCluster.collision.kind === "JobStealing"')
@@ -43,7 +47,7 @@ include /app/helpers/jade/mixins
             +form-field__tooltip(`Configuration parameter to enable stealing to/from only nodes that have these attributes set`)
         +list-pair-edit({
             items: stealingAttributes,
-            keyLbl: 'Attribute name', 
+            keyLbl: 'Attribute name',
             valLbl: 'Attribute value',
             itemName: 'stealing attribute',
             itemsName: 'stealing attributes'

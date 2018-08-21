@@ -27,12 +27,17 @@ panel-collapsible(
 )
     panel-title Persistence store
     panel-description
-        | Configures Apache Ignite Native Persistence. 
+        | Configures Apache Ignite Native Persistence.
         a.link-success(href='https://apacheignite.readme.io/docs/distributed-persistent-store' target='_blank') More info
     panel-content.pca-form-row(ng-if=`$ctrl.available(["2.1.0", "2.3.0"]) && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Enabled', enabled, '"PersistenceEnabled"', 'Flag indicating whether to configure persistent configuration')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: enabled,
+                    name: '"PersistenceEnabled"',
+                    tip: 'Flag indicating whether to configure persistent configuration'
+                })
             .pc-form-grid-col-60
                 +text-enabled('Store path:', `${model}.persistentStorePath`, '"PersistenceStorePath"', enabled, 'false', 'Input store path',
                 'A path the root directory where the Persistent Store will persist data and indexes')

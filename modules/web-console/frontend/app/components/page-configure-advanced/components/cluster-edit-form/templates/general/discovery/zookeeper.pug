@@ -78,7 +78,11 @@ mixin discovery-zookeeper(modelAt = '$ctrl.clonedCluster')
         .pc-form-grid__break
 
         .pc-form-grid-col-60
-            +checkbox('Allow duplicate registrations', `${model}.allowDuplicateRegistrations`, '"allowDuplicateRegistrations"',
-                'Whether to register each node only once, or if duplicate registrations are allowed<br/>\
-                Nodes will attempt to register themselves, plus those they know about<br/>\
-                By default, duplicate registrations are not allowed, but you might want to set this property to <b>true</b> if you have multiple network interfaces or if you are facing troubles')
+            +form-field__checkbox({
+                label: 'Allow duplicate registrations',
+                model: `${model}.allowDuplicateRegistrations`,
+                name: '"allowDuplicateRegistrations"',
+                tip: 'Whether to register each node only once, or if duplicate registrations are allowed<br/>\
+                     Nodes will attempt to register themselves, plus those they know about<br/>\
+                     By default, duplicate registrations are not allowed, but you might want to set this property to <b>true</b> if you have multiple network interfaces or if you are facing troubles'
+            })

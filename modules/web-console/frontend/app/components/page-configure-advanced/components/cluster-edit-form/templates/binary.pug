@@ -64,7 +64,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                 +java-class('Serializer:', '$item.serializer', '"serializer"', 'true', 'false',
                                     'Class with custom serialization logic for binary object')
                             .pc-form-grid-col-60
-                                +checkbox('Enum', '$item.enum', 'enum', 'Flag indicating that this type is the enum')
+                                +form-field__checkbox({
+                                    label: 'Enum',
+                                    model: '$item.enum',
+                                    name: 'enum',
+                                    tip: 'Flag indicating that this type is the enum'
+                                })
 
                         list-editable-no-items
                             list-editable-add-item-button(
@@ -75,6 +80,11 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             - form = 'binary'
             .pc-form-grid-col-60
-                +checkbox('Compact footer', model + '.compactFooter', '"compactFooter"', 'When enabled, Ignite will not write fields metadata when serializing objects (this will increase serialization performance), because internally <b>BinaryMarshaller</b> already distribute metadata inside cluster')
+                +form-field__checkbox({
+                    label: 'Compact footer',
+                    model: model + '.compactFooter',
+                    name: '"compactFooter"',
+                    tip: 'When enabled, Ignite will not write fields metadata when serializing objects (this will increase serialization performance), because internally <b>BinaryMarshaller</b> already distribute metadata inside cluster'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterBinary')

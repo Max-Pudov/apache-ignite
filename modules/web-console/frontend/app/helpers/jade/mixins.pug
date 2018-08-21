@@ -26,15 +26,6 @@ include ../../primitives/form-field/index
 -    return (enabled === false || enabled === true) ? !enabled : '!(' + enabled + ')';
 -}
 
-//- Mixin for checkbox.
-mixin checkbox(label, model, name, tip)
-    +form-field__checkbox({
-        label,
-        model,
-        name,
-        tip
-    })
-
 //- Mixin for checkbox with enabled condition.
 mixin checkbox-enabled(label, model, name, enabled, tip)
     +form-field__checkbox({

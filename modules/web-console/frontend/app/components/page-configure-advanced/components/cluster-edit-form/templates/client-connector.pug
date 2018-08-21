@@ -28,7 +28,12 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
     panel-content.pca-form-row(ng-if=`$ctrl.available("2.3.0") && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +checkbox('Enabled', connectionEnabled, '"ClientConnectorEnabled"', 'Flag indicating whether to configure client connector configuration')
+                +form-field__checkbox({
+                    label: 'Enabled',
+                    model: connectionEnabled,
+                    name: '"ClientConnectorEnabled"',
+                    tip: 'Flag indicating whether to configure client connector configuration'
+                })
             .pc-form-grid-col-60
                 +text-enabled('Host:', `${connectionModel}.host`, '"ClientConnectorHost"', connectionEnabled, 'false', 'localhost')
             .pc-form-grid-col-30

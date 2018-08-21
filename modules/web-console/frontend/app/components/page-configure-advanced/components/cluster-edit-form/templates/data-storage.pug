@@ -61,7 +61,7 @@ mixin data-region-form({modelAt, namePlaceholder, dataRegionsAt})
 
     .pc-form-grid-col-60(ng-if=`!${modelAt}.persistenceEnabled || ${modelAt}.swapPath`)
         +text('Swap file path:', `${modelAt}.swapPath`, '"swapPath"', 'false', 'Input swap file path', 'An optional path to a memory mapped file for this data region')
-        
+
     .pc-form-grid-col-60
         +number('Checkpoint page buffer:', `${modelAt}.checkpointPageBufferSize`, '"checkpointPageBufferSize"', 'true', '0', '0', 'Amount of memory allocated for a checkpoint temporary buffer in bytes')
 
@@ -126,19 +126,27 @@ mixin data-region-form({modelAt, namePlaceholder, dataRegionsAt})
             on-scale-change='_metricsRateTimeIntervalScale = $event'
             size-scale-label='s'
         )
-            
+
     .pc-form-grid-col-60
-        +checkbox('Metrics enabled', `${modelAt}.metricsEnabled`, '"MemoryPolicyMetricsEnabled"',
-            'Whether memory metrics are enabled by default on node startup')
+        +form-field__checkbox({
+            label: 'Metrics enabled',
+            model: `${modelAt}.metricsEnabled`,
+            name: '"MemoryPolicyMetricsEnabled"',
+            tip: 'Whether memory metrics are enabled by default on node startup'
+        })
 
     .pc-form-grid-col-60(ng-if=`!${modelAt}.swapPath`)
-        +checkbox('Persistence enabled', `${modelAt}.persistenceEnabled`, '"RegionPersistenceEnabled" + $index',
-            'Enable Ignite Native Persistence')
+        +form-field__checkbox({
+            label: 'Persistence enabled',
+            model: `${modelAt}.persistenceEnabled`,
+            name: '"RegionPersistenceEnabled" + $index',
+            tip: 'Enable Ignite Native Persistence'
+        })
 
 panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Data storage configuration
     panel-description
-        | Page memory is a manageable off-heap based memory architecture that is split into pages of fixed size. 
+        | Page memory is a manageable off-heap based memory architecture that is split into pages of fixed size.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/distributed-persistent-store" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`$ctrl.available("2.3.0") && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -294,11 +302,19 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
             .pc-form-grid-col-60
                 +checkbox-enabled('Always write full pages', `${model}.alwaysWriteFullPages`, '"DataStorageAlwaysWriteFullPages"', 'true', 'Flag indicating whether always write full pages')
             .pc-form-grid-col-60
-                +checkbox('Write throttling enabled', `${model}.writeThrottlingEnabled`, '"DataStorageWriteThrottlingEnabled"',
-                    'Throttle threads that generate dirty pages too fast during ongoing checkpoint')
+                +form-field__checkbox({
+                    label: 'Write throttling enabled',
+                    model: `${model}.writeThrottlingEnabled`,
+                    name: '"DataStorageWriteThrottlingEnabled"',
+                    tip: 'Throttle threads that generate dirty pages too fast during ongoing checkpoint'
+                })
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.4.0")')
-                +checkbox('Enable WAL compaction', `${model}.walCompactionEnabled`, '"DataStorageWalCompactionEnabled"',
-                    'If true, system filters and compresses WAL archive in background')
+                +form-field__checkbox({
+                    label: 'Enable WAL compaction',
+                    model: `${model}.walCompactionEnabled`,
+                    name: '"DataStorageWalCompactionEnabled"',
+                    tip: 'If true, system filters and compresses WAL archive in background'
+                })
 
         .pca-form-column-6
             +preview-xml-java(model, 'clusterDataStorageConfiguration')

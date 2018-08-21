@@ -30,7 +30,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Affinity Collocation
     panel-description
-        | Collocate data with data to improve performance and scalability of your application. 
+        | Collocate data with data to improve performance and scalability of your application.
         a.link-success(href="https://apacheignite.readme.io/docs/affinity-collocation" target="_blank") More info
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -59,8 +59,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')
                     .pc-form-grid-col-60
-                        +checkbox('Exclude neighbors', `${affModel}.Rendezvous.excludeNeighbors`, '"RendExcludeNeighbors"',
-                            'Exclude same - host - neighbors from being backups of each other and specified number of backups')
+                        +form-field__checkbox({
+                            label: 'Exclude neighbors',
+                            model: `${affModel}.Rendezvous.excludeNeighbors`,
+                            name: '"RendExcludeNeighbors"',
+                            tip: 'Exclude same - host - neighbors from being backups of each other and specified number of backups'
+                        })
                 .pc-form-grid-row(ng-if=fairAff)
                     .pc-form-grid-col-60
                         +number-required('Partitions', `${affModel}.Fair.partitions`, '"FairPartitions"', 'true', fairPartitionsRequired, '256', '1', 'Number of partitions')
@@ -68,8 +72,12 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         +java-class('Backup filter', `${affModel}.Fair.affinityBackupFilter`, '"FairAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')
                     .pc-form-grid-col-60
-                        +checkbox('Exclude neighbors', `${affModel}.Fair.excludeNeighbors`, '"FairExcludeNeighbors"',
-                            'Exclude same - host - neighbors from being backups of each other and specified number of backups')
+                        +form-field__checkbox({
+                            label: 'Exclude neighbors',
+                            model: `${affModel}.Fair.excludeNeighbors`,
+                            name: '"FairExcludeNeighbors"',
+                            tip: 'Exclude same - host - neighbors from being backups of each other and specified number of backups'
+                        })
                 .pc-form-grid-row(ng-if=customAff)
                     .pc-form-grid-col-60
                         +java-class('Class name:', `${affModel}.Custom.className`, '"AffCustomClassName"', 'true', customAff,
