@@ -161,17 +161,6 @@ mixin text-enabled(label, model, name, enabled, required, placeholder, tip)
         if  block
             block
 
-//- Mixin for text field with autofocus.
-mixin text-enabled-autofocus(label, model, name, enabled, required, placeholder, tip)
-    +form-field__text--autofocus({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        tip
-    })
 
 mixin form-field__text--autofocus({ label, model, name, disabled = false, required, placeholder, tip })
     +form-field__text({
