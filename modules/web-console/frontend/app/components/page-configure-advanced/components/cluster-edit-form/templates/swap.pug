@@ -28,7 +28,7 @@ panel-collapsible(
 )
     panel-title Swap
     panel-description
-        | Settings for overflow data to disk if it cannot fit in memory. 
+        | Settings for overflow data to disk if it cannot fit in memory.
         | #[a.link-success(href="https://apacheignite.readme.io/v1.9/docs/off-heap-memory#swap-space" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`$ctrl.available(["1.0.0", "2.0.0"]) && ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
@@ -59,9 +59,18 @@ panel-collapsible(
                     )
                         +form-field__error({ error: 'powerOfTwo', message: 'Read stripe size must be positive and power of two' })
                 .pc-form-grid-col-30
-                    +number-min-max-step('Maximum sparsity:', `${fileSwapModel}.maximumSparsity`, '"maximumSparsity"', 'true', '0.5', '0', '0.999', '0.001',
-                        'This property defines maximum acceptable wasted file space to whole file size ratio<br/>\
-                        When this ratio becomes higher than specified number compacting thread starts working')
+                    +form-field__number({
+                        label: 'Maximum sparsity:',
+                        model: `${fileSwapModel}.maximumSparsity`,
+                        name: '"maximumSparsity"',
+                        disabled: 'false',
+                        placeholder: '0.5',
+                        min: '0',
+                        max: '0.999',
+                        step: '0.001',
+                        tip: 'This property defines maximum acceptable wasted file space to whole file size ratio<br/>\
+                             When this ratio becomes higher than specified number compacting thread starts working'
+                    })
                 .pc-form-grid-col-30
                     +number('Max write queue size:', `${fileSwapModel}.maxWriteQueueSize`, '"maxWriteQueueSize"', 'true', '1024 * 1024', '0',
                         'Max write queue size in bytes<br/>\

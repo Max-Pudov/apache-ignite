@@ -210,19 +210,6 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
 
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
-//- Mixin for required numeric field with maximum and minimum limit.
-mixin number-min-max-step(label, model, name, enabled, placeholder, min, max, step, tip)
-    +form-field__number({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        placeholder,
-        min,
-        max,
-        step,
-        tip
-    })
 
 //- Mixin for numeric field.
 mixin number(label, model, name, enabled, placeholder, min, tip)

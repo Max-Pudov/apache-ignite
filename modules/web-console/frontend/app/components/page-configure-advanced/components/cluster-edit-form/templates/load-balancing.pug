@@ -107,8 +107,17 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                             tip: 'Divide each node\'s CPU load by the number of processors on that node'
                                         })
                                     .details-row
-                                        +number-min-max-step('Processor coefficient:', '$item.Adaptive.loadProbe.CPU.processorCoefficient',
-                                            '"loadBalancingAdaptiveCPUProcessorCoefficient"', 'true', '1', '0.001', '1', '0.05', 'Coefficient of every CPU')
+                                        +form-field__number({
+                                            label: 'Processor coefficient:',
+                                            model: '$item.Adaptive.loadProbe.CPU.processorCoefficient',
+                                            name: '"loadBalancingAdaptiveCPUProcessorCoefficient"',
+                                            disabled: 'false',
+                                            placeholder: '1',
+                                            min: '0.001',
+                                            max: '1',
+                                            step: '0.05',
+                                            tip: 'Coefficient of every CPU'
+                                        })
                                 .panel-details(ng-show='$item.Adaptive.loadProbe.kind === "ProcessingTime"')
                                     .details-row
                                         +form-field__checkbox({

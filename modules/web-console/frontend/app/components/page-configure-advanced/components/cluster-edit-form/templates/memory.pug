@@ -156,8 +156,17 @@ panel-collapsible(
                                             <li>RANDOM_2_LRU - Differs from Random - LRU only in a way that two latest access timestamps are stored for every data page</li>\
                                         </ul>')
                                     .pc-form-grid-col-30
-                                        +number-min-max-step('Eviction threshold:', '$item.evictionThreshold', '"MemoryPolicyEvictionThreshold"',
-                                        'true', '0.9', '0.5', '0.999', '0.05', 'A threshold for memory pages eviction initiation')
+                                        +form-field__number({
+                                            label: 'Eviction threshold:',
+                                            model: '$item.evictionThreshold',
+                                            name: '"MemoryPolicyEvictionThreshold"',
+                                            disabled: 'false',
+                                            placeholder: '0.9',
+                                            min: '0.5',
+                                            max: '0.999',
+                                            step: '0.05',
+                                            tip: 'A threshold for memory pages eviction initiation'
+                                        })
                                     .pc-form-grid-col-30
                                         +form-field__number({
                                             label: 'Empty pages pool size:',
