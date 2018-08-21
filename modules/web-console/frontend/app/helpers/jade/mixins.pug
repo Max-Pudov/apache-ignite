@@ -469,8 +469,15 @@ mixin form-field__eviction-policy({ model, name, enabled, required, tip })
         })
     .pc-form-group.pc-form-grid-row(ng-if=kind)
         .pc-form-grid-col-30
-            +number('Batch size', policy + '.batchSize', name + '+ "batchSize"', enabled, '1', '1',
-                'Number of entries to remove on shrink')
+            +form-field__number({
+                label: 'Batch size',
+                model: policy + '.batchSize',
+                name: name + '+ "batchSize"',
+                disabled: enabledToDisabled(enabled),
+                placeholder: '1',
+                min: '1',
+                tip: 'Number of entries to remove on shrink'
+            })
         .pc-form-grid-col-30
             form-field-size(
                 label='Max memory size:'

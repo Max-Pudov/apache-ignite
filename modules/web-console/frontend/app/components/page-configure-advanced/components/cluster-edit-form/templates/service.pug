@@ -22,7 +22,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-title Service configuration
     panel-description
-        | Service Grid allows for deployments of arbitrary user-defined services on the cluster. 
+        | Service Grid allows for deployments of arbitrary user-defined services on the cluster.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/fault-tolerance" target="_blank") More info]
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6
@@ -53,13 +53,27 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             .pc-form-grid-col-60
                                 +java-class('Service class', '$item.service', '"serviceService"', 'true', 'true', 'Service implementation class name')
                             .pc-form-grid-col-60
-                                +number('Max per node count:', '$item.maxPerNodeCount', '"ServiceMaxPerNodeCount"', 'true', 'Unlimited', '0',
-                                    'Maximum number of deployed service instances on each node.<br/>' +
-                                    'Zero for unlimited')
+                                +form-field__number({
+                                    label: 'Max per node count:',
+                                    model: '$item.maxPerNodeCount',
+                                    name: '"ServiceMaxPerNodeCount"',
+                                    disabled: 'false',
+                                    placeholder: 'Unlimited',
+                                    min: '0',
+                                    tip: 'Maximum number of deployed service instances on each node.<br/>\
+                                          Zero for unlimited'
+                                })
                             .pc-form-grid-col-60
-                                +number('Total count:', '$item.totalCount', '"serviceTotalCount"', 'true', 'Unlimited', '0',
-                                    'Total number of deployed service instances in the cluster.<br/>' +
-                                    'Zero for unlimited')
+                                +form-field__number({
+                                    label: 'Total count:',
+                                    model: '$item.totalCount',
+                                    name: '"serviceTotalCount"',
+                                    disabled: 'false',
+                                    placeholder: 'Unlimited',
+                                    min: '0',
+                                    tip: 'Total number of deployed service instances in the cluster.<br/>\
+                                        Zero for unlimited'
+                                })
                             .pc-form-grid-col-60
                                 +dropdown-required-empty('Cache:', '$item.cache', '"serviceCache"', 'true', 'false',
                                     'Choose cache', 'No caches configured for current cluster', '$ctrl.cachesMenu', 'Cache name used for key-to-node affinity calculation')(

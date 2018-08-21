@@ -72,12 +72,26 @@ panel-collapsible(
                              When this ratio becomes higher than specified number compacting thread starts working'
                     })
                 .pc-form-grid-col-30
-                    +number('Max write queue size:', `${fileSwapModel}.maxWriteQueueSize`, '"maxWriteQueueSize"', 'true', '1024 * 1024', '0',
-                        'Max write queue size in bytes<br/>\
-                        If there are more values are waiting for being written to disk then specified size, SPI will block on store operation')
+                    +form-field__number({
+                        label: 'Max write queue size:',
+                        model: `${fileSwapModel}.maxWriteQueueSize`,
+                        name: '"maxWriteQueueSize"',
+                        disabled: 'false',
+                        placeholder: '1024 * 1024',
+                        min: '0',
+                        tip: 'Max write queue size in bytes<br/>\
+                              If there are more values are waiting for being written to disk then specified size, SPI will block on store operation'
+                    })
                 .pc-form-grid-col-30
-                    +number('Write buffer size:', `${fileSwapModel}.writeBufferSize`, '"writeBufferSize"', 'true', '64 * 1024', '0',
-                        'Write buffer size in bytes<br/>\
-                        Write to disk occurs only when this buffer is full')
+                    +form-field__number({
+                        label: 'Write buffer size:',
+                        model: `${fileSwapModel}.writeBufferSize`,
+                        name: '"writeBufferSize"',
+                        disabled: 'false',
+                        placeholder: '64 * 1024',
+                        min: '0',
+                        tip: 'Write buffer size in bytes<br/>\
+                              Write to disk occurs only when this buffer is full'
+                    })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterSwap')

@@ -50,13 +50,20 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 ng-if='$ctrl.available(["1.0.0", "2.1.0"])'
             )
                 .pc-form-grid-col-60
-                    +number('Streams pool size:', `${optMarshaller}.poolSize`, '"poolSize"', 'true', '0', '0',
-                        'Specifies size of cached object streams used by marshaller<br/>\
-                        Object streams are cached for performance reason to avoid costly recreation for every serialization routine<br/>\
-                        If 0 (default), pool is not used and each thread has its own cached object stream which it keeps reusing<br/>\
-                        Since each stream has an internal buffer, creating a stream for each thread can lead to high memory consumption if many large messages are marshalled or unmarshalled concurrently<br/>\
-                        Consider using pool in this case. This will limit number of streams that can be created and, therefore, decrease memory consumption<br/>\
-                        NOTE: Using streams pool can decrease performance since streams will be shared between different threads which will lead to more frequent context switching')
+                    +form-field__number({
+                        label: 'Streams pool size:',
+                        model: `${optMarshaller}.poolSize`,
+                        name: '"poolSize"',
+                        disabled: 'false',
+                        placeholder: '0',
+                        min: '0',
+                        tip: 'Specifies size of cached object streams used by marshaller<br/>\
+                             Object streams are cached for performance reason to avoid costly recreation for every serialization routine<br/>\
+                             If 0 (default), pool is not used and each thread has its own cached object stream which it keeps reusing<br/>\
+                             Since each stream has an internal buffer, creating a stream for each thread can lead to high memory consumption if many large messages are marshalled or unmarshalled concurrently<br/>\
+                             Consider using pool in this case. This will limit number of streams that can be created and, therefore, decrease memory consumption<br/>\
+                             NOTE: Using streams pool can decrease performance since streams will be shared between different threads which will lead to more frequent context switching'
+                    })
                 .pc-form-grid-col-60
                     +form-field__checkbox({
                         label: 'Require serializable',
@@ -74,11 +81,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-30(ng-if-start='$ctrl.available(["1.0.0", "2.0.0"])')
-                +number('Keep alive time:', `${model}.marshallerCacheKeepAliveTime`, '"marshallerCacheKeepAliveTime"', 'true', '10000', '0',
-                    'Keep alive time of thread pool that is in charge of processing marshaller messages')
+                +form-field__number({
+                    label: 'Keep alive time:',
+                    model: `${model}.marshallerCacheKeepAliveTime`,
+                    name: '"marshallerCacheKeepAliveTime"',
+                    disabled: 'false',
+                    placeholder: '10000',
+                    min: '0',
+                    tip: 'Keep alive time of thread pool that is in charge of processing marshaller messages'
+                })
             .pc-form-grid-col-30(ng-if-end)
-                +number('Pool size:', `${model}.marshallerCacheThreadPoolSize`, '"marshallerCacheThreadPoolSize"', 'true', 'max(8, availableProcessors) * 2', '1',
-                    'Default size of thread pool that is in charge of processing marshaller messages')
+                +form-field__number({
+                    label: 'Pool size:',
+                    model: `${model}.marshallerCacheThreadPoolSize`,
+                    name: '"marshallerCacheThreadPoolSize"',
+                    disabled: 'false',
+                    placeholder: 'max(8, availableProcessors) * 2',
+                    min: '1',
+                    tip: 'Default size of thread pool that is in charge of processing marshaller messages'
+                })
 
         .pca-form-column-6
             +preview-xml-java(model, 'clusterMarshaller')

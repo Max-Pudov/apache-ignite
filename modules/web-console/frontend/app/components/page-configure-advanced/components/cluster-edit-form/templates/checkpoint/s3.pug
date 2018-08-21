@@ -82,8 +82,15 @@ include /app/helpers/jade/mixins
                 may use slightly more system resources. AWS recommends using HTTPS for maximize security</li>\
         </ul>')
     .pc-form-grid-col-30
-        +number('Maximum connections:', clientCfgModel + '.maxConnections', '"checkpointS3MaxConnections"',
-        'true', '50', '1', 'Maximum number of allowed open HTTP connections')
+        +form-field__number({
+            label:'Maximum connections:',
+            model:clientCfgModel + '.maxConnections',
+            name: '"checkpointS3MaxConnections"',
+            disabled: 'false',
+            placeholder: '50',
+            min: '1',
+            tip: 'Maximum number of allowed open HTTP connections'
+        })
     .pc-form-grid-col-60
         +text('User agent prefix:', clientCfgModel + '.userAgentPrefix', '"checkpointS3UserAgentPrefix"', 'false', 'System specific header',
         'HTTP user agent prefix to send with all requests')
@@ -97,8 +104,15 @@ include /app/helpers/jade/mixins
         +text('Proxy host:', clientCfgModel + '.proxyHost', '"checkpointS3ProxyHost"', 'false', 'Not specified',
         'Optional proxy host the client will connect through')
     .pc-form-grid-col-20
-        +number('Proxy port:', clientCfgModel + '.proxyPort', '"checkpointS3ProxyPort"', 'true', 'Not specified', '0',
-        'Optional proxy port the client will connect through')
+        +form-field__number({
+            label: 'Proxy port:',
+            model: clientCfgModel + '.proxyPort',
+            name: '"checkpointS3ProxyPort"',
+            disabled: 'false',
+            placeholder: 'Not specified',
+            min: '0',
+            tip: 'Optional proxy port the client will connect through'
+        })
     .pc-form-grid-col-30
         +text('Proxy user:', clientCfgModel + '.proxyUsername', '"checkpointS3ProxyUsername"', 'false', 'Not specified',
         'Optional proxy user name to use if connecting through a proxy')

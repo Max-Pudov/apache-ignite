@@ -58,28 +58,80 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Port for TCP binary protocol server'
                 })
             .pc-form-grid-col-20
-                +number('TCP port range:', `${model}.portRange`, '"connectorPortRange"', enabled, '100', '1', 'Number of ports for TCP binary protocol server to try if configured port is already in use')
+                +form-field__number({
+                    label: 'TCP port range:',
+                    model: `${model}.portRange`,
+                    name: '"connectorPortRange"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '100',
+                    min: '1',
+                    tip: 'Number of ports for TCP binary protocol server to try if configured port is already in use'
+                })
             .pc-form-grid-col-60
-                +number('Idle query cursor timeout:', `${model}.idleQueryCursorTimeout`, '"connectorIdleQueryCursorTimeout"', enabled, '600000', '0',
-                    'Reject open query cursors that is not used timeout<br/>\
-                    If no fetch query request come within idle timeout, it will be removed on next check for old query cursors')
+                +form-field__number({
+                    label: 'Idle query cursor timeout:',
+                    model: `${model}.idleQueryCursorTimeout`,
+                    name: '"connectorIdleQueryCursorTimeout"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '600000',
+                    min: '0',
+                    tip: 'Reject open query cursors that is not used timeout<br/>\
+                          If no fetch query request come within idle timeout, it will be removed on next check for old query cursors'
+                })
             .pc-form-grid-col-60
-                +number('Idle query cursor check frequency:', `${model}.idleQueryCursorCheckFrequency`, '"connectorIdleQueryCursorCheckFrequency"', enabled, '60000', '0',
-                    'Idle query cursors check frequency<br/>\
-                    This setting is used to reject open query cursors that is not used')
+                +form-field__number({
+                    label: 'Idle query cursor check frequency:',
+                    model: `${model}.idleQueryCursorCheckFrequency`,
+                    name: '"connectorIdleQueryCursorCheckFrequency"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '60000',
+                    min: '0',
+                    tip: 'Idle query cursors check frequency<br/>\
+                          This setting is used to reject open query cursors that is not used'
+                })
             .pc-form-grid-col-30
-                +number('Idle timeout:', `${model}.idleTimeout`, '"connectorIdleTimeout"', enabled, '7000', '0',
-                    'Idle timeout for REST server<br/>\
-                    This setting is used to reject half - opened sockets<br/>\
-                    If no packets come within idle timeout, the connection is closed')
+                +form-field__number({
+                    label: 'Idle timeout:',
+                    model: `${model}.idleTimeout`,
+                    name: '"connectorIdleTimeout"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '7000',
+                    min: '0',
+                    tip: 'Idle timeout for REST server<br/>\
+                          This setting is used to reject half - opened sockets<br/>\
+                          If no packets come within idle timeout, the connection is closed'
+                })
             .pc-form-grid-col-30
-                +number('Receive buffer size:', `${model}.receiveBufferSize`, '"connectorReceiveBufferSize"', enabled, '32768', '0', 'REST TCP server receive buffer size')
+                +form-field__number({
+                    label: 'Receive buffer size:',
+                    model: `${model}.receiveBufferSize`,
+                    name: '"connectorReceiveBufferSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '32768',
+                    min: '0',
+                    tip: 'REST TCP server receive buffer size'
+                })
             .pc-form-grid-col-30
-                +number('Send buffer size:', `${model}.sendBufferSize`, '"connectorSendBufferSize"', enabled, '32768', '0', 'REST TCP server send buffer size')
+                +form-field__number({
+                    label: 'Send buffer size:',
+                    model: `${model}.sendBufferSize`,
+                    name: '"connectorSendBufferSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '32768',
+                    min: '0',
+                    tip: 'REST TCP server send buffer size'
+                })
             .pc-form-grid-col-30
-                +number('Send queue limit:', `${model}.sendQueueLimit`, '"connectorSendQueueLimit"', enabled, 'unlimited', '0',
-                    'REST TCP server send queue limit<br/>\
-                    If the limit exceeds, all successive writes will block until the queue has enough capacity')
+                +form-field__number({
+                    label: 'Send queue limit:',
+                    model: `${model}.sendQueueLimit`,
+                    name: '"connectorSendQueueLimit"',
+                    disabled: `!(${enabled})`,
+                    placeholder: 'unlimited',
+                    min: '0',
+                    tip: 'REST TCP server send queue limit<br/>\
+                         If the limit exceeds, all successive writes will block until the queue has enough capacity'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Direct buffer',
@@ -101,12 +153,26 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                           For more information, see Socket#setTcpNoDelay(boolean)'
                 })
             .pc-form-grid-col-30
-                +number('Selector count:', `${model}.selectorCount`, '"connectorSelectorCount"', enabled, 'min(4, availableProcessors)', '1',
-                    'Number of selector threads in REST TCP server<br/>\
-                    Higher value for this parameter may increase throughput, but also increases context switching')
+                +form-field__number({
+                    label: 'Selector count:',
+                    model: `${model}.selectorCount`,
+                    name: '"connectorSelectorCount"',
+                    disabled: `!(${enabled})`,
+                    placeholder: 'min(4, availableProcessors)',
+                    min: '1',
+                    tip: 'Number of selector threads in REST TCP server<br/>\
+                          Higher value for this parameter may increase throughput, but also increases context switching'
+                })
             .pc-form-grid-col-30
-                +number('Thread pool size:', `${model}.threadPoolSize`, '"connectorThreadPoolSize"', enabled, 'max(8, availableProcessors) * 2', '1',
-                    'Thread pool size to use for processing of client messages (REST requests)')
+                +form-field__number({
+                    label: 'Thread pool size:',
+                    model: `${model}.threadPoolSize`,
+                    name: '"connectorThreadPoolSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: 'max(8, availableProcessors) * 2',
+                    min: '1',
+                    tip: 'Thread pool size to use for processing of client messages (REST requests)'
+                })
             .pc-form-grid-col-60
                 +java-class('Message interceptor:', `${model}.messageInterceptor`, '"connectorMessageInterceptor"', enabled, 'false',
                     'Interceptor allows to transform all objects exchanged via REST protocol<br/>\

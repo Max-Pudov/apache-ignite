@@ -32,7 +32,15 @@ include /app/helpers/jade/mixins
 .pc-form-grid-col-30
     +text('Table name:', '$checkpointSPI.JDBC.checkpointTableName', '"checkpointJdbcCheckpointTableName"', 'false', 'CHECKPOINTS', 'Checkpoint table name')
 .pc-form-grid-col-30
-    +number('Number of retries:', '$checkpointSPI.JDBC.numberOfRetries', '"checkpointJdbcNumberOfRetries"', 'true', '2', '0', 'Number of retries in case of DB failure')
+    +form-field__number({
+        label: 'Number of retries:',
+        model: '$checkpointSPI.JDBC.numberOfRetries',
+        name: '"checkpointJdbcNumberOfRetries"',
+        disabled: 'false',
+        placeholder: '2',
+        min: '0',
+        tip: 'Number of retries in case of DB failure'
+    })
 .pc-form-grid-col-30
     +text('Key field name:', '$checkpointSPI.JDBC.keyFieldName', '"checkpointJdbcKeyFieldName"', 'false', 'NAME', 'Checkpoint key field name')
 .pc-form-grid-col-30
