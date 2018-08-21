@@ -54,7 +54,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-group
                 .pc-form-grid-row(ng-if=rendezvousAff)
                     .pc-form-grid-col-60
-                        +number-required('Partitions', `${affModel}.Rendezvous.partitions`, '"RendPartitions"', 'true', rendPartitionsRequired, '1024', '1', 'Number of partitions')
+                        +form-field__number({
+                            label: 'Partitions',
+                            model: `${affModel}.Rendezvous.partitions`,
+                            name: '"RendPartitions"',
+                            disabled: 'false',
+                            required: rendPartitionsRequired,
+                            placeholder: '1024',
+                            min: '1',
+                            tip: 'Number of partitions'
+                        })
                     .pc-form-grid-col-60
                         +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')
@@ -67,7 +76,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         })
                 .pc-form-grid-row(ng-if=fairAff)
                     .pc-form-grid-col-60
-                        +number-required('Partitions', `${affModel}.Fair.partitions`, '"FairPartitions"', 'true', fairPartitionsRequired, '256', '1', 'Number of partitions')
+                        +form-field__number({
+                            label: 'Partitions',
+                            model: `${affModel}.Fair.partitions`,
+                            name: '"FairPartitions"',
+                            disabled: 'false',
+                            required: fairPartitionsRequired,
+                            placeholder: '256',
+                            min: '1',
+                            tip: 'Number of partitions'
+                        })
                     .pc-form-grid-col-60
                         +java-class('Backup filter', `${affModel}.Fair.affinityBackupFilter`, '"FairAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')

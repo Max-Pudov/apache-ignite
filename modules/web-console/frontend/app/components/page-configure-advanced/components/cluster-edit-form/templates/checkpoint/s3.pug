@@ -129,12 +129,28 @@ include /app/helpers/jade/mixins
         </ul>')
     .pc-form-group.pc-form-grid-row(ng-if=checkpointS3DefaultMaxRetry)
         .pc-form-grid-col-60
-            +number-required('Maximum retry attempts:', clientRetryModel + '.DefaultMaxRetries.maxErrorRetry', '"checkpointS3DefaultMaxErrorRetry"', 'true', checkpointS3DefaultMaxRetry, '-1', '1',
-            'Maximum number of retry attempts for failed requests')
+            +form-field__number({
+                label: 'Maximum retry attempts:',
+                model: clientRetryModel + '.DefaultMaxRetries.maxErrorRetry',
+                name: '"checkpointS3DefaultMaxErrorRetry"',
+                disabled: 'false',
+                required: checkpointS3DefaultMaxRetry,
+                placeholder: '-1',
+                min: '1',
+                tip: 'Maximum number of retry attempts for failed requests'
+            })
     .pc-form-group.pc-form-grid-row(ng-if=checkpointS3DynamoDbMaxRetry)
         .pc-form-grid-col-60
-            +number-required('Maximum retry attempts:', clientRetryModel + '.DynamoDBMaxRetries.maxErrorRetry', '"checkpointS3DynamoDBMaxErrorRetry"', 'true', checkpointS3DynamoDbMaxRetry, '-1', '1',
-            'Maximum number of retry attempts for failed requests')
+            +form-field__number({
+                label: 'Maximum retry attempts:',
+                model: clientRetryModel + '.DynamoDBMaxRetries.maxErrorRetry',
+                name: '"checkpointS3DynamoDBMaxErrorRetry"',
+                disabled: 'false',
+                required: checkpointS3DynamoDbMaxRetry,
+                placeholder: '-1',
+                min: '1',
+                tip: 'Maximum number of retry attempts for failed requests'
+            })
     .pc-form-group.pc-form-grid-row(ng-if=checkpointS3CustomRetry)
         .pc-form-grid-col-60
             +java-class('Retry condition:', clientRetryModel + '.Custom.retryCondition', '"checkpointS3CustomRetryPolicy"', 'true', checkpointS3CustomRetry,
@@ -143,8 +159,16 @@ include /app/helpers/jade/mixins
             +java-class('Backoff strategy:', clientRetryModel + '.Custom.backoffStrategy', '"checkpointS3CustomBackoffStrategy"', 'true', checkpointS3CustomRetry,
             'Back-off strategy for controlling how long the next retry should wait', checkpointS3CustomRetry)
         .pc-form-grid-col-60
-            +number-required('Maximum retry attempts:', clientRetryModel + '.Custom.maxErrorRetry', '"checkpointS3CustomMaxErrorRetry"', 'true', checkpointS3CustomRetry, '-1', '1',
-            'Maximum number of retry attempts for failed requests')
+            +form-field__number({
+                label: 'Maximum retry attempts:',
+                model: clientRetryModel + '.Custom.maxErrorRetry',
+                name: '"checkpointS3CustomMaxErrorRetry"',
+                disabled: 'false',
+                required: checkpointS3CustomRetry,
+                placeholder: '-1',
+                min: '1',
+                tip: 'Maximum number of retry attempts for failed requests'
+            })
         .pc-form-grid-col-60
             +form-field__checkbox({
                 label: 'Honor the max error retry set',

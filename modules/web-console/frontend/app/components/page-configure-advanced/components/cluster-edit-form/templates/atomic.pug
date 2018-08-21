@@ -61,7 +61,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-group(ng-if-end ng-if=rendezvousAff + ' || ' + customAff)
                 .pc-form-grid-row
                     .pc-form-grid-col-30(ng-if-start=rendezvousAff)
-                        +number-required('Partitions', `${affModel}.Rendezvous.partitions`, '"RendPartitions"', 'true', rendPartitionsRequired, '1024', '1', 'Number of partitions')
+                        +form-field__number({
+                            label: 'Partitions',
+                            model: `${affModel}.Rendezvous.partitions`,
+                            name: '"RendPartitions"',
+                            disabled: 'false',
+                            required: rendPartitionsRequired,
+                            placeholder: '1024',
+                            min: '1',
+                            tip: 'Number of partitions'
+                        })
                     .pc-form-grid-col-30
                         +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
                             'Backups will be selected from all nodes that pass this filter')
