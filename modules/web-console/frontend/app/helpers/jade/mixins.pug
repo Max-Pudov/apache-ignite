@@ -210,19 +210,6 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
 
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
-//- Mixin for text field with enabled condition with options.
-mixin text-options(label, model, name, options, enabled, required, placeholder, tip)
-    +form-field__typeahead({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        options,
-        tip
-    })
-
 //- Mixin for required numeric field.
 mixin number-required(label, model, name, enabled, required, placeholder, min, tip)
     +form-field__number({
