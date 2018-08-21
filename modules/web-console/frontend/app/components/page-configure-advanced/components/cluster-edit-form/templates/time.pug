@@ -35,9 +35,18 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     Clock synchronization is used for cache version assignment in CLOCK order mode')
 
             .pc-form-grid-col-30
-                +number-min-max('Port base:', `${model}.timeServerPortBase`, '"timeServerPortBase"', 'true', '31100', '0', '65535',
-                    'Time server provides clock synchronization between nodes<br/>\
-                    Base UPD port number for grid time server. Time server will be started on one of free ports in range')
+                +form-field__number({
+                    label: 'Port base:',
+                    model: `${model}.timeServerPortBase`,
+                    name: '"timeServerPortBase"',
+                    disabled: 'false',
+                    placeholder: '31100',
+                    min: '0',
+                    max: '65535',
+                    tip: 'Time server provides clock synchronization between nodes<br/>\
+                         Base UPD port number for grid time server. Time server will be started on one of free ports in range'
+                })
+
             .pc-form-grid-col-30
                 +number('Port range:', `${model}.timeServerPortRange`, '"timeServerPortRange"', 'true', '100', '1', 'Time server port range')
         .pca-form-column-6

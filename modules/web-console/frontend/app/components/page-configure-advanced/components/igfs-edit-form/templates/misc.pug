@@ -41,7 +41,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-30
                 +number('Maximum task range length:', `${model}.maximumTaskRangeLength`, '"maximumTaskRangeLength"', 'true', '0', '0', 'Maximum default range size of a file being split during IGFS task execution')
             .pc-form-grid-col-30
-                +number-min-max('Management port:', `${model}.managementPort`, '"managementPort"', 'true', '11400', '0', '65535', 'Port number for management endpoint')
+                +form-field__number({
+                    label: 'Management port:',
+                    model: `${model}.managementPort`,
+                    name: '"managementPort"',
+                    disabled: 'false',
+                    placeholder: '11400',
+                    min: '0',
+                    max: '65535',
+                    tip: 'Port number for management endpoint'
+                })
             .pc-form-grid-col-30
                 +number('Per node batch size:', `${model}.perNodeBatchSize`, '"perNodeBatchSize"', 'true', '100', '0', 'Number of file blocks collected on local node before sending batch to remote node')
             .pc-form-grid-col-30

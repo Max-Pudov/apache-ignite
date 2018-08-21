@@ -47,7 +47,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     If not defined, system - wide local address will be used IgniteConfiguration#getLocalHost()<br/>\
                     You can also use "0.0.0.0" value to bind to all locally - available IP addresses')
             .pc-form-grid-col-20
-                +number-min-max('TCP port:', `${model}.port`, '"connectorPort"', enabled, '11211', '1024', '65535', 'Port for TCP binary protocol server')
+                +form-field__number({
+                    label: 'TCP port:',
+                    model: `${model}.port`,
+                    name: '"connectorPort"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '11211',
+                    min: '1024',
+                    max: '65535',
+                    tip: 'Port for TCP binary protocol server'
+                })
             .pc-form-grid-col-20
                 +number('TCP port range:', `${model}.portRange`, '"connectorPortRange"', enabled, '100', '1', 'Number of ports for TCP binary protocol server to try if configured port is already in use')
             .pc-form-grid-col-60

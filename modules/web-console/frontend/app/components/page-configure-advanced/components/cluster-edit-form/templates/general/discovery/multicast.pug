@@ -24,7 +24,16 @@ mixin discovery-multicast(modelAt = '$ctrl.clonedCluster')
         .pc-form-grid-col-30
             +text-ip-address('IP address:', `${model}.multicastGroup`, '"multicastGroup"', 'true', '228.1.2.4', 'IP address of multicast group')
         .pc-form-grid-col-30
-            +number-min-max('Port number:', `${model}.multicastPort`, '"multicastPort"', 'true', '47400', '0', '65535', 'Port number which multicast messages are sent to')
+            +form-field__number({
+                label: 'Port number:',
+                model: `${model}.multicastPort`,
+                name: '"multicastPort"',
+                disabled: 'false',
+                placeholder: '47400',
+                min: '0',
+                max: '65535',
+                tip: 'Port number which multicast messages are sent to'
+            })
         .pc-form-grid-col-20
             +number('Waits for reply:', `${model}.responseWaitTime`, '"responseWaitTime"', 'true', '500', '0',
                 'Time in milliseconds IP finder waits for reply to multicast address request')

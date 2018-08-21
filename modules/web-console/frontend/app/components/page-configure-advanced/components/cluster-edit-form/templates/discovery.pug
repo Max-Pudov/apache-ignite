@@ -31,7 +31,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     'Local host IP address that discovery SPI uses<br/>\
                     If not provided a first found non-loopback address will be used')
             .pc-form-grid-col-20
-                +number-min-max('Local port:', `${model}.localPort`, '"discoLocalPort"', 'true', '47500', '1024', '65535', 'Local port which node uses')
+                +form-field__number({
+                    label: 'Local port:',
+                    model: `${model}.localPort`,
+                    name: '"discoLocalPort"',
+                    disabled: 'false',
+                    placeholder: '47500',
+                    min: '1024',
+                    max: '65535',
+                    tip: 'Local port which node uses'
+                })
             .pc-form-grid-col-20
                 +number('Local port range:', `${model}.localPortRange`, '"discoLocalPortRange"', 'true', '100', '1', 'Local port range')
             .pc-form-grid-col-60

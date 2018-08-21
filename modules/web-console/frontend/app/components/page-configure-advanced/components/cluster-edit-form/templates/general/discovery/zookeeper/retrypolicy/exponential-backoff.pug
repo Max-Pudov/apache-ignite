@@ -21,6 +21,15 @@ include /app/helpers/jade/mixins
 .pc-form-grid-col-20(ng-if-start=`${modelRetryPolicyKind} === 'ExponentialBackoff'`)
     +number('Base interval:', `${model}.baseSleepTimeMs`, '"expBaseSleepTimeMs"', 'true', '1000', '0', 'Initial amount of time in ms to wait between retries')
 .pc-form-grid-col-20
-    +number-min-max('Max retries:', `${model}.maxRetries`, '"expMaxRetries"', 'true', '10', '0', '29', 'Max number of times to retry')
+    +form-field__number({
+        label: 'Max retries:',
+        model: `${model}.maxRetries`,
+        name: '"expMaxRetries"',
+        disabled: 'false',
+        placeholder: '10',
+        min: '0',
+        max: '29',
+        tip: 'Max number of times to retry'
+    })
 .pc-form-grid-col-20(ng-if-end)
     +number('Max interval:', `${model}.maxSleepMs`, '"expMaxSleepMs"', 'true', 'Integer.MAX_VALUE', '0', 'Max time in ms to sleep on each retry')

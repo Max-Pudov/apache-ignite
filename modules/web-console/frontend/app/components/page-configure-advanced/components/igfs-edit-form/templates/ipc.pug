@@ -48,7 +48,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-30
                 +text-ip-address('Host:', `${ipcEndpointConfiguration}.host`, '"ipcEndpointConfigurationHost"', enabled, '127.0.0.1', 'Host endpoint is bound to')
             .pc-form-grid-col-30
-                +number-min-max('Port:', `${ipcEndpointConfiguration}.port`, '"ipcEndpointConfigurationPort"', enabled, '10500', '1', '65535', 'Port endpoint is bound to')
+                +form-field__number({
+                    label: 'Port:',
+                    model: `${ipcEndpointConfiguration}.port`,
+                    name: '"ipcEndpointConfigurationPort"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '10500',
+                    min: '1',
+                    max: '65535',
+                    tip: 'Port endpoint is bound to'
+                })
             .pc-form-grid-col-30
                 +number('Memory size:', `${ipcEndpointConfiguration}.memorySize`, '"ipcEndpointConfigurationMemorySize"', enabled, '262144', '1', 'Shared memory size in bytes allocated for endpoint communication')
             .pc-form-grid-col-30

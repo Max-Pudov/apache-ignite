@@ -23,4 +23,13 @@ include /app/helpers/jade/mixins
 .pc-form-grid-col-20
     +number('Max interval:', `${model}.maxSleepTimeMs`, '"beMaxSleepTimeMs"', 'true', 'Integer.MAX_VALUE', '0', 'Max time in ms to sleep on each retry')
 .pc-form-grid-col-20(ng-if-end)
-    +number-min-max('Max retries:', `${model}.maxRetries`, '"beMaxRetries"', 'true', '10', '0', '29', 'Max number of times to retry')
+    +form-field__number({
+        label: 'Max retries:',
+        model: `${model}.maxRetries`,
+        name: '"beMaxRetries"',
+        disabled: 'false',
+        placeholder: '10',
+        min: '0',
+        max: '29',
+        tip: 'Max number of times to retry'
+    })
