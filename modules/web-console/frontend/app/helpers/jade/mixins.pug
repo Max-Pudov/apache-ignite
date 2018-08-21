@@ -96,16 +96,6 @@ mixin java-class-typeahead(label, model, name, options, enabled, required, place
         +form-field__error({ error: 'javaPackageSpecified', message: `${ errLbl } does not have package specified!` })
         +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 
-//- Mixin for java package field with enabled condition.
-mixin java-package(label, model, name, enabled, required, tip)
-    +form-field__java-package({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        tip
-    })
 
 mixin form-field__java-package({ label, model, name, disabled, required, tip, tipOpts, placeholder })
     +form-field__text({
