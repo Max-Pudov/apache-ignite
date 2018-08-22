@@ -20,13 +20,13 @@
         svg(ignite-icon='cross')
     .popover-content
         form.theme--ignite(name='popoverForm' novalidate)
-            .row.form-field.form-field__text.ignite-form-field
-                .col-35.form-field__control
+            .form-field.form-field__text.ignite-form-field
+                .form-field__control
                     input(ng-init='value = paragraph.rate.value' ng-model='value' type='number' min='1' required ignite-auto-focus)
-                .col-65.form-field__control
+                .form-field__control
                     button.select-toggle(ng-init='unit = paragraph.rate.unit' ng-model='unit' required placeholder='Time unit' bs-select bs-options='item.value as item.label for item in timeUnit' tabindex='0')
-            .row.form-field.form-field__text.ignite-form-field
-                .col-100.actions
+            .form-field.form-field__text.ignite-form-field
+                .actions
                     button.btn-ignite.btn-ignite--primary(ng-disabled='popoverForm.$invalid' ng-click='startRefresh(paragraph, value, unit); $hide()') Start
                     button.btn-ignite.btn-ignite--primary(ng-click='stopRefresh(paragraph); $hide()' ng-disabled='!paragraph.rate.installed') Stop
 
