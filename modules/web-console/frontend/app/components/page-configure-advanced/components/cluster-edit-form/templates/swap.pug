@@ -43,8 +43,14 @@ panel-collapsible(
                     </ul>')
             .pc-form-group.pc-form-grid-row(ng-show=`${swapModel}.kind`)
                 .pc-form-grid-col-60
-                    +text('Base directory:', `${fileSwapModel}.baseDirectory`, '"baseDirectory"', 'false', 'swapspace',
-                        'Base directory where to write files')
+                    +form-field__text({
+                        label: 'Base directory:',
+                        model: `${fileSwapModel}.baseDirectory`,
+                        name: '"baseDirectory"',
+                        required: 'false',
+                        placeholder: 'swapspace',
+                        tip: 'Base directory where to write files'
+                    })
                 .pc-form-grid-col-30
                     +form-field__number({
                         label: 'Read stripe size:',

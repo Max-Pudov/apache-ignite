@@ -45,8 +45,14 @@ include /app/helpers/jade/mixins
     </ul>')
 .pc-form-group.pc-form-grid-row(ng-if=checkpointS3Path)
     .pc-form-grid-col-60
-        +text('Path:', credentialsModel + '.Properties.path', '"checkpointS3PropertiesPath"', checkpointS3Path, 'Input properties file path',
-        'The file from which to read the AWS credentials properties')
+        +form-field__text({
+            label: 'Path:',
+            model: `${credentialsModel}.Properties.path`,
+            name: '"checkpointS3PropertiesPath"',
+            required: checkpointS3Path,
+            placeholder: 'Input properties file path',
+            tip: 'The file from which to read the AWS credentials properties'
+        })
 .pc-form-group.pc-form-grid-row(ng-if=checkpointS3Custom)
     .pc-form-grid-col-60
         +java-class('Class name:', credentialsModel + '.Custom.className', '"checkpointS3CustomClassName"', 'true', checkpointS3Custom,
@@ -54,15 +60,33 @@ include /app/helpers/jade/mixins
 .pc-form-grid-col-60
     label Note, AWS credentials will be generated as stub
 .pc-form-grid-col-60
-    +text('Bucket name suffix:', '$checkpointSPI.S3.bucketNameSuffix', '"checkpointS3BucketNameSuffix"', 'false', 'default-bucket')
+    +form-field__text({
+        label: 'Bucket name suffix:',
+        model: '$checkpointSPI.S3.bucketNameSuffix',
+        name: '"checkpointS3BucketNameSuffix"',
+        required: 'false',
+        placeholder: 'default-bucket'
+    })
 .pc-form-grid-col-60(ng-if-start=`$ctrl.available("2.4.0")`)
-    +text('Bucket endpoint:', `$checkpointSPI.S3.bucketEndpoint`, '"checkpointS3BucketEndpoint"', false, 'Input bucket endpoint',
-    'Bucket endpoint for IP finder<br/> \
-    For information about possible endpoint names visit <a href="http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">docs.aws.amazon.com</a>')
+    +form-field__text({
+        label: 'Bucket endpoint:',
+        model: `$checkpointSPI.S3.bucketEndpoint`,
+        name: '"checkpointS3BucketEndpoint"',
+        required: 'false',
+        placeholder: 'Input bucket endpoint',
+        tip: 'Bucket endpoint for IP finder<br/> \
+            For information about possible endpoint names visit <a href="http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">docs.aws.amazon.com</a>'
+    })
 .pc-form-grid-col-60(ng-if-end)
-    +text('SSE algorithm:', `$checkpointSPI.S3.SSEAlgorithm`, '"checkpointS3SseAlgorithm"', false, 'Input SSE algorithm',
-    'Server-side encryption algorithm for Amazon S3-managed encryption keys<br/> \
-    For information about possible S3-managed encryption keys visit <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html">docs.aws.amazon.com</a>')
+    +form-field__text({
+        label: 'SSE algorithm:',
+        model: `$checkpointSPI.S3.SSEAlgorithm`,
+        name: '"checkpointS3SseAlgorithm"',
+        required: 'false',
+        placeholder: 'Input SSE algorithm',
+        tip: 'Server-side encryption algorithm for Amazon S3-managed encryption keys<br/> \
+              For information about possible S3-managed encryption keys visit <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html">docs.aws.amazon.com</a>'
+    })
 .pc-form-grid-col-60
     +java-class('Listener:', '$checkpointSPI.S3.checkpointListener', '"checkpointS3Listener"', 'true', 'false',
         'Checkpoint listener implementation class name', checkpointS3)
@@ -92,17 +116,35 @@ include /app/helpers/jade/mixins
             tip: 'Maximum number of allowed open HTTP connections'
         })
     .pc-form-grid-col-60
-        +text('User agent prefix:', clientCfgModel + '.userAgentPrefix', '"checkpointS3UserAgentPrefix"', 'false', 'System specific header',
-        'HTTP user agent prefix to send with all requests')
+        +form-field__text({
+            label: 'User agent prefix:',
+            model: `${clientCfgModel}.userAgentPrefix`,
+            name: '"checkpointS3UserAgentPrefix"',
+            required: 'false',
+            placeholder: 'System specific header',
+            tip: 'HTTP user agent prefix to send with all requests'
+        })
     .pc-form-grid-col-60
-        +text('User agent suffix:', clientCfgModel + '.userAgentSuffix', '"checkpointS3UserAgentSuffix"', 'false', 'System specific header',
-        'HTTP user agent suffix to send with all requests')
+        +form-field__text({
+            label: 'User agent suffix:',
+            model: `${clientCfgModel}.userAgentSuffix`,
+            name: '"checkpointS3UserAgentSuffix"',
+            required: 'false',
+            placeholder: 'System specific header',
+            tip: 'HTTP user agent suffix to send with all requests'
+        })
     .pc-form-grid-col-60
         +text-ip-address('Local address:', clientCfgModel + '.localAddress', '"checkpointS3LocalAddress"', 'true', 'Not specified',
         'Optionally specifies the local address to bind to')
     .pc-form-grid-col-40
-        +text('Proxy host:', clientCfgModel + '.proxyHost', '"checkpointS3ProxyHost"', 'false', 'Not specified',
-        'Optional proxy host the client will connect through')
+        +form-field__text({
+            label: 'Proxy host:',
+            model: `${clientCfgModel}.proxyHost`,
+            name: '"checkpointS3ProxyHost"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Optional proxy host the client will connect through'
+        })
     .pc-form-grid-col-20
         +form-field__number({
             label: 'Proxy port:',
@@ -114,8 +156,14 @@ include /app/helpers/jade/mixins
             tip: 'Optional proxy port the client will connect through'
         })
     .pc-form-grid-col-30
-        +text('Proxy user:', clientCfgModel + '.proxyUsername', '"checkpointS3ProxyUsername"', 'false', 'Not specified',
-        'Optional proxy user name to use if connecting through a proxy')
+        +form-field__text({
+            label: 'Proxy user:',
+            model: clientCfgModel + '.proxyUsername',
+            name: '"checkpointS3ProxyUsername"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Optional proxy user name to use if connecting through a proxy'
+        })
     .pc-form-grid-col-30
         +text('Proxy domain:', clientCfgModel + '.proxyDomain', '"checkpointS3ProxyDomain"', 'false', 'Not specified',
         'Optional Windows domain name for configuring an NTLM proxy')

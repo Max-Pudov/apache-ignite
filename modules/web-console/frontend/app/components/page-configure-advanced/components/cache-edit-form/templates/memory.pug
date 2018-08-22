@@ -45,13 +45,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 })
             //- Since ignite 2.0 deprecated in ignite 2.3
             .pc-form-grid-col-60(ng-if='$ctrl.available(["2.0.0", "2.3.0"])')
-                +text('Memory policy name:', model + '.memoryPolicyName', '"MemoryPolicyName"', 'false', 'default',
-                    'Name of memory policy configuration for this cache')
+                +form-field__text({
+                    label: 'Memory policy name:',
+                    model: `${model}.memoryPolicyName`,
+                    name: '"MemoryPolicyName"',
+                    required: 'false',
+                    placeholder: 'default',
+                    tip: 'Name of memory policy configuration for this cache'
+                })
 
             //- Since ignite 2.3
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.3.0")')
-                +text('Data region name:', model + '.dataRegionName', '"DataRegionName"', 'false', 'default',
-                    'Name of data region configuration for this cache')
+                +form-field__text({
+                    label: 'Data region name:',
+                    model: `${model}.dataRegionName`,
+                    name: '"DataRegionName"',
+                    required: 'false',
+                    placeholder: 'default',
+                    tip: 'Name of data region configuration for this cache'
+                })
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if-start='$ctrl.available(["1.0.0", "2.0.0"])')
