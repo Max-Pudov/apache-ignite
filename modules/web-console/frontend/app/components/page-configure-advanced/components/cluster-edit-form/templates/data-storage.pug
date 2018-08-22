@@ -63,7 +63,15 @@ mixin data-region-form({modelAt, namePlaceholder, dataRegionsAt})
         +text('Swap file path:', `${modelAt}.swapPath`, '"swapPath"', 'false', 'Input swap file path', 'An optional path to a memory mapped file for this data region')
 
     .pc-form-grid-col-60
-        +number('Checkpoint page buffer:', `${modelAt}.checkpointPageBufferSize`, '"checkpointPageBufferSize"', 'true', '0', '0', 'Amount of memory allocated for a checkpoint temporary buffer in bytes')
+        +form-field__number({
+            label: 'Checkpoint page buffer:',
+            model: `${modelAt}.checkpointPageBufferSize`,
+            name: '"checkpointPageBufferSize"',
+            disabled: 'false',
+            placeholder: '0',
+            min: '0',
+            tip: 'Amount of memory allocated for a checkpoint temporary buffer in bytes'
+        })
 
     .pc-form-grid-col-60
         +dropdown('Eviction mode:', `${modelAt}.pageEvictionMode`, '"pageEvictionMode"', 'true', 'DISABLED',
@@ -159,8 +167,15 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                     tip: 'Every memory region is split on pages of fixed size'
                 })
             .pc-form-grid-col-30
-                +number('Concurrency level:', model + '.concurrencyLevel', '"DataStorageConfigurationConcurrencyLevel"',
-                    'true', 'availableProcessors', '2', 'The number of concurrent segments in Ignite internal page mapping tables')
+                +form-field__number({
+                    label: 'Concurrency level:',
+                    model: model + '.concurrencyLevel',
+                    name: '"DataStorageConfigurationConcurrencyLevel"',
+                    disabled: 'false',
+                    placeholder: 'availableProcessors',
+                    min: '2',
+                    tip: 'The number of concurrent segments in Ignite internal page mapping tables'
+                })
             .pc-form-grid-col-60.pc-form-group__text-title
                 span System region
             .pc-form-group.pc-form-grid-row
@@ -219,10 +234,25 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                 +text-enabled('Storage path:', `${model}.storagePath`, '"DataStoragePath"', 'true', 'false', 'db',
                     'Directory where index and partition files are stored')
             .pc-form-grid-col-60
-                +number('Checkpoint frequency:', `${model}.checkpointFrequency`, '"DataStorageCheckpointFrequency"', 'true', '180000', '1',
-                    'Frequency which is a minimal interval when the dirty pages will be written to the Persistent Store')
+                +form-field__number({
+                    label: 'Checkpoint frequency:',
+                    model: `${model}.checkpointFrequency`,
+                    name: '"DataStorageCheckpointFrequency"',
+                    disabled: 'false',
+                    placeholder: '180000',
+                    min: '1',
+                    tip: 'Frequency which is a minimal interval when the dirty pages will be written to the Persistent Store'
+                })
             .pc-form-grid-col-20
-                +number('Checkpoint threads:', `${model}.checkpointThreads`, '"DataStorageCheckpointThreads"', 'true', '4', '1', 'A number of threads to use for the checkpoint purposes')
+                +form-field__number({
+                    label: 'Checkpoint threads:',
+                    model: `${model}.checkpointThreads`,
+                    name: '"DataStorageCheckpointThreads"',
+                    disabled: 'false',
+                    placeholder: '4',
+                    min: '1',
+                    tip: 'A number of threads to use for the checkpoint purposes'
+                })
             .pc-form-grid-col-20
                 +dropdown('Checkpoint write order:', `${model}.checkpointWriteOrder`, '"DataStorageCheckpointWriteOrder"', 'true', 'SEQUENTIAL',
                     '[\

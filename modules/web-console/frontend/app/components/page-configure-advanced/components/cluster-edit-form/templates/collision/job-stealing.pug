@@ -20,17 +20,45 @@ include /app/helpers/jade/mixins
 -var stealingAttributes = `${model}.stealingAttributes`
 
 .pc-form-grid-col-30
-    +number('Active jobs threshold:', `${model}.activeJobsThreshold`, '"jsActiveJobsThreshold"', 'true', '95', '0',
-        'Number of jobs that can be executed in parallel')
+    +form-field__number({
+        label: 'Active jobs threshold:',
+        model: `${model}.activeJobsThreshold`,
+        name: '"jsActiveJobsThreshold"',
+        disabled: 'false',
+        placeholder: '95',
+        min: '0',
+        tip: 'Number of jobs that can be executed in parallel'
+    })
 .pc-form-grid-col-30
-    +number('Wait jobs threshold:', `${model}.waitJobsThreshold`, '"jsWaitJobsThreshold"', 'true', '0', '0',
-        'Job count threshold at which this node will start stealing jobs from other nodes')
+    +form-field__number({
+        label: 'Wait jobs threshold:',
+        model: `${model}.waitJobsThreshold`,
+        name: '"jsWaitJobsThreshold"',
+        disabled: 'false',
+        placeholder: '0',
+        min: '0',
+        tip: 'Job count threshold at which this node will start stealing jobs from other nodes'
+    })
 .pc-form-grid-col-30
-    +number('Message expire time:', `${model}.messageExpireTime`, '"jsMessageExpireTime"', 'true', '1000', '1',
-        'Message expire time in ms')
+    +form-field__number({
+        label: 'Message expire time:',
+        model: `${model}.messageExpireTime`,
+        name: '"jsMessageExpireTime"',
+        disabled: 'false',
+        placeholder: '1000',
+        min: '1',
+        tip: 'Message expire time in ms'
+    })
 .pc-form-grid-col-30
-    +number('Maximum stealing attempts:', `${model}.maximumStealingAttempts`, '"jsMaximumStealingAttempts"', 'true', '5', '1',
-        'Maximum number of attempts to steal job by another node')
+    +form-field__number({
+        label: 'Maximum stealing attempts:',
+        model: `${model}.maximumStealingAttempts`,
+        name: '"jsMaximumStealingAttempts"',
+        disabled: 'false',
+        placeholder: '5',
+        min: '1',
+        tip: 'Maximum number of attempts to steal job by another node'
+    })
 .pc-form-grid-col-60
     +form-field__checkbox({
         label: 'Stealing enabled',
