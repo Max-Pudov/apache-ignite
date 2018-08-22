@@ -42,32 +42,89 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 </ul>')
             .pc-form-group.pc-form-grid-row(ng-show=weightedPlanner)
                 .pc-form-grid-col-20
-                    +number('Local mapper weight:', weightedModel + '.localMapperWeight', '"LocalMapperWeight"', 'true', 100, '0',
-                        'This weight is added to a node when a mapper is assigned and it is input split data is located on this node')
+                    +form-field__number({
+                        label: 'Local mapper weight:',
+                        model: `${weightedModel}.localMapperWeight`,
+                        name: '"LocalMapperWeight"',
+                        disabled: 'false',
+                        placeholder: '100',
+                        min: '0',
+                        tip: 'This weight is added to a node when a mapper is assigned and it is input split data is located on this node'
+                    })
                 .pc-form-grid-col-20
-                    +number('Remote mapper weight:', weightedModel + '.remoteMapperWeight', '"remoteMapperWeight"', 'true', 100, '0',
-                        'This weight is added to a node when a mapper is assigned, but it is input split data is not located on this node')
+                    +form-field__number({
+                        label: 'Remote mapper weight:',
+                        model: `${weightedModel}.remoteMapperWeight`,
+                        name: '"remoteMapperWeight"',
+                        disabled: 'false',
+                        placeholder: '100',
+                        min: '0',
+                        tip: 'This weight is added to a node when a mapper is assigned, but it is input split data is not located on this node'
+                    })
                 .pc-form-grid-col-20
-                    +number('Local reducer weight:', weightedModel + '.localReducerWeight', '"localReducerWeight"', 'true', 100, '0',
-                        'This weight is added to a node when a reducer is assigned and the node have at least one assigned mapper')
+                    +form-field__number({
+                        label: 'Local reducer weight:',
+                        model: `${weightedModel}.localReducerWeight`,
+                        name: '"localReducerWeight"',
+                        disabled: 'false',
+                        placeholder: '100',
+                        min: '0',
+                        tip: 'This weight is added to a node when a reducer is assigned and the node have at least one assigned mapper'
+                    })
                 .pc-form-grid-col-30
-                    +number('Remote reducer weight:', weightedModel + '.remoteReducerWeight', '"remoteReducerWeight"', 'true', 100, '0',
-                        'This weight is added to a node when a reducer is assigned, but the node does not have any assigned mappers')
+                    +form-field__number({
+                        label: 'Remote reducer weight:',
+                        model: `${weightedModel}.remoteReducerWeight`,
+                        name: '"remoteReducerWeight"',
+                        disabled: 'false',
+                        placeholder: '100',
+                        min: '0',
+                        tip: 'This weight is added to a node when a reducer is assigned, but the node does not have any assigned mappers'
+                    })
                 .pc-form-grid-col-30
-                    +number('Local mapper weight:', weightedModel + '.preferLocalReducerThresholdWeight', '"preferLocalReducerThresholdWeight"', 'true', 200, '0',
-                        "When threshold is reached, a node with mappers is no longer considered as preferred for further reducer assignments")
+                    +form-field__number({
+                        label: 'Local mapper weight:',
+                        model: `${weightedModel}.preferLocalReducerThresholdWeight`,
+                        name: '"preferLocalReducerThresholdWeight"',
+                        disabled: 'false',
+                        placeholder: '200',
+                        min: '0',
+                        tip: 'When threshold is reached, a node with mappers is no longer considered as preferred for further reducer assignments'
+                    })
             .pc-form-group.pc-form-grid-row(ng-show=customPlanner)
                 .pc-form-grid-col-60
                     +java-class('Class name:', plannerModel + '.Custom.className', '"MapReducePlannerCustomClass"', 'true', customPlanner,
                         'Custom planner implementation')
             .pc-form-grid-col-30
-                +number('Finished job info TTL:', model + '.finishedJobInfoTtl', '"finishedJobInfoTtl"', 'true', '30000', '0',
-                    'Finished job info time-to-live in milliseconds')
+                +form-field__number({
+                    label: 'Finished job info TTL:',
+                    model: `${model}.finishedJobInfoTtl`,
+                    name: '"finishedJobInfoTtl"',
+                    disabled: 'false',
+                    placeholder: '30000',
+                    min: '0',
+                    tip: 'Finished job info time-to-live in milliseconds'
+                })
             .pc-form-grid-col-30
-                +number('Max parallel tasks:', model + '.maxParallelTasks', '"maxParallelTasks"', 'true', 'availableProcessors * 2', '1',
-                    'Max number of local tasks that may be executed in parallel')
+                +form-field__number({
+                    label: 'Max parallel tasks:',
+                    model: `${model}.maxParallelTasks`,
+                    name: '"maxParallelTasks"',
+                    disabled: 'false',
+                    placeholder: 'availableProcessors * 2',
+                    min: '1',
+                    tip: 'Max number of local tasks that may be executed in parallel'
+                })
             .pc-form-grid-col-30
-                +number('Max task queue size:', model + '.maxTaskQueueSize', '"maxTaskQueueSize"', 'true', '8192', '1', 'Max task queue size')
+                +form-field__number({
+                    label: 'Max task queue size:',
+                    model: `${model}.maxTaskQueueSize`,
+                    name: '"maxTaskQueueSize"',
+                    disabled: 'false',
+                    placeholder: '8192',
+                    min: '1',
+                    tip: 'Max task queue size'
+                })
             .pc-form-grid-col-60
                 .ignite-form-field
                     +list-text-field({

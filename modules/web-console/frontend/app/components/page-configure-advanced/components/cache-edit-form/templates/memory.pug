@@ -147,14 +147,21 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if-start='$ctrl.available(["1.0.0", "2.0.0"])')
-                +number('Start size:', `${model}.startSize`, '"startSize"', 'true', '1500000', '0',
-                    'In terms of size and capacity, Ignite internal cache map acts exactly like a normal Java HashMap: it has some initial capacity\
-                    (which is pretty small by default), which doubles as data arrives. The process of internal cache map resizing is CPU-intensive\
-                    and time-consuming, and if you load a huge dataset into cache (which is a normal use case), the map will have to resize a lot of times.\
-                    To avoid that, you can specify the initial cache map capacity, comparable to the expected size of your dataset.\
-                    This will save a lot of CPU resources during the load time, because the map would not have to resize.\
-                    For example, if you expect to load 10 million entries into cache, you can set this property to 10 000 000.\
-                    This will save you from cache internal map resizes.')
+                +form-field__number({
+                    label: 'Start size:',
+                    model: `${model}.startSize`,
+                    name: '"startSize"',
+                    disabled: 'false',
+                    placeholder: '1500000',
+                    min: '0',
+                    tip: 'In terms of size and capacity, Ignite internal cache map acts exactly like a normal Java HashMap: it has some initial capacity\
+                          (which is pretty small by default), which doubles as data arrives. The process of internal cache map resizing is CPU-intensive\
+                          and time-consuming, and if you load a huge dataset into cache (which is a normal use case), the map will have to resize a lot of times.\
+                          To avoid that, you can specify the initial cache map capacity, comparable to the expected size of your dataset.\
+                          This will save a lot of CPU resources during the load time, because the map would not have to resize.\
+                          For example, if you expect to load 10 million entries into cache, you can set this property to 10 000 000.\
+                          This will save you from cache internal map resizes.'
+                })
             .pc-form-grid-col-60(ng-if-end)
                 +form-field__checkbox({
                     label: 'Swap enabled',

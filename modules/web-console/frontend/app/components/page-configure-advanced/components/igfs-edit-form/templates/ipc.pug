@@ -59,10 +59,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Port endpoint is bound to'
                 })
             .pc-form-grid-col-30
-                +number('Memory size:', `${ipcEndpointConfiguration}.memorySize`, '"ipcEndpointConfigurationMemorySize"', enabled, '262144', '1', 'Shared memory size in bytes allocated for endpoint communication')
+                +form-field__number({
+                    label: 'Memory size:',
+                    model: `${ipcEndpointConfiguration}.memorySize`,
+                    name: '"ipcEndpointConfigurationMemorySize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '262144',
+                    min: '1',
+                    tip: 'Shared memory size in bytes allocated for endpoint communication'
+                })
             .pc-form-grid-col-30
-                +number('Thread count:', `${ipcEndpointConfiguration}.threadCount`, '"ipcEndpointConfigurationThreadCount"', enabled, 'availableProcessors', '1',
-                    'Number of threads used by this endpoint to process incoming requests')
+                +form-field__number({
+                    label: 'Thread count:',
+                    model: `${ipcEndpointConfiguration}.threadCount`,
+                    name: '"ipcEndpointConfigurationThreadCount"',
+                    disabled: `!(${enabled})`,
+                    placeholder: 'availableProcessors',
+                    min: '1',
+                    tip: 'Number of threads used by this endpoint to process incoming requests'
+                })
             .pc-form-grid-col-60
                 +text-enabled('Token directory:', `${ipcEndpointConfiguration}.tokenDirectoryPath`, '"ipcEndpointConfigurationTokenDirectoryPath"', enabled, 'false', 'ipc/shmem', 'Directory where shared memory tokens are stored')
         .pca-form-column-6

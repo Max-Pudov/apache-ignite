@@ -26,13 +26,27 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-30
-                +number('Max async operations:', `${model}.maxConcurrentAsyncOperations`, '"maxConcurrentAsyncOperations"', 'true', '500', '0',
-                    'Maximum number of allowed concurrent asynchronous operations<br/>\
-                    If <b>0</b> then number of concurrent asynchronous operations is unlimited')
+                +form-field__number({
+                    label: 'Max async operations:',
+                    model: `${model}.maxConcurrentAsyncOperations`,
+                    name: '"maxConcurrentAsyncOperations"',
+                    disabled: 'false',
+                    placeholder: '500',
+                    min: '0',
+                    tip: 'Maximum number of allowed concurrent asynchronous operations<br/>\
+                         If <b>0</b> then number of concurrent asynchronous operations is unlimited'
+                })
             .pc-form-grid-col-30
-                +number('Default lock timeout:', `${model}.defaultLockTimeout`, '"defaultLockTimeout"', 'true', '0', '0',
-                    'Default lock acquisition timeout in milliseconds<br/>\
-                    If <b>0</b> then lock acquisition will never timeout')
+                +form-field__number({
+                    label: 'Default lock timeout:',
+                    model: `${model}.defaultLockTimeout`,
+                    name: '"defaultLockTimeout"',
+                    disabled: 'false',
+                    placeholder: '0',
+                    min: '0',
+                    tip: 'Default lock acquisition timeout in milliseconds<br/>\
+                         If <b>0</b> then lock acquisition will never timeout'
+                })
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available(["1.0.0", "2.0.0"])' ng-hide=`${model}.atomicityMode === 'TRANSACTIONAL'`)

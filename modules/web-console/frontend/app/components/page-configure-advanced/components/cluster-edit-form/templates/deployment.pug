@@ -58,11 +58,26 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Enables/disables peer class loading'
                 })
             .pc-form-grid-col-60
-                +number('Missed resources cache size:', `${model}.peerClassLoadingMissedResourcesCacheSize`, '"peerClassLoadingMissedResourcesCacheSize"', enabled, '100', '0',
-                    'If size greater than 0, missed resources will be cached and next resource request ignored<br/>\
-                    If size is 0, then request for the resource will be sent to the remote node every time this resource is requested')
+                +form-field__number({
+                    label: 'Missed resources cache size:',
+                    model: `${model}.peerClassLoadingMissedResourcesCacheSize`,
+                    name: '"peerClassLoadingMissedResourcesCacheSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '100',
+                    min: '0',
+                    tip: 'If size greater than 0, missed resources will be cached and next resource request ignored<br/>\
+                          If size is 0, then request for the resource will be sent to the remote node every time this resource is requested'
+                })
             .pc-form-grid-col-60
-                +number('Pool size:', `${model}.peerClassLoadingThreadPoolSize`, '"peerClassLoadingThreadPoolSize"', enabled, '2', '1', 'Thread pool size to use for peer class loading')
+                +form-field__number({
+                    label: 'Pool size:',
+                    model: `${model}.peerClassLoadingThreadPoolSize`,
+                    name: '"peerClassLoadingThreadPoolSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '2',
+                    min: '1',
+                    tip: 'Thread pool size to use for peer class loading'
+                })
             .pc-form-grid-col-60
                 mixin clusters-deployment-packages
                     .ignite-form-field

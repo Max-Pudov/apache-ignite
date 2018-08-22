@@ -26,13 +26,27 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             //- Removed in ignite 2.0
             .pc-form-grid-col-30(ng-if-start='$ctrl.available(["1.0.0", "2.0.0"])')
-                +number('Samples size:', `${model}.clockSyncSamples`, '"clockSyncSamples"', 'true', '8', '0',
-                    'Number of samples used to synchronize clocks between different nodes<br/>\
-                    Clock synchronization is used for cache version assignment in CLOCK order mode')
+                +form-field__number({
+                    label: 'Samples size:',
+                    model: `${model}.clockSyncSamples`,
+                    name: '"clockSyncSamples"',
+                    disabled: 'false',
+                    placeholder: '8',
+                    min: '0',
+                    tip: 'Number of samples used to synchronize clocks between different nodes<br/>\
+                          Clock synchronization is used for cache version assignment in CLOCK order mode'
+                })
             .pc-form-grid-col-30(ng-if-end)
-                +number('Frequency:', `${model}.clockSyncFrequency`, '"clockSyncFrequency"', 'true', '120000', '0',
-                    'Frequency at which clock is synchronized between nodes, in milliseconds<br/>\
-                    Clock synchronization is used for cache version assignment in CLOCK order mode')
+                +form-field__number({
+                    label: 'Frequency:',
+                    model: `${model}.clockSyncFrequency`,
+                    name: '"clockSyncFrequency"',
+                    disabled: 'false',
+                    placeholder: '120000',
+                    min: '0',
+                    tip: 'Frequency at which clock is synchronized between nodes, in milliseconds<br/>\
+                          Clock synchronization is used for cache version assignment in CLOCK order mode'
+                })
 
             .pc-form-grid-col-30
                 +form-field__number({
@@ -48,6 +62,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 })
 
             .pc-form-grid-col-30
-                +number('Port range:', `${model}.timeServerPortRange`, '"timeServerPortRange"', 'true', '100', '1', 'Time server port range')
+                +form-field__number({
+                    label: 'Port range:',
+                    model: `${model}.timeServerPortRange`,
+                    name: '"timeServerPortRange"',
+                    disabled: 'false',
+                    placeholder: '100',
+                    min: '1',
+                    tip: 'Time server port range'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterTime')

@@ -131,7 +131,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         +java-class('Load brobe implementation:', '$item.Adaptive.loadProbe.Custom.className', '"loadBalancingAdaptiveJobUseClass"', 'true', loadProbeCustom,
                                             'Custom load balancing SPI implementation class name.', loadProbeCustom)
                             .settings-row(ng-show='$item.kind === "WeightedRandom"')
-                                +number('Node weight:', '$item.WeightedRandom.nodeWeight', '"loadBalancingWRNodeWeight"', 'true', 10, '1', 'Weight of node')
+                                +form-field__number({
+                                    label: 'Node weight:',
+                                    model: '$item.WeightedRandom.nodeWeight',
+                                    name: '"loadBalancingWRNodeWeight"',
+                                    disabled: 'false',
+                                    placeholder: '10',
+                                    min: '1',
+                                    tip: 'Weight of node'
+                                })
                             .settings-row(ng-show='$item.kind === "WeightedRandom"')
                                 +form-field__checkbox({
                                     label: 'Use weights',

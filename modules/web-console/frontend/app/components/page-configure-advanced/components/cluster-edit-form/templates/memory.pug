@@ -40,8 +40,15 @@ panel-collapsible(
                     tip: 'Every memory region is split on pages of fixed size'
                 })
             .pc-form-grid-col-60
-                +number('Concurrency level:', model + '.concurrencyLevel', '"MemoryConfigurationConcurrencyLevel"',
-                'true', 'availableProcessors', '2', 'The number of concurrent segments in Ignite internal page mapping tables')
+                +form-field__number({
+                    label: 'Concurrency level:',
+                    model: `${model}.concurrencyLevel`,
+                    name: '"MemoryConfigurationConcurrencyLevel"',
+                    disabled: 'false',
+                    placeholder: 'availableProcessors',
+                    min: '2',
+                    tip: 'The number of concurrent segments in Ignite internal page mapping tables'
+                })
             .pc-form-grid-col-60.pc-form-group__text-title
                 span System cache
             .pc-form-group.pc-form-grid-row
@@ -87,9 +94,15 @@ panel-collapsible(
                         +form-field__error({ error: 'notInCollection', message: '{{::$ctrl.Clusters.memoryPolicy.name.invalidValues[0]}} is reserved for internal use' })
                         +form-field__error({ error: 'defaultMemoryPolicyExists', message: 'Memory policy with that name should be configured' })
                 .pc-form-grid-col-60(ng-hide='(' + model + '.defaultMemoryPolicyName || "default") !== "default"')
-                    +number('Default memory policy size:', model + '.defaultMemoryPolicySize', '"defaultMemoryPolicySize"',
-                    'true', '0.8 * totalMemoryAvailable', '10485760',
-                    'Specify desired size of default memory policy without having to use more verbose syntax of MemoryPolicyConfiguration elements')
+                    +form-field__number({
+                        label: 'Default memory policy size:',
+                        model: `${model}.defaultMemoryPolicySize`,
+                        name: '"defaultMemoryPolicySize"',
+                        disabled: 'false',
+                        placeholder: '0.8 * totalMemoryAvailable',
+                        min: '10485760',
+                        tip: 'Specify desired size of default memory policy without having to use more verbose syntax of MemoryPolicyConfiguration elements'
+                    })
                 .pc-form-grid-col-60
                     mixin clusters-memory-policies
                         .ignite-form-field(ng-init='memoryPoliciesTbl={type: "memoryPolicies", model: "memoryPolicies", focusId: "name", ui: "memory-policies-table"}')
@@ -180,11 +193,25 @@ panel-collapsible(
 
                                     //- Since ignite 2.1
                                     .pc-form-grid-col-30(ng-if-start='$ctrl.available("2.1.0")')
-                                        +number('Sub intervals:', '$item.subIntervals', '"MemoryPolicySubIntervals"',
-                                            'true', '5', '1', 'A number of sub-intervals the whole rate time interval will be split into to calculate allocation and eviction rates')
+                                        +form-field__number({
+                                            label: 'Sub intervals:',
+                                            model: '$item.subIntervals',
+                                            name: '"MemoryPolicySubIntervals"',
+                                            disabled: 'false',
+                                            placeholder: '5',
+                                            min: '1',
+                                            tip: 'A number of sub-intervals the whole rate time interval will be split into to calculate allocation and eviction rates'
+                                        })
                                     .pc-form-grid-col-30(ng-if-end)
-                                        +number('Rate time interval:', '$item.rateTimeInterval', '"MemoryPolicyRateTimeInterval"',
-                                            'true', '60000', '1000', 'Time interval for allocation rate and eviction rate monitoring purposes')
+                                        +form-field__number({
+                                            label: 'Rate time interval:',
+                                            model: '$item.rateTimeInterval',
+                                            name: '"MemoryPolicyRateTimeInterval"',
+                                            disabled: 'false',
+                                            placeholder: '60000',
+                                            min: '1000',
+                                            tip: 'Time interval for allocation rate and eviction rate monitoring purposes'
+                                        })
 
                                     .pc-form-grid-col-60
                                         +form-field__checkbox({

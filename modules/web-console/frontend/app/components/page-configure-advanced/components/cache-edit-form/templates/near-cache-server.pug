@@ -43,8 +43,15 @@ panel-collapsible(
                     tip: 'Flag indicating whether to configure near cache'
                 })
             .pc-form-grid-col-60
-                +number('Start size:', `${nearCfg}.nearStartSize`, '"nearStartSize"', enabled, '375000', '0',
-                    'Initial cache size for near cache which will be used to pre-create internal hash table after start')
+                +form-field__number({
+                    label: 'Start size:',
+                    model: `${nearCfg}.nearStartSize`,
+                    name: '"nearStartSize"',
+                    disabled: `!(${enabled})`,
+                    placeholder: '375000',
+                    min: '0',
+                    tip: 'Initial cache size for near cache which will be used to pre-create internal hash table after start'
+                })
             +evictionPolicy(`${model}.nearConfiguration.nearEvictionPolicy`, '"nearCacheEvictionPolicy"', enabled, 'false',
                 'Near cache eviction policy\
                 <ul>\

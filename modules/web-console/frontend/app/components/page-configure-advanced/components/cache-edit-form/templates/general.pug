@@ -69,7 +69,15 @@ panel-collapsible(opened=`::true` ng-form=form)
                         <li>TRANSACTIONAL - in this mode specified fully ACID-compliant transactional cache behavior</li>\
                     </ul>')
             .pc-form-grid-col-30(ng-is=`${model}.cacheMode === 'PARTITIONED'`)
-                +number('Backups:', `${model}.backups`, '"backups"', 'true', '0', '0', 'Number of nodes used to back up single partition for partitioned cache')
+                +form-field__number({
+                    label: 'Backups:',
+                    model: `${model}.backups`,
+                    name: '"checkpointS3ClientExecutionTimeout"',
+                    disabled: 'false',
+                    placeholder: '0',
+                    min: '0',
+                    tip: 'Number of nodes used to back up single partition for partitioned cache'
+                })
             //- Since ignite 2.0
             .pc-form-grid-col-30(ng-if='$ctrl.available("2.0.0")')
                 +dropdown('Partition loss policy:', `${model}.partitionLossPolicy`, '"partitionLossPolicy"', 'true', 'IGNORE',

@@ -64,7 +64,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 })
 
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.1.0")')
-                +number('Long query timeout:', `${model}.longQueryWarningTimeout`, '"LongQueryWarningTimeout"', 'true', '3000', '0',
-                'Timeout in milliseconds after which long query warning will be printed')
+                +form-field__number({
+                    label: 'Long query timeout:',
+                    model: `${model}.longQueryWarningTimeout`,
+                    name: '"LongQueryWarningTimeout"',
+                    disabled: 'false',
+                    placeholder: '3000',
+                    min: '0',
+                    tip: 'Timeout in milliseconds after which long query warning will be printed'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterMisc', 'caches')
