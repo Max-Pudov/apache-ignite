@@ -50,9 +50,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 })
 
             .pc-form-grid-col-60
-                +text-enabled('Key store file:', `${model}.keyStoreFilePath`, '"keyStoreFilePath"', enabled, enabled, 'Path to the key store file',
-                    'Path to the key store file<br/>\
-                    This is a mandatory parameter since ssl context could not be initialized without key manager')
+                +form-field__text({
+                    label: 'Key store file:',
+                    model: `${secondaryFileSystem}.keyStoreFilePath`,
+                    name: '"keyStoreFilePath"',
+                    disabled: `!(${enabled})`,
+                    required: enabled,
+                    placeholder: 'Path to the key store file',
+                    tip: 'Path to the key store file<br/>\
+                          This is a mandatory parameter since ssl context could not be initialized without key manager'
+                })
             .pc-form-grid-col-30
                 +form-field__typeahead({
                     label: 'Key store type:',

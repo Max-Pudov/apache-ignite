@@ -147,21 +147,6 @@ mixin text-ip-address-with-port-range(label, model, name, enabled, placeholder, 
         +form-field__error({ error: 'ipaddressPort', message: 'Invalid port!' })
         +form-field__error({ error: 'ipaddressPortRange', message: 'Invalid port range!' })
 
-//- Mixin for text field.
-mixin text-enabled(label, model, name, enabled, required, placeholder, tip)
-    +form-field__text({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        tip
-    })
-        if  block
-            block
-
-
 mixin form-field__text--autofocus({ label, model, name, disabled = false, required, placeholder, tip })
     +form-field__text({
         label,

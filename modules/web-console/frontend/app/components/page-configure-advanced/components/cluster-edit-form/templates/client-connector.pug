@@ -35,7 +35,14 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                     tip: 'Flag indicating whether to configure client connector configuration'
                 })
             .pc-form-grid-col-60
-                +text-enabled('Host:', `${connectionModel}.host`, '"ClientConnectorHost"', connectionEnabled, 'false', 'localhost')
+                +form-field__text({
+                    label: 'Host:',
+                    model: `${connectionModel}.host`,
+                    name: '"ClientConnectorHost"',
+                    disabled: `!(${connectionEnabled})`,
+                    required: 'false',
+                    placeholder: 'localhost'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Port:',

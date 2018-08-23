@@ -36,10 +36,17 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Flag indicating whether to configure connector configuration'
                 })
             .pc-form-grid-col-60
-                +text-enabled('Jetty configuration path:', `${model}.jettyPath`, '"connectorJettyPath"', enabled, 'false', 'Input path to Jetty configuration',
-                    'Path, either absolute or relative to IGNITE_HOME, to Jetty XML configuration file<br/>\
-                    Jetty is used to support REST over HTTP protocol for accessing Ignite APIs remotely<br/>\
-                    If not provided, Jetty instance with default configuration will be started picking IgniteSystemProperties.IGNITE_JETTY_HOST and IgniteSystemProperties.IGNITE_JETTY_PORT as host and port respectively')
+                +form-field__text({
+                    label: 'Jetty configuration path:',
+                    model: `${model}.jettyPath`,
+                    name: '"connectorJettyPath"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'Input path to Jetty configuration',
+                    tip: 'Path, either absolute or relative to IGNITE_HOME, to Jetty XML configuration file<br/>\
+                          Jetty is used to support REST over HTTP protocol for accessing Ignite APIs remotely<br/>\
+                          If not provided, Jetty instance with default configuration will be started picking IgniteSystemProperties.IGNITE_JETTY_HOST and IgniteSystemProperties.IGNITE_JETTY_PORT as host and port respectively'
+                })
             .pc-form-grid-col-20
                 +text-ip-address('TCP host:', `${model}.host`, '"connectorHost"', enabled, 'IgniteConfiguration#getLocalHost()',
                     'Host for TCP binary protocol server<br/>\
@@ -178,7 +185,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     'Interceptor allows to transform all objects exchanged via REST protocol<br/>\
                     For example if you use custom serialisation on client you can write interceptor to transform binary representations received from client to Java objects and later access them from java code directly')
             .pc-form-grid-col-60
-                +text-enabled('Secret key:', `${model}.secretKey`, '"connectorSecretKey"', enabled, 'false', 'Specify to enable authentication', 'Secret key to authenticate REST requests')
+                +form-field__text({
+                    label: 'Secret key:',
+                    model: `${model}.secretKey`,
+                    name: '"connectorSecretKey"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'Specify to enable authentication',
+                    tip: 'Secret key to authenticate REST requests'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Enable SSL',
