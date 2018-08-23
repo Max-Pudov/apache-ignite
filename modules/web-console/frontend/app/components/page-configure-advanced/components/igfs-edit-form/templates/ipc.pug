@@ -79,6 +79,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Number of threads used by this endpoint to process incoming requests'
                 })
             .pc-form-grid-col-60
-                +text-enabled('Token directory:', `${ipcEndpointConfiguration}.tokenDirectoryPath`, '"ipcEndpointConfigurationTokenDirectoryPath"', enabled, 'false', 'ipc/shmem', 'Directory where shared memory tokens are stored')
+                +form-field__text({
+                    label: 'Token directory:',
+                    model: `${ipcEndpointConfiguration}.tokenDirectoryPath`,
+                    name: '"ipcEndpointConfigurationTokenDirectoryPath"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'ipc/shmem',
+                    tip: 'Directory where shared memory tokens are stored'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'igfsIPC')

@@ -38,7 +38,14 @@ panel-collapsible(
                     tip: 'Flag indicating whether to configure SQL connector configuration'
                 })
             .pc-form-grid-col-60
-                +text-enabled('Host:', `${connectionModel}.host`, '"SqlConnectorHost"', connectionEnabled, 'false', 'localhost')
+                +form-field__text({
+                    label: 'Host:',
+                    model: `${connectionModel}.host`,
+                    name: '"SqlConnectorHost"',
+                    disabled: `!(${connectionEnabled})`,
+                    required: 'false',
+                    placeholder: 'localhost'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Port:',

@@ -39,8 +39,15 @@ panel-collapsible(
                     tip: 'Flag indicating whether to configure persistent configuration'
                 })
             .pc-form-grid-col-60
-                +text-enabled('Store path:', `${model}.persistentStorePath`, '"PersistenceStorePath"', enabled, 'false', 'Input store path',
-                'A path the root directory where the Persistent Store will persist data and indexes')
+                +form-field__text({
+                    label: 'Store path:',
+                    model: `${model}.persistentStorePath`,
+                    name: '"PersistenceStorePath"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'Input store path',
+                    tip: 'A path the root directory where the Persistent Store will persist data and indexes'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Metrics enabled',
@@ -88,9 +95,25 @@ panel-collapsible(
                     tip: 'A number of threads to use for the checkpointing purposes'
                 })
             .pc-form-grid-col-60
-                +text-enabled('WAL store path:', `${model}.walStorePath`, '"PersistenceWalStorePath"', enabled, 'false', 'Input store path', 'A path to the directory where WAL is stored')
+                +form-field__text({
+                    label: 'WAL store path:',
+                    model: `${model}.walStorePath`,
+                    name: '"PersistenceWalStorePath"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'Input store path',
+                    tip: 'A path to the directory where WAL is stored'
+                })
             .pc-form-grid-col-60
-                +text-enabled('WAL archive path:', `${model}.walArchivePath`, '"PersistenceWalArchivePath"', enabled, 'false', 'Input archive path', 'A path to the WAL archive directory')
+                +form-field__text({
+                    label: 'WAL archive path:',
+                    model: `${model}.walArchivePath`,
+                    name: '"PersistenceWalArchivePath"',
+                    disabled: `!(${enabled})`,
+                    required: 'false',
+                    placeholder: 'Input archive path',
+                    tip: 'A path to the WAL archive directory'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'WAL segments:',

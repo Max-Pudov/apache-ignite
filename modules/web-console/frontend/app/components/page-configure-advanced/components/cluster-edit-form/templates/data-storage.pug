@@ -238,8 +238,15 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                             )
 
             .pc-form-grid-col-60
-                +text-enabled('Storage path:', `${model}.storagePath`, '"DataStoragePath"', 'true', 'false', 'db',
-                    'Directory where index and partition files are stored')
+                +form-field__text({
+                    label: 'Storage path:',
+                    model: `${model}.storagePath`,
+                    name: '"DataStoragePath"',
+                    disabled: 'false',
+                    required: 'false',
+                    placeholder: 'db',
+                    tip: 'Directory where index and partition files are stored'
+                })
             .pc-form-grid-col-60
                 +form-field__number({
                     label: 'Checkpoint frequency:',
@@ -287,9 +294,25 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                         <li>NONE - WAL is disabled</li>\
                     </ul>')
             .pc-form-grid-col-60
-                +text-enabled('WAL path:', `${model}.walPath`, '"DataStorageWalPath"', 'true', 'false', 'db/wal', 'A path to the directory where WAL is stored')
+                +form-field__text({
+                    label: 'WAL path:',
+                    model: `${model}.walPath`,
+                    name: '"DataStorageWalPath"',
+                    disabled: 'false',
+                    required: 'false',
+                    placeholder: 'db/wal',
+                    tip: 'A path to the directory where WAL is stored'
+                })
             .pc-form-grid-col-60
-                +text-enabled('WAL archive path:', `${model}.walArchivePath`, '"DataStorageWalArchivePath"', 'true', 'false', 'db/wal/archive', 'A path to the WAL archive directory')
+                +form-field__text({
+                    label: 'WAL archive path:',
+                    model: `${model}.walArchivePath`,
+                    name: '"DataStorageWalArchivePath"',
+                    disabled: 'false',
+                    required: 'false',
+                    placeholder: 'db/wal/archive',
+                    tip: 'A path to the WAL archive directory'
+                })
             .pc-form-grid-col-20
                 +form-field__number({
                     label: 'WAL segments:',
