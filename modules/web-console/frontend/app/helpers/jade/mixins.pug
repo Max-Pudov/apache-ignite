@@ -271,16 +271,6 @@ mixin list-addresses({ items, name, tip, withPortRange = true })
                 label-single='address'
             )
 
-//- Mixin for cache mode.
-mixin cacheMode(label, model, name, placeholder)
-    +form-field__cache-modes({
-        label,
-        model,
-        name,
-        placeholder
-    })&attributes(attributes)
-        if  block
-            block
 
 mixin form-field__cache-modes({ label, model, name, placeholder })
     +form-field__dropdown({

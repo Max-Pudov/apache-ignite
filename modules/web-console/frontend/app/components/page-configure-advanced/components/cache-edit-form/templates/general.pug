@@ -61,7 +61,12 @@ panel-collapsible(opened=`::true` ng-form=form)
                           Caches with the same group name share single underlying "physical" cache (partition set), but are logically isolated.'
                 })
             .pc-form-grid-col-30
-                +cacheMode('Mode:', `${model}.cacheMode`, '"cacheMode"', 'PARTITIONED')
+                +form-field__cache-modes({
+                    label: 'Mode:',
+                    model: `${model}.cacheMode`,
+                    name: '"cacheMode"',
+                    placeholder: 'PARTITIONED'
+                })
 
             .pc-form-grid-col-30
                 +form-field__dropdown({
