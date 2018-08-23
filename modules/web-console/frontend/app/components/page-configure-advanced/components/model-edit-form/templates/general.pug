@@ -47,12 +47,21 @@ panel-collapsible(opened=`::true` ng-form=form)
                     tip: 'Select caches to describe types in cache'
                 })
             .pc-form-grid-col-30
-                +dropdown-required('Query metadata:', `${model}.queryMetadata`, '"queryMetadata"', 'true', 'true', '', '::$ctrl.Models.queryMetadata.values',
-                    'Query metadata configured with:\
-                    <ul>\
-                        <li>Java annotations like @QuerySqlField</li>\
-                        <li>Configuration via QueryEntity class</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Query metadata:',
+                    model: `${model}.queryMetadata`,
+                    name: '"queryMetadata"',
+                    disabled: 'false',
+                    required: 'true',
+                    placeholder: '',
+                    options: '::$ctrl.Models.queryMetadata.values',
+                    tip: 'Query metadata configured with:\
+                          <ul>\
+                            <li>Java annotations like @QuerySqlField</li>\
+                            <li>Configuration via QueryEntity class</li>\
+                          </ul>'
+                })
+
             .pc-form-grid-col-60
                 +java-class-typeahead('Key type:', `${model}.keyType`, '"keyType"', '$ctrl.javaBuiltInClassesBase', 'true', 'true', '{{ ' + generatePojo + ' ? "Full class name for Key" : "Key type name" }}', 'Key class used to store key in cache', generatePojo)
             .pc-form-grid-col-60

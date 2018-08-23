@@ -51,7 +51,15 @@ mixin list-db-field-edit({ items, itemName, itemsName })
                     )
                         +form-field__error({ error: 'igniteUnique', message: 'DB name should be unique' })
                 .pc-form-grid-col-30
-                    +dropdown-required('DB type:', '$item.databaseFieldType', '"databaseFieldType"', true, true, 'Choose DB type', 'supportedJdbcTypes')
+                    +form-field__dropdown({
+                        label: 'DB type:',
+                        model:'$item.databaseFieldType',
+                        name: '"databaseFieldType"',
+                        disabled: 'false',
+                        required: 'true',
+                        placeholder: 'Choose DB type',
+                        options: 'supportedJdbcTypes'
+                    })
                 .pc-form-grid-col-30(divider='/')
                     +form-field__text({
                         label: 'Java name:',
@@ -66,7 +74,15 @@ mixin list-db-field-edit({ items, itemName, itemsName })
                     )
                         +form-field__error({ error: 'igniteUnique', message: 'Java name should be unique' })
                 .pc-form-grid-col-30
-                    +dropdown-required('Java type:', '$item.javaFieldType', '"javaFieldType"', true, true, 'Choose Java type', 'supportedJavaTypes')
+                    +form-field__dropdown({
+                        label: 'Java type:',
+                        model: '$item.javaFieldType',
+                        name: '"javaFieldType"',
+                        disabled: 'false',
+                        required: 'true',
+                        placeholder: 'Choose Java type',
+                        options: 'supportedJavaTypes'
+                    })
 
         list-editable-no-items
             list-editable-add-item-button(

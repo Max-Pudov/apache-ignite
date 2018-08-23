@@ -35,16 +35,23 @@ include /app/helpers/jade/mixins
         ]',
         'Level for internal log4j implementation')
 .pc-form-grid-col-30
-    +dropdown-required('Logger configuration:', `${model}.mode`, '"log4jMode"', 'true', 'true', 'Choose logger mode',
-        '[\
-            {value: "Default", label: "Default"},\
-            {value: "Path", label: "Path"}\
-        ]',
-        'Choose logger configuration\
-        <ul>\
-            <li>Default - default logger</li>\
-            <li>Path - path or URI to XML configuration</li>\
-        </ul>')
+    +form-field__dropdown({
+        label: 'Logger configuration:',
+        model: `${model}.mode`,
+        name: '"log4jMode"',
+        disabled: 'false',
+        required: 'true',
+        placeholder: 'Choose logger mode',
+        options: '[\
+                    {value: "Default", label: "Default"},\
+                    {value: "Path", label: "Path"}\
+                ]',
+        tip: 'Choose logger configuration\
+                <ul>\
+                    <li>Default - default logger</li>\
+                    <li>Path - path or URI to XML configuration</li>\
+                </ul>'
+    })
 .pc-form-grid-col-60(ng-show=pathRequired)
     +form-field__text({
         label: 'Path:',

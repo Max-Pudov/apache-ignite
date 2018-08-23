@@ -169,21 +169,6 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
 
-//- Mixin for required dropdown field.
-mixin dropdown-required(label, model, name, enabled, required, placeholder, options, tip)
-    +form-field__dropdown({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        options,
-        tip
-    })&attributes(attributes)
-        if  block
-            block
-
 //- Mixin for required dropdown field with autofocus.
 mixin dropdown-required-autofocus(label, model, name, enabled, required, placeholder, options, tip)
     +form-field__dropdown({

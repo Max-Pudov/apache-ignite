@@ -35,21 +35,29 @@ panel-collapsible(ng-form=form)
                     list-editable.pc-list-editable-with-form-grid(ng-model=model name='checkpointSPIConfigurations')
                         list-editable-item-edit(item-name='$checkpointSPI').pc-form-grid-row
                             .pc-form-grid-col-60
-                                +dropdown-required('Checkpoint SPI:', '$checkpointSPI.kind', '"checkpointKind"', 'true', 'true', 'Choose checkpoint configuration variant', '[\
-                                        {value: "FS", label: "File System"},\
-                                        {value: "Cache", label: "Cache"},\
-                                        {value: "S3", label: "Amazon S3"},\
-                                        {value: "JDBC", label: "Database"},\
-                                        {value: "Custom", label: "Custom"}\
-                                    ]',
-                                    'Provides an ability to save an intermediate job state\
-                                    <ul>\
-                                        <li>File System - Uses a shared file system to store checkpoints</li>\
-                                        <li>Cache - Uses a cache to store checkpoints</li>\
-                                        <li>Amazon S3 - Uses Amazon S3 to store checkpoints</li>\
-                                        <li>Database - Uses a database to store checkpoints</li>\
-                                        <li>Custom - Custom checkpoint SPI implementation</li>\
-                                    </ul>')
+                                +form-field__dropdown({
+                                    label: 'Checkpoint SPI:',
+                                    model: '$checkpointSPI.kind',
+                                    name: '"checkpointKind"',
+                                    disabled: 'false',
+                                    required: 'true',
+                                    placeholder: 'Choose checkpoint configuration variant',
+                                    options: '[\
+                                                {value: "FS", label: "File System"},\
+                                                {value: "Cache", label: "Cache"},\
+                                                {value: "S3", label: "Amazon S3"},\
+                                                {value: "JDBC", label: "Database"},\
+                                                {value: "Custom", label: "Custom"}\
+                                               ]',
+                                    tip: 'Provides an ability to save an intermediate job state\
+                                          <ul>\
+                                            <li>File System - Uses a shared file system to store checkpoints</li>\
+                                            <li>Cache - Uses a cache to store checkpoints</li>\
+                                            <li>Amazon S3 - Uses Amazon S3 to store checkpoints</li>\
+                                            <li>Database - Uses a database to store checkpoints</li>\
+                                            <li>Custom - Custom checkpoint SPI implementation</li>\
+                                          </ul>'
+                                })
 
                             include ./checkpoint/fs
 

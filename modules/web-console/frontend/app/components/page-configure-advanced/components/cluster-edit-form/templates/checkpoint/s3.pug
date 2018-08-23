@@ -28,21 +28,30 @@ include /app/helpers/jade/mixins
 -var checkpointS3CustomRetry = checkpointS3 + ' && ' + clientRetryModel + '.kind === "Custom"'
 
 .pc-form-grid-col-60(ng-if-start='$checkpointSPI.kind === "S3"')
-    +dropdown-required('AWS credentials:', '$checkpointSPI.S3.awsCredentials.kind', '"checkpointS3AwsCredentials"', 'true', checkpointS3, 'Custom', '[\
-        {value: "Basic", label: "Basic"},\
-        {value: "Properties", label: "Properties"},\
-        {value: "Anonymous", label: "Anonymous"},\
-        {value: "BasicSession", label: "Basic with session"},\
-        {value: "Custom", label: "Custom"}\
-    ]',
-    'AWS credentials\
-    <ul>\
-        <li>Basic - Allows callers to pass in the AWS access key and secret access in the constructor</li>\
-        <li>Properties - Reads in AWS access keys from a properties file</li>\
-        <li>Anonymous - Allows use of "anonymous" credentials</li>\
-        <li>Database - Session credentials with keys and session token</li>\
-        <li>Custom - Custom AWS credentials provider</li>\
-    </ul>')
+    +form-field__dropdown({
+        label: 'AWS credentials:',
+        model: '$checkpointSPI.S3.awsCredentials.kind',
+        name: '"checkpointS3AwsCredentials"',
+        disabled: 'false',
+        required: checkpointS3,
+        placeholder: 'Custom',
+        options: '[\
+                {value: "Basic", label: "Basic"},\
+                {value: "Properties", label: "Properties"},\
+                {value: "Anonymous", label: "Anonymous"},\
+                {value: "BasicSession", label: "Basic with session"},\
+                {value: "Custom", label: "Custom"}\
+            ]',
+        tip: 'AWS credentials\
+            <ul>\
+                <li>Basic - Allows callers to pass in the AWS access key and secret access in the constructor</li>\
+                <li>Properties - Reads in AWS access keys from a properties file</li>\
+                <li>Anonymous - Allows use of "anonymous" credentials</li>\
+                <li>Database - Session credentials with keys and session token</li>\
+                <li>Custom - Custom AWS credentials provider</li>\
+            </ul>'
+    })
+
 .pc-form-group.pc-form-grid-row(ng-if=checkpointS3Path)
     .pc-form-grid-col-60
         +form-field__text({
