@@ -23,6 +23,7 @@ div(ng-if='::$ctrl.gridTreeView')
         ui-grid-exporter
         ui-grid-pinning
         ui-grid-tree-view
+        ng-class='{ "ui-grid--thin": $ctrl.gridThin }'
     )
 
 div(ng-if='::(!$ctrl.gridTreeView && $ctrl.onSelectionChange)')
@@ -33,6 +34,7 @@ div(ng-if='::(!$ctrl.gridTreeView && $ctrl.onSelectionChange)')
         ui-grid-selection
         ui-grid-exporter
         ui-grid-pinning
+        ng-class='{ "ui-grid--thin": $ctrl.gridThin }'
     )
 
 div(ng-if='::(!$ctrl.gridTreeView && !$ctrl.onSelectionChange)')
@@ -42,4 +44,5 @@ div(ng-if='::(!$ctrl.gridTreeView && !$ctrl.onSelectionChange)')
         ui-grid-filters
         ui-grid-exporter
         ui-grid-pinning
+        ng-class='{ "ui-grid--thin": $ctrl.gridThin }'
     )

@@ -18,12 +18,30 @@
 ignite-grid-table {
 	@import 'public/stylesheets/variables';
 
-    .ui-grid.ui-grid--ignite {
-        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-plus-squared,
-        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-minus-squared {
-            top: 14px;
+    .ui-grid.ui-grid--ignite.ui-grid--thin {
+        // Start section row height.
+        .ui-grid-row {
+            height: 36px;
+
+            .ui-grid-cell {
+                height: 100%;
+            }
         }
 
+        .ui-grid-cell .ui-grid-cell-contents {
+            padding: 8px 20px;
+            min-height: 35px;
+            max-height: 35px;
+        }
+
+        // Set force header height.
+        // Fix hide border bottom of pinned column without data.
+        .ui-grid-header-canvas {
+            height: 48px;
+        }
+    }
+
+    .ui-grid.ui-grid--ignite:not(.ui-grid--thin) {
         // Start section row height.
         .ui-grid-row {
             height: 48px;
@@ -46,18 +64,28 @@ ignite-grid-table {
         }
 
         [role="columnheader"] {
-            display: flex;
-            align-items: center;
             margin: 11px 0;
-        }
-
-        .ui-grid-header--subcategories [role="columnheader"] {
-            margin: 0;
         }
 
         // Fix checkbox position.
         .ui-grid-header-cell  .ui-grid-selection-row-header-buttons {
             margin-top: 12px;
+        }
+    }
+
+    .ui-grid.ui-grid--ignite {
+        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-plus-squared,
+        .ui-grid-header .ui-grid-tree-base-row-header-buttons.ui-grid-icon-minus-squared {
+            top: 14px;
+        }
+
+        [role="columnheader"] {
+            display: flex;
+            align-items: center;
+        }
+
+        .ui-grid-header--subcategories [role="columnheader"] {
+            margin: 0;
         }
 
         // Removes unwanted box-shadow and border-right from checkboxes column
@@ -75,6 +103,11 @@ ignite-grid-table {
         .ui-grid-header:not(.ui-grid-header--subcategories) .ui-grid-filters[role="columnheader"] {
             padding-top: 6px;
         }
+
+        .ui-grid-pinned-container.ui-grid-pinned-container-left .ui-grid-cell:first-child + .ui-grid-cell .ui-grid-cell-contents,
+        .ui-grid-pinned-container.ui-grid-pinned-container-left .ui-grid-header-cell:first-child + .ui-grid-header-cell .ui-grid-cell-contents {
+            padding-left: 0;
+        } 
 
         // End section row height.
         .ui-grid-header-cell:last-child .ui-grid-column-resizer.right {

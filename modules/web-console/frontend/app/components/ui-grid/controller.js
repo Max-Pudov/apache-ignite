@@ -23,6 +23,12 @@ export default class IgniteUiGrid {
     gridApi;
 
     /** @type */
+    gridThin;
+
+    /** @type */
+    gridHeight;
+
+    /** @type */
     items;
 
     /** @type */
@@ -52,18 +58,26 @@ export default class IgniteUiGrid {
         this.gridUtil = gridUtil;
 
         this.rowIdentityKey = '_id';
+
+        this.rowHeight = 48;
+        this.headerRowHeight = 70;
     }
 
     $onInit() {
         this.SCROLLBAR_WIDTH = this.gridUtil.getScrollbarWidth();
 
+        if (this.gridThin) {
+            this.rowHeight = 36;
+            this.headerRowHeight = 48;
+        }
+
         this.grid = {
             data: this.items,
             columnDefs: this.columnDefs,
             categories: this.categories,
+            rowHeight: this.rowHeight,
+            headerRowHeight: this.headerRowHeight,
             columnVirtualizationThreshold: 30,
-            rowHeight: 48,
-            headerRowHeight: 70,
             enableColumnMenus: false,
             enableFullRowSelection: true,
             enableFiltering: true,
@@ -71,7 +85,8 @@ export default class IgniteUiGrid {
             fastWatch: true,
             showTreeExpandNoChildren: false,
             modifierKeysToMultiSelect: true,
-            selectionRowHeaderWidth: 30,
+            // selectionRowHeaderWidth: 30,
+            selectionRowHeaderWidth: 52,
             exporterCsvFilename: `${_.camelCase([this.tabName, this.tableTitle])}.csv`,
             onRegisterApi: (api) => {
                 this.gridApi = api;
@@ -124,6 +139,9 @@ export default class IgniteUiGrid {
 
         if (hasChanged('selectedRowsId') && this.grid && this.grid.data)
             this.applyIncomingSelectionRowsId(changes.selectedRowsId.currentValue);
+
+        if (hasChanged('gridHeight') && this.grid)
+            this.adjustHeight();
     }
 
     applyIncomingSelectionRows(selected = []) {
@@ -160,12 +178,17 @@ export default class IgniteUiGrid {
     });
 
     adjustHeight() {
-        const maxRowsToShow = this.maxRowsToShow || 5;
-        const headerBorder = 1;
-        const visibleRows = this.gridApi.core.getVisibleRows().length;
-        const header = this.grid.headerRowHeight + headerBorder;
-        const optionalScroll = (visibleRows ? this.gridUtil.getScrollbarWidth() : 0);
-        const height = Math.min(visibleRows, maxRowsToShow) * this.grid.rowHeight + header + optionalScroll;
+        let height = this.gridHeight;
+
+        if (!height) {
+            const maxRowsToShow = this.maxRowsToShow || 5;
+            const headerBorder = 1;
+            const visibleRows = this.gridApi.core.getVisibleRows().length;
+            const header = this.grid.headerRowHeight + headerBorder;
+            const optionalScroll = (visibleRows ? this.gridUtil.getScrollbarWidth() : 0);
+
+            height = Math.min(visibleRows, maxRowsToShow) * this.grid.rowHeight + header + optionalScroll;
+        }
 
         this.gridApi.grid.element.css('height', height + 'px');
         this.gridApi.core.handleWindowResize();

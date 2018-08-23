@@ -25,6 +25,8 @@ export default {
     bindings: {
         gridApi: '=?',
         gridTreeView: '<?',
+        gridThin: '<?',
+        gridHeight: '<?',
 
         // Input Events.
         items: '<',
