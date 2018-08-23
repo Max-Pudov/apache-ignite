@@ -26,8 +26,7 @@ include ../../primitives/form-field/index
 -    return (enabled === false || enabled === true) ? !enabled : '!(' + enabled + ')';
 -}
 
-//- Mixin for Java class name field with auto focus condition.
-mixin java-class-autofocus-placholder(label, model, name, enabled, required, autofocus, placeholder, tip, validationActive)
+mixin form-field__java-class({ label, model, name, enabled, required, tip, placeholder, validationActive })
     -var errLbl = label.substring(0, label.length - 1)
 
     +form-field__text({
@@ -36,14 +35,13 @@ mixin java-class-autofocus-placholder(label, model, name, enabled, required, aut
         name,
         disabled: enabledToDisabled(enabled),
         required,
-        placeholder,
+        placeholder: placeholder || 'Enter fully qualified class name',
         tip
     })(
         data-java-identifier='true'
         data-java-package-specified='true'
         data-java-keywords='true'
         data-java-built-in-class='true'
-        data-ignite-form-field-input-autofocus=autofocus
         data-validation-active=validationActive ? `{{ ${validationActive} }}` : `'always'`
     )&attributes(attributes)
         if  block
@@ -55,26 +53,66 @@ mixin java-class-autofocus-placholder(label, model, name, enabled, required, aut
         +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 
 //- Mixin for Java class name field with auto focus condition.
-mixin java-class-autofocus(lbl, model, name, enabled, required, autofocus, tip, validationActive)
-    +java-class-autofocus-placholder(lbl, model, name, enabled, required, autofocus, 'Enter fully qualified class name', tip, validationActive)&attributes(attributes)
+mixin java-class-autofocus-placholder(label, model, name, enabled, required, autofocus, placeholder, tip, validationActive)
+    +form-field__java-class({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        required,
+        placeholder,
+        tip,
+        validationActive
+    })(
+        data-ignite-form-field-input-autofocus=autofocus
+    )&attributes(attributes)
         if  block
             block
 
-//- Mixin for Java class name field.
-mixin form-field__java-class({ label, model, name, enabled, required, tip, validationActive })
-    +java-class-autofocus(label, model, name, enabled, required, 'false', tip, validationActive)
+//- Mixin for Java class name field with auto focus condition.
+mixin java-class-autofocus(label, model, name, enabled, required, autofocus, tip, validationActive)
+    +form-field__java-class({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        required,
+        tip,
+        validationActive
+    })(
+        data-ignite-form-field-input-autofocus=autofocus
+    )&attributes(attributes)
         if  block
             block
-
 
 mixin java-class(label, model, name, enabled, required, tip, validationActive)
     +form-field__java-class({ label, model, name, enabled, required, tip, validationActive })
         if  block
             block
 
-
 //- Mixin for text field with enabled condition with options.
 mixin java-class-typeahead(label, model, name, options, enabled, required, placeholder, tip, validationActive)
+    -var errLbl = label.substring(0, label.length - 1)
+
+    +form-field__typeahead({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        required,
+        placeholder,
+        options,
+        tip
+    })&attributes(attributes)(
+        data-java-identifier='true'
+        data-java-package-specified='allow-built-in'
+        data-java-keywords='true'
+        data-validation-active=validationActive ? `{{ ${validationActive} }}` : `'always'`
+    )
+        +form-field__error({ error: 'javaKeywords', message: `${ errLbl } could not contains reserved Java keyword!` })
+        +form-field__error({ error: 'javaPackageSpecified', message: `${ errLbl } does not have package specified!` })
+        +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
+mixin form-field__java-class--typeahead({ label, model, name, options, enabled, required, placeholder, tip, validationActive })
     -var errLbl = label.substring(0, label.length - 1)
 
     +form-field__typeahead({
@@ -128,6 +166,16 @@ mixin text-ip-address(label, model, name, enabled, placeholder, tip)
         tip
     })(data-ipaddress='true')
         +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
+mixin form-field__ip-address({ label, model, name, enabled, placeholder, tip })
+    +form-field__text({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        placeholder,
+        tip
+    })(data-ipaddress='true')
+        +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
 
 //- Mixin for text field with IP address and port range check.
 mixin text-ip-address-with-port-range(label, model, name, enabled, placeholder, tip)
@@ -146,7 +194,22 @@ mixin text-ip-address-with-port-range(label, model, name, enabled, placeholder, 
         +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
         +form-field__error({ error: 'ipaddressPort', message: 'Invalid port!' })
         +form-field__error({ error: 'ipaddressPortRange', message: 'Invalid port range!' })
-
+mixin form-field__ip-address-with-port-range({ label, model, name, enabled, placeholder, tip })
+    +form-field__text({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        placeholder,
+        tip
+    })(
+        data-ipaddress='true'
+        data-ipaddress-with-port='true'
+        data-ipaddress-with-port-range='true'
+    )
+        +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
+        +form-field__error({ error: 'ipaddressPort', message: 'Invalid port!' })
+        +form-field__error({ error: 'ipaddressPortRange', message: 'Invalid port range!' })
 
 //- Mixin for url field.
 mixin url(label, model, name, enabled, required, placeholder, tip)
@@ -404,6 +467,33 @@ mixin list-pair-edit({ items, keyLbl, valLbl, itemName, itemsName })
 
 //- Mixin for DB dialect.
 mixin dialect(label, model, name, required, tip, genericDialectName, placeholder)
+    +form-field__dropdown({
+        label,
+        model,
+        name,
+        required,
+        placeholder,
+        options: '[\
+                {value: "Generic", label: "' + genericDialectName + '"},\
+                {value: "Oracle", label: "Oracle"},\
+                {value: "DB2", label: "IBM DB2"},\
+                {value: "SQLServer", label: "Microsoft SQL Server"},\
+                {value: "MySQL", label: "MySQL"},\
+                {value: "PostgreSQL", label: "PostgreSQL"},\
+                {value: "H2", label: "H2 database"}\
+        ]',
+        tip: `${ tip }
+            <ul>
+                <li>${ genericDialectName }</li>
+                <li>Oracle database</li>
+                <li>IBM DB2</li>
+                <li>Microsoft SQL Server</li>
+                <li>MySQL</li>
+                <li>PostgreSQL</li>
+                <li>H2 database</li>
+            </ul>`
+    })
+mixin form-field__dialect({ label, model, name, required, tip, genericDialectName, placeholder })
     +form-field__dropdown({
         label,
         model,
