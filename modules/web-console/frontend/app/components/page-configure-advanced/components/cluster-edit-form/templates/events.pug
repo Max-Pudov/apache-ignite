@@ -89,8 +89,17 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     +java-class('Class:', `${modelEventStorage}.Custom.className`, '"EventStorageCustom"', 'true', eventStorageCustom, 'Event storage implementation class name', eventStorageCustom)
 
                 .pc-form-grid-col-60
-                    +dropdown-multiple('Include type:', `${model}.includeEventTypes`, '"includeEventTypes"', true, 'Choose recorded event types', '', '$ctrl.eventGroups',
-                    'Array of event types, which will be recorded by GridEventStorageManager#record(Event)<br/>\
-                    Note, that either the include event types or the exclude event types can be established')
+                    +form-field__dropdown({
+                        label: 'Include type:',
+                        model: `${model}.includeEventTypes`,
+                        name: '"includeEventTypes"',
+                        disabled: 'false',
+                        multiple: true,
+                        placeholder: 'Choose recorded event types',
+                        placeholderEmpty: '',
+                        options: '$ctrl.eventGroups',
+                        tip: 'Array of event types, which will be recorded by GridEventStorageManager#record(Event)<br/>\
+                             Note, that either the include event types or the exclude event types can be established'
+                    })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterEvents')

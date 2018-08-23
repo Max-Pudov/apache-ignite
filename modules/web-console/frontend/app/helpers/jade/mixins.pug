@@ -168,22 +168,6 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
 
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
-//- Mixin for dropdown-multiple field.
-mixin dropdown-multiple(label, model, name, enabled, placeholder, placeholderEmpty, options, tip)
-    +form-field__dropdown({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        multiple: true,
-        placeholder,
-        placeholderEmpty,
-        options,
-        tip
-    })&attributes(attributes)
-        if  block
-            block
 
 mixin list-text-field({ items, lbl, name, itemName, itemsName })
     list-editable(ng-model=items)&attributes(attributes)
@@ -376,13 +360,31 @@ mixin evictionPolicy(model, name, enabled, required, tip)
 
 //- Mixin for clusters dropdown.
 mixin clusters(model, tip)
-    +dropdown-multiple('Clusters:',
-        model + '.clusters', '"clusters"', true, 'Choose clusters', 'No clusters configured', 'clusters', tip)
+    +form-field__dropdown({
+        label: 'Clusters:',
+        model: model + '.clusters',
+        name: '"clusters"',
+        disabled: 'false',
+        multiple: true,
+        placeholder: 'Choose clusters',
+        placeholderEmpty: 'No clusters configured',
+        options: 'clusters',
+        tip: tip
+    })
 
 //- Mixin for caches dropdown.
 mixin caches(model, tip)
-    +dropdown-multiple('Caches:',
-        model + '.caches', '"caches"', true, 'Choose caches', 'No caches configured', 'caches', tip)
+    +form-field__dropdown({
+        label: 'Caches:',
+        model: model + '.caches',
+        name: '"caches"',
+        disabled: 'false',
+        multiple: true,
+        placeholder: 'Choose caches',
+        placeholderEmpty: 'No caches configured',
+        options: 'caches',
+        tip: tip
+    })
 
 //- Mixin for XML, Java, .Net preview.
 mixin preview(master, generator, detail)
