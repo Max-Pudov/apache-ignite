@@ -165,14 +165,32 @@ include /app/helpers/jade/mixins
             tip: 'Optional proxy user name to use if connecting through a proxy'
         })
     .pc-form-grid-col-30
-        +text('Proxy domain:', clientCfgModel + '.proxyDomain', '"checkpointS3ProxyDomain"', 'false', 'Not specified',
-        'Optional Windows domain name for configuring an NTLM proxy')
+        +form-field__text({
+            label: 'Proxy domain:',
+            model: `${clientCfgModel}.proxyDomain`,
+            name: '"checkpointS3ProxyDomain"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Optional Windows domain name for configuring an NTLM proxy'
+        })
     .pc-form-grid-col-60
-        +text('Proxy workstation:', clientCfgModel + '.proxyWorkstation', '"checkpointS3ProxyWorkstation"', 'false', 'Not specified',
-        'Optional Windows workstation name for configuring NTLM proxy support')
+        +form-field__text({
+            label: 'Proxy workstation:',
+            model: `${clientCfgModel}.proxyWorkstation`,
+            name: '"checkpointS3ProxyWorkstation"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Optional Windows workstation name for configuring NTLM proxy support'
+        })
     .pc-form-grid-col-60
-        +text('Non proxy hosts:', clientCfgModel + '.nonProxyHosts', '"checkpointS3NonProxyHosts"', 'false', 'Not specified',
-        'Optional hosts the client will access without going through the proxy')
+        +form-field__text({
+            label: 'Non proxy hosts:',
+            model: `${clientCfgModel}.nonProxyHosts`,
+            name: '"checkpointS3NonProxyHosts"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Optional hosts the client will access without going through the proxy'
+        })
     .pc-form-grid-col-60
         +dropdown('Retry policy:', clientRetryModel + '.kind', '"checkpointS3RetryPolicy"', 'true', 'Default', '[\
                                             {value: "Default", label: "Default SDK retry policy"},\
@@ -293,8 +311,14 @@ include /app/helpers/jade/mixins
             tip: 'Maximum amount of time that an idle connection may sit in the connection pool and still be eligible for reuse'
         })
     .pc-form-grid-col-30
-        +text('Signature algorithm:', clientCfgModel + '.signerOverride', '"checkpointS3SignerOverride"', 'false', 'Not specified',
-        'Name of the signature algorithm to use for signing requests made by this client')
+        +form-field__text({
+            label: 'Signature algorithm:',
+            model: `${clientCfgModel}.signerOverride`,
+            name: '"checkpointS3SignerOverride"',
+            required: 'false',
+            placeholder: 'Not specified',
+            tip: 'Name of the signature algorithm to use for signing requests made by this client'
+        })
     .pc-form-grid-col-30
         +form-field__number({
             label: 'Connection TTL:',

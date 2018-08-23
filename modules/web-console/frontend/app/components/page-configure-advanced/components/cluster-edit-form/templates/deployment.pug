@@ -171,8 +171,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     - var form = 'deployment'
 
                 .pc-form-grid-col-60
-                    +text('Temporary directory path:', modelDeployment + '.URI.temporaryDirectoryPath', '"DeploymentURITemporaryDirectoryPath"', 'false', 'Temporary directory path',
-                    'Absolute path to temporary directory which will be used by deployment SPI to keep all deployed classes in')
+                    +form-field__text({
+                        label: 'Temporary directory path:',
+                        model: modelDeployment + '.URI.temporaryDirectoryPath',
+                        name: '"DeploymentURITemporaryDirectoryPath"',
+                        required: 'false',
+                        placeholder: 'Temporary directory path',
+                        tip: 'Absolute path to temporary directory which will be used by deployment SPI to keep all deployed classes in'
+                    })
                 .pc-form-grid-col-60
                     mixin clusters-deployment-scanner
                         .ignite-form-field

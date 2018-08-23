@@ -60,7 +60,14 @@ mixin data-region-form({modelAt, namePlaceholder, dataRegionsAt})
         )
 
     .pc-form-grid-col-60(ng-if=`!${modelAt}.persistenceEnabled || ${modelAt}.swapPath`)
-        +text('Swap file path:', `${modelAt}.swapPath`, '"swapPath"', 'false', 'Input swap file path', 'An optional path to a memory mapped file for this data region')
+        +form-field__text({
+            label: 'Swap file path:',
+            model: `${modelAt}.swapPath`,
+            name: '"swapPath"',
+            required: 'false',
+            placeholder: 'Input swap file path',
+            tip: 'An optional path to a memory mapped file for this data region'
+        })
 
     .pc-form-grid-col-60
         +form-field__number({

@@ -30,8 +30,14 @@ mixin discovery-zookeeper(modelAt = '$ctrl.clonedCluster')
                 By default generates curator of org.apache.curator. framework.imps.CuratorFrameworkImpl\
                 class with configured connect string, retry policy, and default session and connection timeouts', required)
         .pc-form-grid-col-60
-            +text('Connect string:', `${model}.zkConnectionString`, `'${discoveryKind}ConnectionString'`, required, 'host:port[chroot][,host:port[chroot]]',
-                'When <b>IGNITE_ZK_CONNECTION_STRING</b> system property is not configured this property will be used.<br><br>This should be a comma separated host:port pairs, each corresponding to a zk server. e.g. "127.0.0.1:3000,127.0.0.1:3001".<br>If the optional chroot suffix is used the example would look like: "127.0.0.1:3000,127.0.0.1:3002/app/a".<br><br>Where the client would be rooted at "/app/a" and all paths would be relative to this root - ie getting/setting/etc... "/foo/bar" would result in operations being run on "/app/a/foo/bar" (from the server perspective).<br><br><a href="https://zookeeper.apache.org/doc/r3.2.2/api/org/apache/zookeeper/ZooKeeper.html#ZooKeeper(java.lang.String,%20int,%20org.apache.zookeeper.Watcher)">Zookeeper docs</a>')
+            +form-field__text({
+                label: 'Connect string:',
+                model: `${model}.zkConnectionString`,
+                name: `'${discoveryKind}ConnectionString'`,
+                required: required,
+                placeholder: 'host:port[chroot][,host:port[chroot]]',
+                tip: 'When <b>IGNITE_ZK_CONNECTION_STRING</b> system property is not configured this property will be used.<br><br>This should be a comma separated host:port pairs, each corresponding to a zk server. e.g. "127.0.0.1:3000,127.0.0.1:3001".<br>If the optional chroot suffix is used the example would look like: "127.0.0.1:3000,127.0.0.1:3002/app/a".<br><br>Where the client would be rooted at "/app/a" and all paths would be relative to this root - ie getting/setting/etc... "/foo/bar" would result in operations being run on "/app/a/foo/bar" (from the server perspective).<br><br><a href="https://zookeeper.apache.org/doc/r3.2.2/api/org/apache/zookeeper/ZooKeeper.html#ZooKeeper(java.lang.String,%20int,%20org.apache.zookeeper.Watcher)">Zookeeper docs</a>'
+            })
         .pc-form-grid-col-60
             +dropdown('Retry policy:', `${model}.retryPolicy.kind`, '"retryPolicy"', 'true', 'Default',
             '[\
@@ -69,11 +75,24 @@ mixin discovery-zookeeper(modelAt = '$ctrl.clonedCluster')
         .pc-form-grid-col-30
             -var model = `${modelAt}.discovery.ZooKeeper`
 
-            +text('Base path:', `${model}.basePath`, '"basePath"', 'false', '/services', 'Base path for service registration')
+            +form-field__text({
+                label: 'Base path:',
+                model: `${model}.basePath`,
+                name: '"basePath"',
+                required: 'false',
+                placeholder: '/services',
+                tip: 'Base path for service registration'
+            })
         .pc-form-grid-col-30
-            +text('Service name:', `${model}.serviceName`, '"serviceName"', 'false', 'ignite',
-                'Service name to use, as defined by Curator&#39;s ServiceDiscovery recipe<br/>\
-                In physical ZooKeeper terms, it represents the node under basePath, under which services will be registered')
+            +form-field__text({
+                label:'Service name:',
+                model: `${model}.serviceName`,
+                name: '"serviceName"',
+                required: 'false',
+                placeholder: 'ignite',
+                tip: 'Service name to use, as defined by Curator&#39;s ServiceDiscovery recipe<br/>\
+                      In physical ZooKeeper terms, it represents the node under basePath, under which services will be registered'
+            })
 
         .pc-form-grid__break
 

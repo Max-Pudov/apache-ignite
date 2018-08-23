@@ -153,8 +153,14 @@ panel-collapsible(
                                             tip='Maximum memory region size defined by this memory policy'
                                         )
                                     .pc-form-grid-col-60
-                                        +text('Swap file path:', '$item.swapFilePath', '"MemoryPolicySwapFilePath"', 'false',
-                                        'Input swap file path', 'An optional path to a memory mapped file for this memory policy')
+                                        +form-field__text({
+                                            label: 'Swap file path:',
+                                            model: '$item.swapFilePath',
+                                            name: '"MemoryPolicySwapFilePath"',
+                                            required: 'false',
+                                            placeholder: 'Input swap file path',
+                                            tip: 'An optional path to a memory mapped file for this memory policy'
+                                        })
                                     .pc-form-grid-col-60
                                         +dropdown('Eviction mode:', '$item.pageEvictionMode', '"MemoryPolicyPageEvictionMode"', 'true', 'DISABLED',
                                         '[\

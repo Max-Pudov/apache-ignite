@@ -177,18 +177,6 @@ mixin form-field__text--autofocus({ label, model, name, disabled = false, requir
         if  block
             block
 
-//- Mixin for text field.
-mixin text(label, model, name, required, placeholder, tip)
-    +form-field__text({
-        label,
-        model,
-        name,
-        required,
-        placeholder,
-        tip
-    })&attributes(attributes)
-        if  block
-            block
 
 //- Mixin for url field.
 mixin url(label, model, name, enabled, required, placeholder, tip)

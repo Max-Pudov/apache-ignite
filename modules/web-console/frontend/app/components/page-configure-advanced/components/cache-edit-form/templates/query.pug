@@ -27,21 +27,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +text('SQL schema name:', `${model}.sqlSchema`, '"sqlSchema"', 'false', 'Input schema name',
-                    'Specify any custom name to be used as SQL schema for current cache. This name will correspond to SQL ANSI-99 standard.\
-                    Nonquoted identifiers are not case sensitive. Quoted identifiers are case sensitive.\
-                    When SQL schema is not specified, quoted cache name should used instead.<br/>\
-                    For example:\
-                    <ul>\
-                        <li>\
-                            Query without schema names (quoted cache names will be used):\
-                            SELECT * FROM "PersonsCache".Person p INNER JOIN "OrganizationsCache".Organization o on p.org = o.id\
-                        </li>\
-                        <li>\
-                            The same query using schema names "Persons" and "Organizations":\
-                            SELECT * FROM Persons.Person p INNER JOIN Organizations.Organization o on p.org = o.id\
-                        </li>\
-                    </ul>')
+                +form-field__text({
+                    label: 'SQL schema name:',
+                    model: `${model}.sqlSchema`,
+                    name: '"sqlSchema"',
+                    required: 'false',
+                    placeholder: 'Input schema name',
+                    tip: 'Cache group name.<br/>\
+                          Caches with the same group name share single underlying "physical" cache (partition set), but are logically isolated.'
+                })
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available(["1.0.0", "2.0.0"])')
@@ -52,7 +46,20 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     disabled: 'false',
                     placeholder: '10240',
                     min: '1',
-                    tip: 'Number of SQL rows which will be cached onheap to avoid deserialization on each SQL index access'
+                    tip: 'Specify any custom name to be used as SQL schema for current cache. This name will correspond to SQL ANSI-99 standard.\
+                          Nonquoted identifiers are not case sensitive. Quoted identifiers are case sensitive.\
+                          When SQL schema is not specified, quoted cache name should used instead.<br/>\
+                          For example:\
+                          <ul>\
+                            <li>\
+                            Query without schema names (quoted cache names will be used):\
+                            SELECT * FROM "PersonsCache".Person p INNER JOIN "OrganizationsCache".Organization o on p.org = o.id\
+                            </li>\
+                            <li>\
+                                The same query using schema names "Persons" and "Organizations":\
+                                SELECT * FROM Persons.Person p INNER JOIN Organizations.Organization o on p.org = o.id\
+                            </li>\
+                          </ul>'
                 })
 
             //- Deprecated in ignite 2.1

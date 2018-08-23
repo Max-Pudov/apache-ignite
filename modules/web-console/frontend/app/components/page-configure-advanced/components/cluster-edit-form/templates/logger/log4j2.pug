@@ -35,4 +35,11 @@ include /app/helpers/jade/mixins
         ]',
         'Level for internal log4j2 implementation')
 .pc-form-grid-col-60
-    +text('Path:', `${model}.path`, '"log4j2Path"', log4j2Required, 'Input path', 'Path or URI to XML configuration')
+    +form-field__text({
+        label: 'Path:',
+        model: `${model}.path`,
+        name: '"log4j2Path"',
+        required: log4j2Required,
+        placeholder: 'Input path',
+        tip: 'Path or URI to XML configuration'
+    })

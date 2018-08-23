@@ -51,9 +51,15 @@ panel-collapsible(opened=`::true` ng-form=form)
                     tip: 'Select domain models to describe types in cache'
                 })
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.1.0")')
-                +text('Group:', `${model}.groupName`, '"groupName"', 'false', 'Input group name',
-                    'Cache group name.<br/>\
-                    Caches with the same group name share single underlying "physical" cache (partition set), but are logically isolated.')
+                +form-field__text({
+                    label: 'Group:',
+                    model: `${model}.groupName`,
+                    name: '"groupName"',
+                    required: 'false',
+                    placeholder: 'Input group name',
+                    tip: 'Cache group name.<br/>\
+                          Caches with the same group name share single underlying "physical" cache (partition set), but are logically isolated.'
+                })
             .pc-form-grid-col-30
                 +cacheMode('Mode:', `${model}.cacheMode`, '"cacheMode"', 'PARTITIONED')
 

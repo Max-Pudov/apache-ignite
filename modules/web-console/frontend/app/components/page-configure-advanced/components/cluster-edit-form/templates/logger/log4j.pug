@@ -46,4 +46,11 @@ include /app/helpers/jade/mixins
             <li>Path - path or URI to XML configuration</li>\
         </ul>')
 .pc-form-grid-col-60(ng-show=pathRequired)
-    +text('Path:', `${model}.path`, '"log4jPath"', pathRequired, 'Input path', 'Path or URI to XML configuration')
+    +form-field__text({
+        label: 'Path:',
+        model: `${model}.path`,
+        name: '"log4jPath"',
+        required: pathRequired,
+        placeholder: 'Input path',
+        tip: 'Path or URI to XML configuration'
+    })

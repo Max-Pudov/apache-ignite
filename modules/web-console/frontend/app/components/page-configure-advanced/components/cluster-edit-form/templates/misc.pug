@@ -25,14 +25,27 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60
-                +text('Work directory:', model + '.workDirectory', '"workDirectory"', 'false', 'Input work directory',
-                    'Ignite work directory.<br/>\
-                    If not provided, the method will use work directory under IGNITE_HOME specified by IgniteConfiguration#setIgniteHome(String)\
-                    or IGNITE_HOME environment variable or system property.')
+                +form-field__text({
+                    label: 'Work directory:',
+                    model: `${model}.workDirectory`,
+                    name: '"workDirectory"',
+                    required: 'false',
+                    placeholder: 'Input work directory',
+                    tip: 'Ignite work directory.<br/>\
+                          If not provided, the method will use work directory under IGNITE_HOME specified by IgniteConfiguration#setIgniteHome(String)\
+                          or IGNITE_HOME environment variable or system property.'
+                })
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if-start='$ctrl.available("2.0.0")')
-                +text('Consistent ID:', model + '.consistentId', '"ConsistentId"', 'false', 'Input consistent ID', 'Consistent globally unique node ID which survives node restarts')
+                +form-field__text({
+                    label: 'Consistent ID:',
+                    model: `${model}.consistentId`,
+                    name: '"ConsistentId"',
+                    required: 'false',
+                    placeholder: 'Input consistent ID',
+                    tip: 'Consistent globally unique node ID which survives node restarts'
+                })
             .pc-form-grid-col-60
                 +java-class('Warmup closure:', model + '.warmupClosure', '"warmupClosure"', 'true', 'false', 'This closure will be executed before actual grid instance start')
             .pc-form-grid-col-60

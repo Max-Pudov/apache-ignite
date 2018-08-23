@@ -151,10 +151,23 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     -var required = `${storeFactoryKind} === 'CacheJdbcBlobStoreFactory' && ${blobStoreFactoryVia} === 'URL'`
 
                     .pc-form-grid-col-60(ng-if-start=`${blobStoreFactoryVia} === 'URL'`)
-                        +text('Connection URL:', `${blobStoreFactory}.connectionUrl`, '"connectionUrl"', required, 'Input URL',
-                        'URL for database access, for example: jdbc:h2:mem:myDatabase')
+                        +form-field__text({
+                            label: 'Connection URL:',
+                            model: `${blobStoreFactory}.connectionUrl`,
+                            name: '"connectionUrl"',
+                            required: required,
+                            placeholder: 'Input URL',
+                            tip: 'URL for database access, for example: jdbc:h2:mem:myDatabase'
+                        })
                     .pc-form-grid-col-30
-                        +text('User:', `${blobStoreFactory}.user`, '"user"', required, 'Input user name', 'User name for database access')
+                        +form-field__text({
+                            label: 'User:',
+                            model: `${blobStoreFactory}.user`,
+                            name: '"user"',
+                            required: required,
+                            placeholder: 'Input user name',
+                            tip: 'User name for database access'
+                        })
                     .pc-form-grid-col-30(ng-if-end)
                         .pc-form-grid__text-only-item Password will be generated as stub.
 
@@ -186,25 +199,55 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             tip: 'Flag indicating whether DB schema should be initialized by Ignite (default behaviour) or was explicitly created by user'
                         })
                     .pc-form-grid-col-60
-                        +text('Create query:', `${blobStoreFactory}.createTableQuery`, '"createTableQuery"', 'false', 'SQL for table creation',
-                        'Query for table creation in underlying database<br/>\
-                        Default value: create table if not exists ENTRIES (key binary primary key, val binary)')
+                        +form-field__text({
+                            label: 'Create query:',
+                            model: `${blobStoreFactory}.createTableQuery`,
+                            name: '"createTableQuery"',
+                            required: 'false',
+                            placeholder: 'SQL for table creation',
+                            tip: 'Query for table creation in underlying database<br/>\
+                                 Default value: create table if not exists ENTRIES (key binary primary key, val binary)'
+                        })
                     .pc-form-grid-col-60
-                        +text('Load query:', `${blobStoreFactory}.loadQuery`, '"loadQuery"', 'false', 'SQL for load entry',
-                        'Query for entry load from underlying database<br/>\
-                        Default value: select * from ENTRIES where key=?')
+                        +form-field__text({
+                            label: 'Load query:',
+                            model: `${blobStoreFactory}.loadQuery`,
+                            name: '"loadQuery"',
+                            required: 'false',
+                            placeholder: 'SQL for load entry',
+                            tip: 'Query for entry load from underlying database<br/>\
+                                 Default value: select * from ENTRIES where key=?'
+                        })
                     .pc-form-grid-col-60
-                        +text('Insert query:', `${blobStoreFactory}.insertQuery`, '"insertQuery"', 'false', 'SQL for insert entry',
-                        'Query for insert entry into underlying database<br/>\
-                        Default value: insert into ENTRIES (key, val) values (?, ?)')
+                        +form-field__text({
+                            label: 'Insert query:',
+                            model: `${blobStoreFactory}.insertQuery`,
+                            name: '"insertQuery"',
+                            required: 'false',
+                            placeholder: 'SQL for insert entry',
+                            tip: 'Query for insert entry into underlying database<br/>\
+                                 Default value: insert into ENTRIES (key, val) values (?, ?)'
+                        })
                     .pc-form-grid-col-60
-                        +text('Update query:', `${blobStoreFactory}.updateQuery`, '"updateQuery"', 'false', 'SQL for update entry',
-                        'Query for update entry in underlying database<br/>\
-                        Default value: update ENTRIES set val=? where key=?')
+                        +form-field__text({
+                            label: 'Update query:',
+                            model: `${blobStoreFactory}.updateQuery`,
+                            name: '"updateQuery"',
+                            required: 'false',
+                            placeholder: 'SQL for update entry',
+                            tip: 'Query for update entry in underlying database<br/>\
+                                 Default value: update ENTRIES set val=? where key=?'
+                        })
                     .pc-form-grid-col-60
-                        +text('Delete query:', `${blobStoreFactory}.deleteQuery`, '"deleteQuery"', 'false', 'SQL for delete entry',
-                        'Query for delete entry from underlying database<br/>\
-                        Default value: delete from ENTRIES where key=?')
+                        +form-field__text({
+                            label: 'Delete query:',
+                            model: `${blobStoreFactory}.deleteQuery`,
+                            name: '"deleteQuery"',
+                            required: 'false',
+                            placeholder: 'SQL for delete entry',
+                            tip: 'Query for delete entry from underlying database<br/>\
+                                 Default value: delete from ENTRIES where key=?'
+                        })
 
                 .pc-form-grid-row(ng-if=`${storeFactoryKind} === 'CacheHibernateBlobStoreFactory'`)
                     -var hibernateStoreFactory = `${storeFactory}.CacheHibernateBlobStoreFactory`

@@ -39,11 +39,23 @@ include /app/helpers/jade/mixins
         tip: 'Maximum number of jobs that are allowed to wait in waiting queue'
     })
 .pc-form-grid-col-30
-    +text('Priority attribute key:', `${model}.priorityAttributeKey`, '"priorityPriorityAttributeKey"', 'false', 'grid.task.priority',
-        'Task priority attribute key')
+    +form-field__text({
+        label: 'Priority attribute key:',
+        model: `${model}.priorityAttributeKey`,
+        name: '"priorityPriorityAttributeKey"',
+        required: 'false',
+        placeholder: 'grid.task.priority',
+        tip: 'Task priority attribute key'
+    })
 .pc-form-grid-col-30
-    +text('Job priority attribute key:', `${model}.jobPriorityAttributeKey`, '"priorityJobPriorityAttributeKey"', 'false', 'grid.job.priority',
-        'Job priority attribute key')
+    +form-field__text({
+        label: 'Job priority attribute key:',
+        model: `${model}.jobPriorityAttributeKey`,
+        name: '"priorityJobPriorityAttributeKey"',
+        required: 'false',
+        placeholder: 'grid.job.priority',
+        tip: 'Job priority attribute key'
+    })
 .pc-form-grid-col-30
     +form-field__number({
         label: 'Default priority:',
