@@ -358,20 +358,6 @@ mixin form-field__eviction-policy({ model, name, enabled, required, tip })
 mixin evictionPolicy(model, name, enabled, required, tip)
     +form-field__eviction-policy({ model, name, enabled, required, tip })
 
-//- Mixin for clusters dropdown.
-mixin clusters(model, tip)
-    +form-field__dropdown({
-        label: 'Clusters:',
-        model: model + '.clusters',
-        name: '"clusters"',
-        disabled: 'false',
-        multiple: true,
-        placeholder: 'Choose clusters',
-        placeholderEmpty: 'No clusters configured',
-        options: 'clusters',
-        tip: tip
-    })
-
 //- Mixin for XML and Java preview.
 mixin preview-xml-java(master, generator, detail)
     ignite-ui-ace-tabs
