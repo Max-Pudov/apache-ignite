@@ -230,6 +230,24 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
             block
 
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
+mixin form-field__url({ label, model, name, enabled, required, placeholder, tip })
+    -var errLbl = label.substring(0, label.length - 1)
+
+    +form-field__text({
+        label,
+        model,
+        name,
+        disabled: enabledToDisabled(enabled),
+        required,
+        placeholder,
+        tip
+    })(
+        type='url'
+    )
+        if  block
+            block
+
+        +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
 
 mixin list-text-field({ items, lbl, name, itemName, itemsName })
