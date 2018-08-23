@@ -31,20 +31,34 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60(ng-if='$ctrl.available(["1.0.0", "2.0.0"])')
-                +dropdown('Marshaller:', marshaller + '.kind', '"kind"', 'true', 'Default', '$ctrl.marshallerVariant',
-                    'Instance of marshaller to use in grid<br/>\
-                    <ul>\
-                        <li>OptimizedMarshaller - Optimized implementation of marshaller</li>\
-                        <li>JdkMarshaller - Marshaller based on JDK serialization mechanism</li>\
-                        <li>Default - BinaryMarshaller serialize and deserialize all objects in the binary format</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Marshaller:',
+                    model: marshaller + '.kind',
+                    name: '"kind"',
+                    disabled: 'false',
+                    placeholder: 'Default',
+                    options: '$ctrl.marshallerVariant',
+                    tip: 'Instance of marshaller to use in grid<br/>\
+                                       <ul>\
+                                           <li>OptimizedMarshaller - Optimized implementation of marshaller</li>\
+                                           <li>JdkMarshaller - Marshaller based on JDK serialization mechanism</li>\
+                                           <li>Default - BinaryMarshaller serialize and deserialize all objects in the binary format</li>\
+                                       </ul>'
+                })
             .pc-form-grid-col-60(ng-if='$ctrl.available(["2.0.0", "2.1.0"])')
-                +dropdown('Marshaller:', marshaller + '.kind', '"kind"', 'true', 'Default', '$ctrl.marshallerVariant',
-                    'Instance of marshaller to use in grid<br/>\
-                    <ul>\
-                        <li>JdkMarshaller - Marshaller based on JDK serialization mechanism</li>\
-                        <li>Default - BinaryMarshaller serialize and deserialize all objects in the binary format</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Marshaller:',
+                    model: marshaller + '.kind',
+                    name: '"kind"',
+                    disabled: 'false',
+                    placeholder: 'Default',
+                    options: '$ctrl.marshallerVariant',
+                    tip: 'Instance of marshaller to use in grid<br/>\
+                                        <ul>\
+                                            <li>JdkMarshaller - Marshaller based on JDK serialization mechanism</li>\
+                                            <li>Default - BinaryMarshaller serialize and deserialize all objects in the binary format</li>\
+                                        </ul>'
+                })
             .pc-form-group.pc-form-grid-row(
                 ng-show=`${marshaller}.kind === 'OptimizedMarshaller'`
                 ng-if='$ctrl.available(["1.0.0", "2.1.0"])'

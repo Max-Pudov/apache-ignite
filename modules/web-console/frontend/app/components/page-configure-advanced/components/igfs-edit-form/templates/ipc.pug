@@ -35,16 +35,22 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'IPC endpoint enabled flag'
                 })
             .pc-form-grid-col-60
-                +dropdown('Type:', `${ipcEndpointConfiguration}.type`, '"ipcEndpointConfigurationType"', enabled, 'TCP',
-                    '[\
-                        {value: "SHMEM", label: "SHMEM"},\
-                        {value: "TCP", label: "TCP"}\
-                    ]',
-                    'IPC endpoint type\
-                    <ul>\
-                        <li>SHMEM - shared memory endpoint</li>\
-                        <li>TCP - TCP endpoint</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Type:',
+                    model: `${ipcEndpointConfiguration}.type`,
+                    name: '"ipcEndpointConfigurationType"',
+                    disabled: `!(${enabled})`,
+                    placeholder: 'TCP',
+                    options: '[\
+                                            {value: "SHMEM", label: "SHMEM"},\
+                                            {value: "TCP", label: "TCP"}\
+                                        ]',
+                    tip: 'IPC endpoint type\
+                                        <ul>\
+                                            <li>SHMEM - shared memory endpoint</li>\
+                                            <li>TCP - TCP endpoint</li>\
+                                        </ul>'
+                })
             .pc-form-grid-col-30
                 +text-ip-address('Host:', `${ipcEndpointConfiguration}.host`, '"ipcEndpointConfigurationHost"', enabled, '127.0.0.1', 'Host endpoint is bound to')
             .pc-form-grid-col-30

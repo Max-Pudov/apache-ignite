@@ -103,17 +103,24 @@ include /app/helpers/jade/mixins
     span Client configuration
 .pc-form-group.pc-form-grid-row(ng-if-end)
     .pc-form-grid-col-30
-        +dropdown('Protocol:', clientCfgModel + '.protocol', '"checkpointS3Protocol"', 'true', 'HTTPS', '[\
-                {value: "HTTP", label: "HTTP"},\
-                {value: "HTTPS", label: "HTTPS"}\
-            ]',
-        'Provides an ability to save an intermediate job state\
-        <ul>\
-            <li>HTTP - Using the HTTP protocol is less secure than HTTPS, but can slightly reduce\
-                the system resources used when communicating with AWS</li>\
-            <li>HTTPS - Using the HTTPS protocol is more secure than using the HTTP protocol, but\
-                may use slightly more system resources. AWS recommends using HTTPS for maximize security</li>\
-        </ul>')
+        +form-field__dropdown({
+            label: 'Protocol:',
+            model: clientCfgModel + '.protocol',
+            name: '"checkpointS3Protocol"',
+            disabled: 'false',
+            placeholder: 'HTTPS',
+            options: '[\
+                            {value: "HTTP", label: "HTTP"},\
+                            {value: "HTTPS", label: "HTTPS"}\
+                        ]',
+            tip: 'Provides an ability to save an intermediate job state\
+                    <ul>\
+                        <li>HTTP - Using the HTTP protocol is less secure than HTTPS, but can slightly reduce\
+                            the system resources used when communicating with AWS</li>\
+                        <li>HTTPS - Using the HTTPS protocol is more secure than using the HTTP protocol, but\
+                            may use slightly more system resources. AWS recommends using HTTPS for maximize security</li>\
+                    </ul>'
+        })
     .pc-form-grid-col-30
         +form-field__number({
             label:'Maximum connections:',
@@ -201,21 +208,28 @@ include /app/helpers/jade/mixins
             tip: 'Optional hosts the client will access without going through the proxy'
         })
     .pc-form-grid-col-60
-        +dropdown('Retry policy:', clientRetryModel + '.kind', '"checkpointS3RetryPolicy"', 'true', 'Default', '[\
-                                            {value: "Default", label: "Default SDK retry policy"},\
-                                            {value: "DefaultMaxRetries", label: "Default with the specified max retry count"},\
-                                            {value: "DynamoDB", label: "Default for DynamoDB client"},\
-                                            {value: "DynamoDBMaxRetries", label: "DynamoDB with the specified max retry count"},\
-                                            {value: "Custom", label: "Custom configured"}\
-                                        ]',
-        'Provides an ability to save an intermediate job state\
-        <ul>\
-            <li>SDK default retry policy - This policy will honor the maxErrorRetry set in ClientConfiguration</li>\
-            <li>Default with the specified max retry count - Default SDK retry policy with the specified max retry count</li>\
-            <li>Default for DynamoDB client - This policy will honor the maxErrorRetry set in ClientConfiguration</li>\
-            <li>DynamoDB with the specified max retry count - This policy will honor the maxErrorRetry set in ClientConfiguration with the specified max retry count</li>\
-            <li>Custom configured - Custom configured SDK retry policy</li>\
-        </ul>')
+        +form-field__dropdown({
+            label: 'Retry policy:',
+            model: `${clientRetryModel}.kind`,
+            name: '"checkpointS3RetryPolicy"',
+            disabled: 'false',
+            placeholder: 'Default',
+            options: '[\
+                                                        {value: "Default", label: "Default SDK retry policy"},\
+                                                        {value: "DefaultMaxRetries", label: "Default with the specified max retry count"},\
+                                                        {value: "DynamoDB", label: "Default for DynamoDB client"},\
+                                                        {value: "DynamoDBMaxRetries", label: "DynamoDB with the specified max retry count"},\
+                                                        {value: "Custom", label: "Custom configured"}\
+                                                    ]',
+            tip: 'Provides an ability to save an intermediate job state\
+                    <ul>\
+                        <li>SDK default retry policy - This policy will honor the maxErrorRetry set in ClientConfiguration</li>\
+                        <li>Default with the specified max retry count - Default SDK retry policy with the specified max retry count</li>\
+                        <li>Default for DynamoDB client - This policy will honor the maxErrorRetry set in ClientConfiguration</li>\
+                        <li>DynamoDB with the specified max retry count - This policy will honor the maxErrorRetry set in ClientConfiguration with the specified max retry count</li>\
+                        <li>Custom configured - Custom configured SDK retry policy</li>\
+                    </ul>'
+        })
     .pc-form-group.pc-form-grid-row(ng-if=checkpointS3DefaultMaxRetry)
         .pc-form-grid-col-60
             +form-field__number({

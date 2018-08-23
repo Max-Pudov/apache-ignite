@@ -31,20 +31,34 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-60(ng-if='$ctrl.available(["1.0.0", "2.0.0"])')
-                +dropdown('Event storage:', modelEventStorageKind, '"eventStorageKind"', 'true', 'Disabled', '$ctrl.eventStorage',
-                'Regulate how grid store events locally on node\
-                <ul>\
-                    <li>Memory - All events are kept in the FIFO queue in-memory</li>\
-                    <li>Custom - Custom implementation of event storage SPI</li>\
-                </ul>')
+                +form-field__dropdown({
+                    label: 'Event storage:',
+                    model: modelEventStorageKind,
+                    name: '"eventStorageKind"',
+                    disabled: 'false',
+                    placeholder: 'Disabled',
+                    options: '$ctrl.eventStorage',
+                    tip: 'Regulate how grid store events locally on node\
+                                    <ul>\
+                                        <li>Memory - All events are kept in the FIFO queue in-memory</li>\
+                                        <li>Custom - Custom implementation of event storage SPI</li>\
+                                    </ul>'
+                })
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +dropdown('Event storage:', modelEventStorageKind, '"eventStorageKind"', 'true', 'Disabled', '$ctrl.eventStorage',
-                'Regulate how grid store events locally on node\
-                <ul>\
-                    <li>Memory - All events are kept in the FIFO queue in-memory</li>\
-                    <li>Custom - Custom implementation of event storage SPI</li>\
-                    <li>Disabled - Events are not collected</li>\
-                </ul>')
+                +form-field__dropdown({
+                    label: 'Event storage:',
+                    model: modelEventStorageKind,
+                    name: '"eventStorageKind"',
+                    disabled: 'false',
+                    placeholder: 'Disabled',
+                    options: '$ctrl.eventStorage',
+                    tip: 'Regulate how grid store events locally on node\
+                                    <ul>\
+                                        <li>Memory - All events are kept in the FIFO queue in-memory</li>\
+                                        <li>Custom - Custom implementation of event storage SPI</li>\
+                                        <li>Disabled - Events are not collected</li>\
+                                    </ul>'
+                })
             .pc-form-group.pc-form-grid-row(ng-if=modelEventStorageKind)
                 .pc-form-grid-col-30(ng-if-start=eventStorageMemory)
                     +form-field__number({

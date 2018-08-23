@@ -31,18 +31,24 @@ panel-collapsible(
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-30
-                +dropdown('Mode:', `${model}.rebalanceMode`, '"rebalanceMode"', 'true', 'ASYNC',
-                    '[\
-                        {value: "SYNC", label: "SYNC"},\
-                        {value: "ASYNC", label: "ASYNC"},\
-                        {value: "NONE", label: "NONE"}\
-                    ]',
-                    'Rebalance modes\
-                    <ul>\
-                        <li>Synchronous - in this mode distributed caches will not start until all necessary data is loaded from other available grid nodes</li>\
-                        <li>Asynchronous - in this mode distributed caches will start immediately and will load all necessary data from other available grid nodes in the background</li>\
-                        <li>None - in this mode no rebalancing will take place which means that caches will be either loaded on demand from persistent store whenever data is accessed, or will be populated explicitly</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Mode:',
+                    model: `${model}.rebalanceMode`,
+                    name: '"rebalanceMode"',
+                    disabled: 'false',
+                    placeholder: 'ASYNC',
+                    options: '[\
+                                            {value: "SYNC", label: "SYNC"},\
+                                            {value: "ASYNC", label: "ASYNC"},\
+                                            {value: "NONE", label: "NONE"}\
+                                        ]',
+                    tip: 'Rebalance modes\
+                                        <ul>\
+                                            <li>Synchronous - in this mode distributed caches will not start until all necessary data is loaded from other available grid nodes</li>\
+                                            <li>Asynchronous - in this mode distributed caches will start immediately and will load all necessary data from other available grid nodes in the background</li>\
+                                            <li>None - in this mode no rebalancing will take place which means that caches will be either loaded on demand from persistent store whenever data is accessed, or will be populated explicitly</li>\
+                                        </ul>'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Batch size:',

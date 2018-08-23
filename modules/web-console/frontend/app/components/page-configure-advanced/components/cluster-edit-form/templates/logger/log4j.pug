@@ -21,19 +21,26 @@ include /app/helpers/jade/mixins
 -var pathRequired = model + '.mode === "Path" && $ctrl.clonedCluster.logger.kind === "Log4j"'
 
 .pc-form-grid-col-30
-    +dropdown('Level:', `${model}.level`, '"log4jLevel"', 'true', 'Default',
-        '[\
-            {value: "OFF", label: "OFF"},\
-            {value: "FATAL", label: "FATAL"},\
-            {value: "ERROR", label: "ERROR"},\
-            {value: "WARN", label: "WARN"},\
-            {value: "INFO", label: "INFO"},\
-            {value: "DEBUG", label: "DEBUG"},\
-            {value: "TRACE", label: "TRACE"},\
-            {value: "ALL", label: "ALL"},\
-            {value: null, label: "Default"}\
-        ]',
-        'Level for internal log4j implementation')
+    +form-field__dropdown({
+        label: 'Level:',
+        model: `${model}.level`,
+        name: '"log4jLevel"',
+        disabled: 'false',
+        placeholder: 'Default',
+        options: '[\
+                    {value: "OFF", label: "OFF"},\
+                    {value: "FATAL", label: "FATAL"},\
+                    {value: "ERROR", label: "ERROR"},\
+                    {value: "WARN", label: "WARN"},\
+                    {value: "INFO", label: "INFO"},\
+                    {value: "DEBUG", label: "DEBUG"},\
+                    {value: "TRACE", label: "TRACE"},\
+                    {value: "ALL", label: "ALL"},\
+                    {value: null, label: "Default"}\
+                ]',
+        tip: 'Level for internal log4j implementation'
+    })
+
 .pc-form-grid-col-30
     +form-field__dropdown({
         label: 'Logger configuration:',

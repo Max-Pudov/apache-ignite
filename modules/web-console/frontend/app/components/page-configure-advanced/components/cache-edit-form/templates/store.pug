@@ -137,16 +137,22 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     -var blobStoreFactoryVia = `${blobStoreFactory}.connectVia`
 
                     .pc-form-grid-col-60
-                        +dropdown('Connect via:', blobStoreFactoryVia, '"connectVia"', 'true', 'Choose connection method',
-                        '[\
-                            {value: "URL", label: "URL"},\
-                            {value: "DataSource", label: "Data source"}\
-                        ]',
-                        'You can connect to database via:\
-                        <ul>\
-                            <li>JDBC URL, for example: jdbc:h2:mem:myDatabase</li>\
-                            <li>Configured data source</li>\
-                        </ul>')
+                        +form-field__dropdown({
+                            label: 'Connect via:',
+                            model: blobStoreFactoryVia,
+                            name: '"connectVia"',
+                            disabled: 'false',
+                            placeholder: 'Choose connection method',
+                            options: '[\
+                                                        {value: "URL", label: "URL"},\
+                                                        {value: "DataSource", label: "Data source"}\
+                                                    ]',
+                            tip: 'You can connect to database via:\
+                                                    <ul>\
+                                                        <li>JDBC URL, for example: jdbc:h2:mem:myDatabase</li>\
+                                                        <li>Configured data source</li>\
+                                                    </ul>'
+                        })
 
                     -var required = `${storeFactoryKind} === 'CacheJdbcBlobStoreFactory' && ${blobStoreFactoryVia} === 'URL'`
 

@@ -31,18 +31,24 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-30
-                +dropdown('Cache mode:', `${model}.cacheMode`, '"cacheMode"', 'true', 'PARTITIONED',
-                    '[\
-                        {value: "LOCAL", label: "LOCAL"},\
-                        {value: "REPLICATED", label: "REPLICATED"},\
-                        {value: "PARTITIONED", label: "PARTITIONED"}\
-                    ]',
-                    'Cache modes:\
-                    <ul>\
-                        <li>Partitioned - in this mode the overall key set will be divided into partitions and all partitions will be split equally between participating nodes</li>\
-                        <li>Replicated - in this mode all the keys are distributed to all participating nodes</li>\
-                        <li>Local - in this mode caches residing on different grid nodes will not know about each other</li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Cache mode:',
+                    model: `${model}.cacheMode`,
+                    name: '"cacheMode"',
+                    disabled: 'false',
+                    placeholder: 'PARTITIONED',
+                    options: '[\
+                                            {value: "LOCAL", label: "LOCAL"},\
+                                            {value: "REPLICATED", label: "REPLICATED"},\
+                                            {value: "PARTITIONED", label: "PARTITIONED"}\
+                                        ]',
+                    tip: 'Cache modes:\
+                                        <ul>\
+                                            <li>Partitioned - in this mode the overall key set will be divided into partitions and all partitions will be split equally between participating nodes</li>\
+                                            <li>Replicated - in this mode all the keys are distributed to all participating nodes</li>\
+                                            <li>Local - in this mode caches residing on different grid nodes will not know about each other</li>\
+                                        </ul>'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Sequence reserve:',
@@ -66,13 +72,20 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 })
 
             .pc-form-grid-col-60(ng-if-start='$ctrl.available("2.1.0")')
-                +dropdown('Function:', `${affModel}.kind`, '"AffinityKind"', 'true', 'Default', '$ctrl.Clusters.affinityFunctions',
-                    'Key topology resolver to provide mapping from keys to nodes\
-                    <ul>\
-                        <li>Rendezvous - Based on Highest Random Weight algorithm<br/></li>\
-                        <li>Custom - Custom implementation of key affinity function<br/></li>\
-                        <li>Default - By default rendezvous affinity function  with 1024 partitions is used<br/></li>\
-                    </ul>')
+                +form-field__dropdown({
+                    label: 'Function:',
+                    model: `${affModel}.kind`,
+                    name: '"AffinityKind"',
+                    disabled: 'false',
+                    placeholder: 'Default',
+                    options: '$ctrl.Clusters.affinityFunctions',
+                    tip: 'Key topology resolver to provide mapping from keys to nodes\
+                                        <ul>\
+                                            <li>Rendezvous - Based on Highest Random Weight algorithm<br/></li>\
+                                            <li>Custom - Custom implementation of key affinity function<br/></li>\
+                                            <li>Default - By default rendezvous affinity function  with 1024 partitions is used<br/></li>\
+                                        </ul>'
+                })
             .pc-form-group(ng-if-end ng-if=rendezvousAff + ' || ' + customAff)
                 .pc-form-grid-row
                     .pc-form-grid-col-30(ng-if-start=rendezvousAff)

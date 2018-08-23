@@ -39,28 +39,34 @@ mixin discovery-zookeeper(modelAt = '$ctrl.clonedCluster')
                 tip: 'When <b>IGNITE_ZK_CONNECTION_STRING</b> system property is not configured this property will be used.<br><br>This should be a comma separated host:port pairs, each corresponding to a zk server. e.g. "127.0.0.1:3000,127.0.0.1:3001".<br>If the optional chroot suffix is used the example would look like: "127.0.0.1:3000,127.0.0.1:3002/app/a".<br><br>Where the client would be rooted at "/app/a" and all paths would be relative to this root - ie getting/setting/etc... "/foo/bar" would result in operations being run on "/app/a/foo/bar" (from the server perspective).<br><br><a href="https://zookeeper.apache.org/doc/r3.2.2/api/org/apache/zookeeper/ZooKeeper.html#ZooKeeper(java.lang.String,%20int,%20org.apache.zookeeper.Watcher)">Zookeeper docs</a>'
             })
         .pc-form-grid-col-60
-            +dropdown('Retry policy:', `${model}.retryPolicy.kind`, '"retryPolicy"', 'true', 'Default',
-            '[\
-                {value: "ExponentialBackoff", label: "Exponential backoff"},\
-                {value: "BoundedExponentialBackoff", label: "Bounded exponential backoff"},\
-                {value: "UntilElapsed", label: "Until elapsed"},\
-                {value: "NTimes", label: "Max number of times"},\
-                {value: "OneTime", label: "Only once"},\
-                {value: "Forever", label: "Always allow retry"},\
-                {value: "Custom", label: "Custom"},\
-                {value: null, label: "Default"}\
-            ]',
-            'Available retry policies:\
-            <ul>\
-                <li>Exponential backoff - retries a set number of times with increasing sleep time between retries</li>\
-                <li>Bounded exponential backoff - retries a set number of times with an increasing (up to a maximum bound) sleep time between retries</li>\
-                <li>Until elapsed - retries until a given amount of time elapses</li>\
-                <li>Max number of times - retries a max number of times</li>\
-                <li>Only once - retries only once</li>\
-                <li>Always allow retry - retries infinitely</li>\
-                <li>Custom - custom retry policy implementation</li>\
-                <li>Default - exponential backoff retry policy with configured base sleep time equal to 1000ms and max retry count equal to 10</li>\
-            </ul>')
+            +form-field__dropdown({
+                label: 'Retry policy:',
+                model: `${model}.retryPolicy.kind`,
+                name: '"retryPolicy"',
+                disabled: 'false',
+                placeholder: 'Default',
+                options: '[\
+                                {value: "ExponentialBackoff", label: "Exponential backoff"},\
+                                {value: "BoundedExponentialBackoff", label: "Bounded exponential backoff"},\
+                                {value: "UntilElapsed", label: "Until elapsed"},\
+                                {value: "NTimes", label: "Max number of times"},\
+                                {value: "OneTime", label: "Only once"},\
+                                {value: "Forever", label: "Always allow retry"},\
+                                {value: "Custom", label: "Custom"},\
+                                {value: null, label: "Default"}\
+                            ]',
+                tip: 'Available retry policies:\
+                            <ul>\
+                                <li>Exponential backoff - retries a set number of times with increasing sleep time between retries</li>\
+                                <li>Bounded exponential backoff - retries a set number of times with an increasing (up to a maximum bound) sleep time between retries</li>\
+                                <li>Until elapsed - retries until a given amount of time elapses</li>\
+                                <li>Max number of times - retries a max number of times</li>\
+                                <li>Only once - retries only once</li>\
+                                <li>Always allow retry - retries infinitely</li>\
+                                <li>Custom - custom retry policy implementation</li>\
+                                <li>Default - exponential backoff retry policy with configured base sleep time equal to 1000ms and max retry count equal to 10</li>\
+                            </ul>'
+            })
 
         .pc-form-grid__break
 

@@ -168,20 +168,6 @@ mixin url(label, model, name, enabled, required, placeholder, tip)
 
         +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 
-//- Mixin for dropdown field.
-mixin dropdown(label, model, name, enabled, placeholder, options, tip)
-    +form-field__dropdown({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        placeholder,
-        options,
-        tip
-    })&attributes(attributes)
-        if  block
-            block
-
 //- Mixin for dropdown-multiple field.
 mixin dropdown-multiple(label, model, name, enabled, placeholder, placeholderEmpty, options, tip)
     +form-field__dropdown({

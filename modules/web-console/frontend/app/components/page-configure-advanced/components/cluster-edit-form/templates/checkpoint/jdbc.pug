@@ -71,7 +71,15 @@ include /app/helpers/jade/mixins
         tip: 'Checkpoint key field name'
     })
 .pc-form-grid-col-30
-    +dropdown('Key field type:', '$checkpointSPI.JDBC.keyFieldType', '"checkpointJdbcKeyFieldType"', 'true', 'VARCHAR', '::$ctrl.supportedJdbcTypes', 'Checkpoint key field type')
+    +form-field__dropdown({
+        label: 'Key field type:',
+        model: '$checkpointSPI.JDBC.keyFieldType',
+        name: '"checkpointJdbcKeyFieldType"',
+        disabled: 'false',
+        placeholder: 'VARCHAR',
+        options: '::$ctrl.supportedJdbcTypes',
+        tip: 'Checkpoint key field type'
+    })
 .pc-form-grid-col-30
     +form-field__text({
         label: 'Value field name:',
@@ -82,7 +90,15 @@ include /app/helpers/jade/mixins
         tip: 'Checkpoint value field name'
     })
 .pc-form-grid-col-30
-    +dropdown('Value field type:', '$checkpointSPI.JDBC.valueFieldType', '"checkpointJdbcValueFieldType"', 'true', 'BLOB', '::$ctrl.supportedJdbcTypes', 'Checkpoint value field type')
+    +form-field__dropdown({
+        label: 'Value field type:',
+        model: '$checkpointSPI.JDBC.valueFieldType',
+        name: '"checkpointJdbcValueFieldType"',
+        disabled: 'false',
+        placeholder: 'BLOB',
+        options: '::$ctrl.supportedJdbcTypes',
+        tip: 'Checkpoint value field type'
+    })
 .pc-form-grid-col-30
     +form-field__text({
         label:'Expire date field name:',
@@ -93,4 +109,12 @@ include /app/helpers/jade/mixins
         tip: 'Checkpoint expire date field name'
     })
 .pc-form-grid-col-30(ng-if-end)
-    +dropdown('Expire date field type:', '$checkpointSPI.JDBC.expireDateFieldType', '"checkpointJdbcExpireDateFieldType"', 'true', 'DATETIME', '::$ctrl.supportedJdbcTypes', 'Checkpoint expire date field type')
+    +form-field__dropdown({
+        label: 'Expire date field type:',
+        model: '$checkpointSPI.JDBC.expireDateFieldType',
+        name: '"checkpointJdbcExpireDateFieldType"',
+        disabled: 'false',
+        placeholder: 'DATETIME',
+        options: '::$ctrl.supportedJdbcTypes',
+        tip: 'Checkpoint expire date field type'
+    })
