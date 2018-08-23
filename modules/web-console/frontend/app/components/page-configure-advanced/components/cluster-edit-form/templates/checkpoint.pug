@@ -24,7 +24,7 @@ include /app/helpers/jade/mixins
 panel-collapsible(ng-form=form)
     panel-title Checkpointing
     panel-description
-        | Checkpointing provides an ability to save an intermediate job state. 
+        | Checkpointing provides an ability to save an intermediate job state.
         | #[a.link-success(href="https://apacheignite.readme.io/docs/checkpointing" target="_blank") More info]
     panel-content.pca-form-row
         .pca-form-column-6.pc-form-grid-row
@@ -54,8 +54,17 @@ panel-collapsible(ng-form=form)
                             include ./checkpoint/fs
 
                             .pc-form-grid-col-60(ng-if-start=CacheCheckpoint)
-                                +dropdown-required-empty('Cache:', '$checkpointSPI.Cache.cache', '"checkpointCacheCache"', 'true', CacheCheckpoint,
-                                    'Choose cache', 'No caches configured for current cluster', '$ctrl.cachesMenu', 'Cache to use for storing checkpoints')(
+                                +form-field__dropdown({
+                                    label: 'Cache:',
+                                    model: '$checkpointSPI.Cache.cache',
+                                    name: '"checkpointCacheCache"',
+                                    disabled: 'false',
+                                    required: CacheCheckpoint,
+                                    placeholder: 'Choose cache',
+                                    placeholderEmpty: 'No caches configured for current cluster',
+                                    options: '$ctrl.cachesMenu',
+                                    tip: 'Cache to use for storing checkpoints'
+                                })(
                                     pc-is-in-collection='$ctrl.clonedCluster.caches'
                                 )
                                     +form-field__error({ error: 'isInCollection', message: `Cluster doesn't have such a cache` })
@@ -77,6 +86,6 @@ panel-collapsible(ng-form=form)
                                 label-single='checkpoint SPI configuration'
                                 label-multiple='checkpoint SPI configurations'
                             )
-    
+
         .pca-form-column-6
             +preview-xml-java('$ctrl.clonedCluster', 'clusterCheckpoint', '$ctrl.caches')

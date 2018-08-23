@@ -75,8 +75,17 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         Zero for unlimited'
                                 })
                             .pc-form-grid-col-60
-                                +dropdown-required-empty('Cache:', '$item.cache', '"serviceCache"', 'true', 'false',
-                                    'Choose cache', 'No caches configured for current cluster', '$ctrl.cachesMenu', 'Cache name used for key-to-node affinity calculation')(
+                                +form-field__dropdown({
+                                    label: 'Cache:',
+                                    model: '$item.cache',
+                                    name: '"serviceCache"',
+                                    disabled: 'false',
+                                    required: 'false',
+                                    placeholder: 'Choose cache',
+                                    placeholderEmpty: 'No caches configured for current cluster',
+                                    options: '$ctrl.cachesMenu',
+                                    tip: 'Cache name used for key-to-node affinity calculation'
+                                })(
                                     pc-is-in-collection='$ctrl.clonedCluster.caches'
                                 )
                                     +form-field__error({ error: 'isInCollection', message: `Cluster doesn't have such a cache` })
