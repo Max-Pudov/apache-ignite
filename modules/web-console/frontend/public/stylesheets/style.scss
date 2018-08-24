@@ -2121,3 +2121,12 @@ header.header-with-selector {
         }
     }
 }
+
+// Statuses coloring
+.ignite-status__active {
+    color: $ignite-status-active !important;
+}
+
+.ignite-status__iaactive {
+    color: $ignite-status-inactive;
+}
