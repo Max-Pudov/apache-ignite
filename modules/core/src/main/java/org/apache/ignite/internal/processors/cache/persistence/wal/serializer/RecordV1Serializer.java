@@ -22,6 +22,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.zip.CRC32;
+
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteSystemProperties;
 import org.apache.ignite.internal.pagemem.wal.WALPointer;
@@ -37,7 +39,6 @@ import org.apache.ignite.internal.processors.cache.persistence.wal.FileInput;
 import org.apache.ignite.internal.processors.cache.persistence.wal.FileWALPointer;
 import org.apache.ignite.internal.processors.cache.persistence.wal.SegmentEofException;
 import org.apache.ignite.internal.processors.cache.persistence.wal.WalSegmentTailReachedException;
-import org.apache.ignite.internal.processors.cache.persistence.wal.crc.PureJavaCrc32;
 import org.apache.ignite.internal.processors.cache.persistence.wal.record.HeaderRecord;
 import org.apache.ignite.internal.processors.cache.persistence.wal.serializer.io.RecordIO;
 import org.apache.ignite.internal.processors.cache.version.GridCacheVersion;
@@ -95,6 +96,9 @@ public class RecordV1Serializer implements RecordSerializer {
      * Records are not deserialized in this mode, {@link MarshalledRecord} with binary representation are read instead.
      */
     private final boolean marshalledMode;
+
+    /** CRC algo. */
+    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
 
     /** Thread-local heap byte buffer. */
     private final ThreadLocal<ByteBuffer> heapTlb = new ThreadLocal<ByteBuffer>() {
@@ -419,7 +423,7 @@ public class RecordV1Serializer implements RecordSerializer {
             buf.position(startPos);
 
             // This call will move buffer position to the end of the record again.
-            int crcVal = PureJavaCrc32.calcCrc32(buf, curPos - startPos);
+            int crcVal = U.calcCrc(crc.get(), buf, curPos - startPos);
 
             buf.putInt(crcVal);
         }

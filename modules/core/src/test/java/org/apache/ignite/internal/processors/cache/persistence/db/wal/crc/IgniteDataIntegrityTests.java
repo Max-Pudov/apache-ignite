@@ -24,22 +24,30 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.zip.CRC32;
+
 import org.apache.ignite.internal.processors.cache.persistence.file.FileIOFactory;
 import org.apache.ignite.internal.processors.cache.persistence.file.RandomAccessFileIOFactory;
 import org.apache.ignite.internal.processors.cache.persistence.wal.ByteBufferExpander;
 import org.apache.ignite.internal.processors.cache.persistence.wal.FileInput;
 import org.apache.ignite.internal.processors.cache.persistence.wal.crc.IgniteDataIntegrityViolationException;
 import org.apache.ignite.internal.processors.cache.persistence.wal.crc.PureJavaCrc32;
+import org.apache.ignite.internal.util.typedef.internal.U;
 
 /**
  *
  */
 public class IgniteDataIntegrityTests extends TestCase {
     /** File input. */
-    private FileInput fileInput;
+    protected FileInput fileInput;
 
     /** Buffer expander. */
-    private ByteBufferExpander expBuf;
+    protected ByteBufferExpander expBuf;
+
+    /** CRC algo. */
+    private CRC32 crcAlgo = new CRC32();
+
+    protected boolean oldCrcAlgo;
 
     /** {@inheritDoc} */
     @Override protected void setUp() throws Exception {
@@ -65,7 +73,10 @@ public class IgniteDataIntegrityTests extends TestCase {
             buf.putInt(curr.nextInt());
             buf.putInt(curr.nextInt());
             buf.position(i);
-            buf.putInt(PureJavaCrc32.calcCrc32(buf, 12));
+            if (oldCrcAlgo)
+                buf.putInt(PureJavaCrc32.calcCrc32(buf, 12));
+            else
+                buf.putInt(U.calcCrc(crcAlgo, buf, 12));
         }
 
         buf.rewind();

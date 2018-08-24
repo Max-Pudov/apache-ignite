@@ -20,9 +20,11 @@ package org.apache.ignite.internal.processors.cache.persistence.wal;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.zip.CRC32;
+
 import org.apache.ignite.internal.processors.cache.persistence.file.FileIO;
 import org.apache.ignite.internal.processors.cache.persistence.wal.crc.IgniteDataIntegrityViolationException;
-import org.apache.ignite.internal.processors.cache.persistence.wal.crc.PureJavaCrc32;
+import org.apache.ignite.internal.util.typedef.internal.U;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -271,7 +273,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
 
     /**
      * @param skipCheck If CRC check should be skipped.
-     * @return autoclosable fileInput, after its closing crc32 will be calculated and compared with saved one
+     * @return autoclosable fileInput, after its closing crc will be calculated and compared with saved one
      */
     public Crc32CheckingFileInput startRead(boolean skipCheck) {
         return new Crc32CheckingFileInput(buf.position(), skipCheck);
@@ -282,7 +284,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
      */
     public class Crc32CheckingFileInput implements ByteBufferBackedDataInput, AutoCloseable {
         /** */
-        private final PureJavaCrc32 crc32 = new PureJavaCrc32();
+        private final CRC32 crc = new CRC32();
 
         /** Last calc position. */
         private int lastCalcPosition;
@@ -316,7 +318,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
         @Override public void close() throws Exception {
             updateCrc();
 
-            int val = crc32.getValue();
+            int val = (int) crc.getValue() ^ 0xFFFFFFFF;
 
             int writtenCrc =  this.readInt();
 
@@ -341,7 +343,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
 
             buf.position(lastCalcPosition);
 
-            crc32.update(buf, oldPos - lastCalcPosition);
+            U.calcCrcWithReset(crc, buf, oldPos - lastCalcPosition, false);
 
             lastCalcPosition = oldPos;
         }

@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.zip.CRC32;
+
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteSystemProperties;
 import org.apache.ignite.configuration.DataStorageConfiguration;
@@ -35,7 +37,6 @@ import org.apache.ignite.internal.pagemem.store.PageStore;
 import org.apache.ignite.internal.processors.cache.persistence.AllocatedPageTracker;
 import org.apache.ignite.internal.processors.cache.persistence.tree.io.PageIO;
 import org.apache.ignite.internal.processors.cache.persistence.wal.crc.IgniteDataIntegrityViolationException;
-import org.apache.ignite.internal.processors.cache.persistence.wal.crc.PureJavaCrc32;
 import org.apache.ignite.internal.util.typedef.internal.U;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -94,6 +95,9 @@ public class FilePageStore implements PageStore {
 
     /** */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    /** CRC algo. */
+    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
 
     /**
      * @param file File.
@@ -369,7 +373,7 @@ public class FilePageStore implements PageStore {
             pageBuf.position(0);
 
             if (!skipCrc) {
-                int curCrc32 = PureJavaCrc32.calcCrc32(pageBuf, pageSize);
+                int curCrc32 = U.calcCrc(crc.get(), pageBuf, pageSize);
 
                 if ((savedCrc32 ^ curCrc32) != 0)
                     throw new IgniteDataIntegrityViolationException("Failed to read page (CRC validation failed) " +
@@ -562,14 +566,16 @@ public class FilePageStore implements PageStore {
                     if (calculateCrc && !skipCrc) {
                         assert PageIO.getCrc(pageBuf) == 0 : U.hexLong(pageId);
 
-                        PageIO.setCrc(pageBuf, calcCrc32(pageBuf, pageSize));
+                        PageIO.setCrc(pageBuf, U.calcCrc(crc.get(), pageBuf, pageSize));
+
+                        pageBuf.position(0);
                     }
 
                     // Check whether crc was calculated somewhere above the stack if it is forcibly skipped.
-                    assert skipCrc || PageIO.getCrc(pageBuf) != 0 || calcCrc32(pageBuf, pageSize) == 0 :
+                    assert skipCrc || PageIO.getCrc(pageBuf) != 0 || U.calcCrc(crc.get(), pageBuf, pageSize) == 0 :
                         "CRC hasn't been calculated, crc=0";
 
-                    assert pageBuf.position() == 0 : pageBuf.position();
+                    pageBuf.position(0);
 
                     fileIO.writeFully(pageBuf, off);
 
@@ -611,21 +617,6 @@ public class FilePageStore implements PageStore {
                 throw new PersistentStorageIOException("Failed to write the page to the file store [pageId=" + pageId
                     + ", file=" + cfgFile.getAbsolutePath() + ']', e);
             }
-        }
-    }
-
-    /**
-     * @param pageBuf Page buffer.
-     * @param pageSize Page size.
-     */
-    private static int calcCrc32(ByteBuffer pageBuf, int pageSize) {
-        try {
-            pageBuf.position(0);
-
-            return PureJavaCrc32.calcCrc32(pageBuf, pageSize);
-        }
-        finally {
-            pageBuf.position(0);
         }
     }
 

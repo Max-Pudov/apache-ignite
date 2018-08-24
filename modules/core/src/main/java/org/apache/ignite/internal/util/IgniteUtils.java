@@ -137,6 +137,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -10486,6 +10487,38 @@ public abstract class IgniteUtils {
             sb.append(U.hexLong(buf.getLong(i)));
 
         return sb.toString();
+    }
+
+    public static int calcCrc(CRC32 crcAlgo, ByteBuffer buf, int len) {
+        return calcCrcWithReset(crcAlgo, buf, len, true);
+    }
+
+    public static int calcCrcWithReset(CRC32 crcAlgo, ByteBuffer buf, int len, boolean reset) {
+        int pos = buf.position();
+
+        int res;
+
+        if (buf.capacity() <= pos + len)
+            crcAlgo.update(buf);
+        else if (buf.hasArray()) {
+            crcAlgo.update(buf.array(), pos, len);
+
+            buf.position(pos + len);
+        }
+        else {
+            byte[] buf0 = new byte[len];
+
+            buf.get(buf0);
+
+            crcAlgo.update(buf0, 0, len);
+        }
+
+        res = (int)crcAlgo.getValue() ^ 0xFFFFFFFF;
+
+        if (reset)
+            crcAlgo.reset();
+
+        return res;
     }
 
     /**
