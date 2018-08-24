@@ -2,10 +2,10 @@
     {
         "title": "With Apache Ignite Web Console You Can",
         "message": [
-            "<div class='col-50'>",
-            " <img src='/images/ignite-puzzle.png' width='50%' class='getting-started-puzzle' />",
+            "<div class='col-40 align-center'>",
+            " <img src='/images/ignite-puzzle.png' width='170px' class='getting-started-puzzle' />",
             "</div>",
-            "<div class='col-50'>",
+            "<div class='col-60'>",
             " <ul class='align-top'>",
             "  <li>Generate cluster configuration</li>",
             "  <li>Import domain model from database</li>",

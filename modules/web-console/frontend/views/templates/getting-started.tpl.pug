@@ -29,9 +29,9 @@ include /app/helpers/jade/mixins
             .modal-footer
                 div
                     +form-field__checkbox({
-                        label: 'Show getting started on next login',
-                        model: 'ui.showGettingStarted',
-                        name: '"showGettingStarted"'
+                        label: 'Do not show this window again.',
+                        model: 'ui.dontShowGettingStarted',
+                        name: '"dontShowGettingStarted"'
                     })
                 div
                     a.btn-ignite.btn-ignite--link-success(ng-disabled='isFirst()' ng-click='!isFirst() && prev()') Prev
