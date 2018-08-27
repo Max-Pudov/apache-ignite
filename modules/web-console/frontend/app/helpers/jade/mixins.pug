@@ -483,34 +483,6 @@ mixin list-pair-edit({ items, keyLbl, valLbl, itemName, itemsName })
                 label-multiple=itemsName
             )
 
-//- Mixin for DB dialect.
-mixin dialect(label, model, name, required, tip, genericDialectName, placeholder)
-    +form-field__dropdown({
-        label,
-        model,
-        name,
-        required,
-        placeholder,
-        options: '[\
-                {value: "Generic", label: "' + genericDialectName + '"},\
-                {value: "Oracle", label: "Oracle"},\
-                {value: "DB2", label: "IBM DB2"},\
-                {value: "SQLServer", label: "Microsoft SQL Server"},\
-                {value: "MySQL", label: "MySQL"},\
-                {value: "PostgreSQL", label: "PostgreSQL"},\
-                {value: "H2", label: "H2 database"}\
-        ]',
-        tip: `${ tip }
-            <ul>
-                <li>${ genericDialectName }</li>
-                <li>Oracle database</li>
-                <li>IBM DB2</li>
-                <li>Microsoft SQL Server</li>
-                <li>MySQL</li>
-                <li>PostgreSQL</li>
-                <li>H2 database</li>
-            </ul>`
-    })
 mixin form-field__dialect({ label, model, name, required, tip, genericDialectName, placeholder })
     +form-field__dropdown({
         label,
