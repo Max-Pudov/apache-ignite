@@ -53,22 +53,6 @@ mixin form-field__java-class({ label, model, name, enabled, required, tip, place
         +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 
 
-//- Mixin for Java class name field with auto focus condition.
-mixin java-class-autofocus(label, model, name, enabled, required, autofocus, tip, validationActive)
-    +form-field__java-class({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        tip,
-        validationActive
-    })(
-        data-ignite-form-field-input-autofocus=autofocus
-    )&attributes(attributes)
-        if  block
-            block
-
 mixin java-class(label, model, name, enabled, required, tip, validationActive)
     +form-field__java-class({ label, model, name, enabled, required, tip, validationActive })
         if  block

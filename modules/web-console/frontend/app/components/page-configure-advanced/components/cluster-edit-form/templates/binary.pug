@@ -44,7 +44,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         list-editable-item-edit.pc-form-grid-row
                             - form = '$parent.form'
                             .pc-form-grid-col-60
-                                +java-class-autofocus('Type name:', '$item.typeName', '"typeName"', 'true', 'true', 'true', 'Type name')(
+                                +form-field__java-class({
+                                    label: 'Type name:',
+                                    model: '$item.typeName',
+                                    name: '"typeName"',
+                                    disabled: 'false',
+                                    required: 'true',
+                                    tip: 'Type name'
+                                })(
+                                    data-ignite-form-field-input-autofocus='true'
                                     ignite-unique=items
                                     ignite-unique-property='typeName'
                                 )

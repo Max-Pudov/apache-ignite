@@ -57,5 +57,6 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-60(ng-show=customFilter)
                 +java-class('Class name:', `${nodeFilter}.Custom.className`, '"customNodeFilter"',
                     'true', customFilter, 'Class name of custom node filter implementation', customFilter)
+
         .pca-form-column-6
             +preview-xml-java(model, 'cacheNodeFilter', 'igfss')
