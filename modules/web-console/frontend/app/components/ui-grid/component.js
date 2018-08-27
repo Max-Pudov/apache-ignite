@@ -25,6 +25,7 @@ export default {
     bindings: {
         gridApi: '=?',
         gridTreeView: '<?',
+        gridGrouping: '<?',
         gridThin: '<?',
         gridHeight: '<?',
 
