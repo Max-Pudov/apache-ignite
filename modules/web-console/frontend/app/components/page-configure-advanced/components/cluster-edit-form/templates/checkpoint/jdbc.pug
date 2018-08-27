@@ -28,8 +28,16 @@ include /app/helpers/jade/mixins
         tip: 'Name of the data source bean in Spring context'
     })
 .pc-form-grid-col-30
-    +dialect('Dialect:', '$checkpointSPI.JDBC.dialect', '"checkpointJdbcDialect"', jdbcCheckpoint,
-    'Dialect of SQL implemented by a particular RDBMS:', 'Generic JDBC dialect', 'Choose JDBC dialect')
+    +form-field__dialect({
+        label: 'Dialect:',
+        model: '$checkpointSPI.JDBC.dialect',
+        name: '"checkpointJdbcDialect"',
+        required: jdbcCheckpoint,
+        tip: 'Dialect of SQL implemented by a particular RDBMS:',
+        genericDialectName: 'Generic JDBC dialect',
+        placeholder: 'Choose JDBC dialect'
+    })
+
 .pc-form-grid-col-60
     +java-class('Listener:', '$checkpointSPI.JDBC.checkpointListener', '"checkpointJdbcListener"', 'true', 'false',
         'Checkpoint listener implementation class name', jdbcCheckpoint)
