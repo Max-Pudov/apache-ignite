@@ -143,15 +143,20 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     size-type='bytes'
                     required='true'
                 )
-            +evictionPolicy(`${model}.evictionPolicy`, '"evictionPolicy"', 'true',
-                `$ctrl.Caches.evictionPolicy.required(${model})`,
-                'Optional cache eviction policy<br/>\
-                Must be set for entries to be evicted from on-heap to off-heap or swap\
-                <ul>\
-                    <li>Least Recently Used(LRU) - Eviction policy based on LRU algorithm and supports batch eviction</li>\
-                    <li>First In First Out (FIFO) - Eviction policy based on FIFO algorithm and supports batch eviction</li>\
-                    <li>SORTED - Eviction policy which will select the minimum cache entry for eviction</li>\
-                </ul>')
+
+            +form-field__eviction-policy({
+                model: `${model}.evictionPolicy`,
+                name: '"evictionPolicy"',
+                enabled: 'true',
+                required: `$ctrl.Caches.evictionPolicy.required(${model})`,
+                tip: 'Optional cache eviction policy<br/>\
+                      Must be set for entries to be evicted from on-heap to off-heap or swap\
+                      <ul>\
+                          <li>Least Recently Used(LRU) - Eviction policy based on LRU algorithm and supports batch eviction</li>\
+                          <li>First In First Out (FIFO) - Eviction policy based on FIFO algorithm and supports batch eviction</li>\
+                          <li>SORTED - Eviction policy which will select the minimum cache entry for eviction</li>\
+                      </ul>'
+            })
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')

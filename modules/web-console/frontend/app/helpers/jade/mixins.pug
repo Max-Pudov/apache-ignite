@@ -426,9 +426,6 @@ mixin form-field__eviction-policy({ model, name, enabled, required, tip })
             )
                 +form-field__error({ error: 'min', message: 'Either maximum memory size or maximum size should be greater than 0' })
 
-mixin evictionPolicy(model, name, enabled, required, tip)
-    +form-field__eviction-policy({ model, name, enabled, required, tip })
-
 //- Mixin for XML and Java preview.
 mixin preview-xml-java(master, generator, detail)
     ignite-ui-ace-tabs
