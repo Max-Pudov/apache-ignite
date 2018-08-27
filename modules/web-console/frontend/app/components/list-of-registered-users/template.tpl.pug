@@ -77,4 +77,9 @@ ul.tabs.tabs--blue
                 options: '$ctrl.actionOptions'
             })
 
-    .grid.ui-grid--ignite.ui-grid-disabled-group-selection(ui-grid='$ctrl.gridOptions' ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-pinning ui-grid-grouping ui-grid-hovering)
+    .ignite-grid-table
+        .grid.ui-grid--ignite.ui-grid-disabled-group-selection(ui-grid='$ctrl.gridOptions' ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-pinning ui-grid-grouping ui-grid-hovering)
+
+    grid-no-data(grid-api='$ctrl.gridApi')
+        grid-no-data-filtered
+           | Nothing to display. Check your filters.
