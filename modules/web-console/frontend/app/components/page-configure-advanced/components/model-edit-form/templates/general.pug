@@ -63,7 +63,17 @@ panel-collapsible(opened=`::true` ng-form=form)
                 })
 
             .pc-form-grid-col-60
-                +java-class-typeahead('Key type:', `${model}.keyType`, '"keyType"', '$ctrl.javaBuiltInClassesBase', 'true', 'true', '{{ ' + generatePojo + ' ? "Full class name for Key" : "Key type name" }}', 'Key class used to store key in cache', generatePojo)
+                +form-field__java-class--typeahead({
+                    label: 'Key type:',
+                    model: `${model}.keyType`,
+                    name: '"keyType"',
+                    options: '$ctrl.javaBuiltInClassesBase',
+                    enabled: 'true',
+                    required: 'true',
+                    placeholder: '{{ ' + generatePojo + ' ? "Full class name for Key" : "Key type name" }}',
+                    tip: 'Key class used to store key in cache',
+                    validationActive: generatePojo
+                })
             .pc-form-grid-col-60
                 +java-class-autofocus-placholder('Value type:', `${model}.valueType`, '"valueType"', 'true', 'true', 'false', '{{ ' + generatePojo +' ? "Enter fully qualified class name" : "Value type name" }}', 'Value class used to store value in cache', generatePojo)
 

@@ -98,7 +98,15 @@ panel-collapsible(ng-form=form opened=`!!${model}.queryMetadata`)
                                         )
                                             +form-field__error({ error: 'igniteUnique', message: 'Property with such name already exists!' })
                                     .pc-form-grid-col-30
-                                        +java-class-typeahead('Field full class name:', `$item.className`, '"className"', '$ctrl.queryFieldTypes', true, true, 'Enter field full class name')(
+                                        +form-field__java-class--typeahead({
+                                            label: 'Field full class name:',
+                                            model: `$item.className`,
+                                            name: '"className"',
+                                            options: '$ctrl.queryFieldTypes',
+                                            enabled: 'true',
+                                            required: 'true',
+                                            placeholder: 'Enter field full class name'
+                                        })(
                                             ng-model-options='{allowInvalid: true}'
                                             extra-valid-java-identifiers='$ctrl.queryFieldTypes'
                                         )

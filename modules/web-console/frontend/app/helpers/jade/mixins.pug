@@ -91,27 +91,6 @@ mixin java-class(label, model, name, enabled, required, tip, validationActive)
             block
 
 //- Mixin for text field with enabled condition with options.
-mixin java-class-typeahead(label, model, name, options, enabled, required, placeholder, tip, validationActive)
-    -var errLbl = label.substring(0, label.length - 1)
-
-    +form-field__typeahead({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        options,
-        tip
-    })&attributes(attributes)(
-        data-java-identifier='true'
-        data-java-package-specified='allow-built-in'
-        data-java-keywords='true'
-        data-validation-active=validationActive ? `{{ ${validationActive} }}` : `'always'`
-    )
-        +form-field__error({ error: 'javaKeywords', message: `${ errLbl } could not contains reserved Java keyword!` })
-        +form-field__error({ error: 'javaPackageSpecified', message: `${ errLbl } does not have package specified!` })
-        +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 mixin form-field__java-class--typeahead({ label, model, name, options, enabled, required, placeholder, tip, validationActive })
     -var errLbl = label.substring(0, label.length - 1)
 
