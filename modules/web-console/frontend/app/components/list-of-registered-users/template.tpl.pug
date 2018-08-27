@@ -68,6 +68,8 @@ ul.tabs.tabs--blue
                     mindate: '$ctrl.params.startDate'
                 })
 
+            grid-export(grid-api='$ctrl.gridApi')
+
             +ignite-form-field-bsdropdown({
                 label: 'Actions',
                 model: '$ctrl.action',
