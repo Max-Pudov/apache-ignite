@@ -85,9 +85,9 @@ export default class IgniteUiGrid {
             fastWatch: true,
             showTreeExpandNoChildren: false,
             modifierKeysToMultiSelect: true,
-            // selectionRowHeaderWidth: 30,
-            selectionRowHeaderWidth: 52,
+            selectionRowHeaderWidth: 30,
             exporterCsvFilename: `${_.camelCase([this.tabName, this.tableTitle])}.csv`,
+            exporterCsvColumnSeparator: ';',
             onRegisterApi: (api) => {
                 this.gridApi = api;
 

@@ -104,11 +104,6 @@ ignite-grid-table {
             padding-top: 6px;
         }
 
-        .ui-grid-pinned-container.ui-grid-pinned-container-left .ui-grid-cell:first-child + .ui-grid-cell .ui-grid-cell-contents,
-        .ui-grid-pinned-container.ui-grid-pinned-container-left .ui-grid-header-cell:first-child + .ui-grid-header-cell .ui-grid-cell-contents {
-            padding-left: 0;
-        } 
-
         // End section row height.
         .ui-grid-header-cell:last-child .ui-grid-column-resizer.right {
             border-right: none;
