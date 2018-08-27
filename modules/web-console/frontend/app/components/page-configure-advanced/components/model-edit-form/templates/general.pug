@@ -75,7 +75,18 @@ panel-collapsible(opened=`::true` ng-form=form)
                     validationActive: generatePojo
                 })
             .pc-form-grid-col-60
-                +java-class-autofocus-placholder('Value type:', `${model}.valueType`, '"valueType"', 'true', 'true', 'false', '{{ ' + generatePojo +' ? "Enter fully qualified class name" : "Value type name" }}', 'Value class used to store value in cache', generatePojo)
+                +form-field__java-class({
+                    label: 'Value type:',
+                    model: `${model}.valueType`,
+                    name: '"valueType"',
+                    disabled: 'false',
+                    required: 'false',
+                    placeholder: '{{ ' + generatePojo +' ? "Enter fully qualified class name" : "Value type name" }}',
+                    tip: 'Value class used to store value in cache',
+                    validationActive: generatePojo
+                })(
+                    data-ignite-form-field-input-autofocus=autofocus
+                )
 
         .pca-form-column-6
             +preview-xml-java(model, 'domainModelGeneral')
