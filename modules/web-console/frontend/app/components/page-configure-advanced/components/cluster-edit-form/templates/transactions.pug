@@ -94,7 +94,13 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Size of pessimistic transactions log stored on node in order to recover transaction commit if originating node has left grid before it has sent all messages to transaction nodes'
                 })
             .pc-form-grid-col-60
-                +java-class('Manager factory:', `${model}.txManagerFactory`, '"txManagerFactory"', 'true', 'false',
-                    'Class name of transaction manager factory for integration with JEE app servers')
+                +form-field__java-class({
+                    label: 'Manager factory:',
+                    model: `${model}.txManagerFactory`,
+                    name: '"txManagerFactory"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Class name of transaction manager factory for integration with JEE app servers'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterTransactions')

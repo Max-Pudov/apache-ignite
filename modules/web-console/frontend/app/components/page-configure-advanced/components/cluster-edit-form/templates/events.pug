@@ -81,12 +81,27 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         tip: 'Events will be filtered out when new request comes'
                     })
                 .pc-form-grid-col-60(ng-if-end)
-                    +java-class('Filter:', `${modelEventStorage}.Memory.filter`, '"EventStorageFilter"', 'true', 'false',
-                    'Filter for events to be recorded<br/>\
-                    Should be implementation of o.a.i.lang.IgnitePredicate&lt;o.a.i.events.Event&gt;', eventStorageMemory)
+                    +form-field__java-class({
+                        label: 'Filter:',
+                        model: `${modelEventStorage}.Memory.filter`,
+                        name: '"EventStorageFilter"',
+                        enabled: 'true',
+                        required: 'false',
+                        tip: 'Filter for events to be recorded<br/>\
+                             Should be implementation of o.a.i.lang.IgnitePredicate&lt;o.a.i.events.Event&gt;',
+                        validationActive: eventStorageMemory
+                    })
 
                 .pc-form-grid-col-60(ng-if=eventStorageCustom)
-                    +java-class('Class:', `${modelEventStorage}.Custom.className`, '"EventStorageCustom"', 'true', eventStorageCustom, 'Event storage implementation class name', eventStorageCustom)
+                    +form-field__java-class({
+                        label: 'Class:',
+                        model: `${modelEventStorage}.Custom.className`,
+                        name: '"EventStorageCustom"',
+                        enabled: 'true',
+                        required: eventStorageCustom,
+                        tip: 'Event storage implementation class name',
+                        validationActive: eventStorageCustom
+                    })
 
                 .pc-form-grid-col-60
                     +form-field__dropdown({

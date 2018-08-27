@@ -126,9 +126,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                  If <b>0</b> then load sequentially.'
                         })
                     .pc-form-grid-col-60
-                        +java-class('Hasher', `${pojoStoreFactory}.hasher`, '"pojoHasher"', 'true', 'false', 'Hash calculator', required)
+                        +form-field__java-class({
+                            label: 'Hasher:',
+                            model: `${pojoStoreFactory}.hasher`,
+                            name: '"pojoHasher"',
+                            enabled: 'true',
+                            required: 'false',
+                            tip: 'Hash calculator',
+                            validationActive: required
+                        })
                     .pc-form-grid-col-60
-                        +java-class('Transformer', `${pojoStoreFactory}.transformer`, '"pojoTransformer"', 'true', 'false', 'Types transformer', required)
+                        +form-field__java-class({
+                            label: 'Transformer:',
+                            model: `${pojoStoreFactory}.transformer`,
+                            name: '"pojoTransformer"',
+                            enabled: 'true',
+                            required: 'false',
+                            tip: 'Types transformer',
+                            validationActive: required
+                        })
                     .pc-form-grid-col-60
                         +form-field__checkbox({
                             label: 'Escape table and filed names',

@@ -69,7 +69,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'This value is used to expire messages from waiting list whenever node discovery discrepancies happen'
                 })
             .pc-form-grid-col-60
-                +java-class('Communication listener:', `${communication}.listener`, '"comListener"', 'true', 'false', 'Listener of communication events')
+                +form-field__java-class({
+                    label: 'Communication listener:',
+                    model: `${communication}.listener`,
+                    name: '"comListener"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Listener of communication events'
+                })
             .pc-form-grid-col-30
                 +form-field__ip-address({
                     label: 'Local IP address:',
@@ -246,7 +253,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Count of selectors te be used in TCP server'
                 })
             .pc-form-grid-col-60
-                +java-class('Address resolver:', `${communication}.addressResolver`, '"comAddressResolver"', 'true', 'false', 'Provides resolution between external and internal addresses')
+                +form-field__java-class({
+                    label: 'Address resolver:',
+                    model: `${communication}.addressResolver`,
+                    name: '"comAddressResolver"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Provides resolution between external and internal addresses'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Direct buffer',

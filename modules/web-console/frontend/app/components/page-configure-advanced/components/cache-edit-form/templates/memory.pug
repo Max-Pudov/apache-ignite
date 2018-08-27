@@ -160,7 +160,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +java-class('Eviction filter:', model + '.evictionFilter', '"EvictionFilter"', 'true', 'false', 'Eviction filter to specify which entries should not be evicted')
+                +form-field__java-class({
+                    label: 'Eviction filter:',
+                    model: `${model}.evictionFilter`,
+                    name: '"EvictionFilter"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Eviction filter to specify which entries should not be evicted'
+                })
 
             //- Removed in ignite 2.0
             .pc-form-grid-col-60(ng-if-start='$ctrl.available(["1.0.0", "2.0.0"])')

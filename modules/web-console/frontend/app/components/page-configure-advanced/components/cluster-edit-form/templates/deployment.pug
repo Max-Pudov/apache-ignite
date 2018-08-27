@@ -127,8 +127,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +java-class('Class loader:', model + '.classLoader', '"classLoader"', 'true', 'false',
-                    'Loader which will be used for instantiating execution context')
+                +form-field__java-class({
+                    label: 'Class loader:',
+                    model: `${model}.classLoader`,
+                    name: '"classLoader"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Loader which will be used for instantiating execution context'
+                })
 
             .pc-form-grid-col-60
                 +form-field__dropdown({
@@ -219,7 +225,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     - var form = 'deployment'
 
                 .pc-form-grid-col-60
-                    +java-class('Listener:', `${modelDeployment}.URI.listener`, '"DeploymentURIListener"', 'true', 'false', 'Deployment event listener', uriDeployment)
+                    +form-field__java-class({
+                        label: 'Listener:',
+                        model: `${modelDeployment}.URI.listener`,
+                        name: '"DeploymentURIListener"',
+                        enabled: 'true',
+                        required: 'false',
+                        tip: 'Deployment event listener',
+                        validationActive: uriDeployment
+                    })
                 .pc-form-grid-col-60
                     +form-field__checkbox({
                         label: 'Check MD5',
@@ -236,9 +250,25 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     })
             .pc-form-group(ng-show=localDeployment).pc-form-grid-row
                 .pc-form-grid-col-60
-                    +java-class('Listener:', `${modelDeployment}.Local.listener`, '"DeploymentLocalListener"', 'true', 'false', 'Deployment event listener', localDeployment)
+                    +form-field__java-class({
+                        label: 'Listener:',
+                        model: `${modelDeployment}.Local.listener`,
+                        name: '"DeploymentLocalListener"',
+                        enabled: 'true',
+                        required: 'false',
+                        tip: 'Deployment event listener',
+                        validationActive: localDeployment
+                    })
             .pc-form-group(ng-show=customDeployment).pc-form-grid-row
                 .pc-form-grid-col-60
-                    +java-class('Class:', `${modelDeployment}.Custom.className`, '"DeploymentCustom"', 'true', customDeployment, 'DeploymentSpi implementation class', customDeployment)
+                    +form-field__java-class({
+                        label: 'Class:',
+                        model: `${modelDeployment}.Custom.className`,
+                        name: '"DeploymentCustom"',
+                        enabled: 'true',
+                        required: customDeployment,
+                        tip: 'DeploymentSpi implementation class',
+                        validationActive: customDeployment
+                    })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterDeployment')

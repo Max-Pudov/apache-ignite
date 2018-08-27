@@ -146,10 +146,16 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                     tip: 'Use SSL factory Ignite configuration'
                 })
             .pc-form-grid-col-60(ng-if-end)
-                +java-class('SSL factory:', `${connectionModel}.sslContextFactory`, '"ClientConnectorSslContextFactory"', sslFactoryEnabled, sslFactoryEnabled,
-                'If SSL factory specified then replication will be performed through secure SSL channel created with this factory<br/>\
-                If not present <b>isUseIgniteSslContextFactory()</b> flag will be evaluated<br/>\
-                If set to <b>true</b> and <b>IgniteConfiguration#getSslContextFactory()</b> exists, then Ignite SSL context factory will be used to establish secure connection')
+                +form-field__java-class({
+                    label:'SSL factory:',
+                    model: `${connectionModel}.sslContextFactory`,
+                    name: '"ClientConnectorSslContextFactory"',
+                    enabled: sslFactoryEnabled,
+                    required: sslFactoryEnabled,
+                    tip: 'If SSL factory specified then replication will be performed through secure SSL channel created with this factory<br/>\
+                          If not present <b>isUseIgniteSslContextFactory()</b> flag will be evaluated<br/>\
+                          If set to <b>true</b> and <b>IgniteConfiguration#getSslContextFactory()</b> exists, then Ignite SSL context factory will be used to establish secure connection'
+                })
             .pc-form-grid-col-60(ng-if-start='$ctrl.available("2.4.0")')
                 +form-field__checkbox({
                     label: 'JDBC Enabled',

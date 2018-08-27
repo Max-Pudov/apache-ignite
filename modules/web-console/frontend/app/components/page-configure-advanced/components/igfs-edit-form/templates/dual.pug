@@ -42,7 +42,14 @@ panel-collapsible(
                          Zero or negative value stands for unlimited size'
                 })
             .settings-row
-                +java-class('Put executor service:', `${model}.dualModePutExecutorService`, '"dualModePutExecutorService"', 'true', 'false', 'DUAL mode put operation executor service')
+                +form-field__java-class({
+                    label: 'Put executor service:',
+                    model: `${model}.dualModePutExecutorService`,
+                    name: '"dualModePutExecutorService"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'DUAL mode put operation executor service'
+                })
             .settings-row
                 +form-field__checkbox({
                     label: 'Put executor service shutdown',

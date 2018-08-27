@@ -187,9 +187,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Thread pool size to use for processing of client messages (REST requests)'
                 })
             .pc-form-grid-col-60
-                +java-class('Message interceptor:', `${model}.messageInterceptor`, '"connectorMessageInterceptor"', enabled, 'false',
-                    'Interceptor allows to transform all objects exchanged via REST protocol<br/>\
-                    For example if you use custom serialisation on client you can write interceptor to transform binary representations received from client to Java objects and later access them from java code directly')
+                +form-field__java-class({
+                    label: 'Message interceptor:',
+                    model: `${model}.messageInterceptor`,
+                    name: '"connectorMessageInterceptor"',
+                    enabled: enabled,
+                    required: 'false',
+                    tip: 'Interceptor allows to transform all objects exchanged via REST protocol<br/>\
+                         For example if you use custom serialisation on client you can write interceptor to transform binary representations received from client to Java objects and later access them from java code directly'
+                })
             .pc-form-grid-col-60
                 +form-field__text({
                     label: 'Secret key:',
@@ -217,7 +223,13 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Flag indicating whether or not SSL client authentication is required'
                 })
             .pc-form-grid-col-60
-                +java-class('SSL factory:', `${model}.sslFactory`, '"connectorSslFactory"', sslEnabled, sslEnabled,
-                    'Instance of Factory that will be used to create an instance of SSLContext for Secure Socket Layer on TCP binary protocol')
+                +form-field__java-class({
+                    label: 'SSL factory:',
+                    model: `${model}.sslFactory`,
+                    name: '"connectorSslFactory"',
+                    enabled: sslEnabled,
+                    required: sslEnabled,
+                    tip: 'Instance of Factory that will be used to create an instance of SSLContext for Secure Socket Layer on TCP binary protocol'
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterConnector')

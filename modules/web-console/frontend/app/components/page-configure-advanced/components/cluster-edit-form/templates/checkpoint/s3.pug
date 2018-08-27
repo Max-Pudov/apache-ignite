@@ -64,8 +64,15 @@ include /app/helpers/jade/mixins
         })
 .pc-form-group.pc-form-grid-row(ng-if=checkpointS3Custom)
     .pc-form-grid-col-60
-        +java-class('Class name:', credentialsModel + '.Custom.className', '"checkpointS3CustomClassName"', 'true', checkpointS3Custom,
-        'Custom AWS credentials provider implementation class', checkpointS3Custom)
+        +form-field__java-class({
+            label: 'Class name:',
+            model: credentialsModel + '.Custom.className',
+            name: '"checkpointS3CustomClassName"',
+            enabled: 'true',
+            required: checkpointS3Custom,
+            tip: 'Custom AWS credentials provider implementation class',
+            validationActive:checkpointS3Custom
+        })
 .pc-form-grid-col-60
     label Note, AWS credentials will be generated as stub
 .pc-form-grid-col-60
@@ -97,8 +104,15 @@ include /app/helpers/jade/mixins
               For information about possible S3-managed encryption keys visit <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html">docs.aws.amazon.com</a>'
     })
 .pc-form-grid-col-60
-    +java-class('Listener:', '$checkpointSPI.S3.checkpointListener', '"checkpointS3Listener"', 'true', 'false',
-        'Checkpoint listener implementation class name', checkpointS3)
+    +form-field__java-class({
+        label: 'Listener:',
+        model: '$checkpointSPI.S3.checkpointListener',
+        name: '"checkpointS3Listener"',
+        enabled: 'true',
+        required: 'false',
+        tip: 'Checkpoint listener implementation class name',
+        validationActive: checkpointS3
+    })
 .pc-form-grid-col-60.pc-form-group__text-title
     span Client configuration
 .pc-form-group.pc-form-grid-row(ng-if-end)
@@ -262,11 +276,25 @@ include /app/helpers/jade/mixins
             })
     .pc-form-group.pc-form-grid-row(ng-if=checkpointS3CustomRetry)
         .pc-form-grid-col-60
-            +java-class('Retry condition:', clientRetryModel + '.Custom.retryCondition', '"checkpointS3CustomRetryPolicy"', 'true', checkpointS3CustomRetry,
-            'Retry condition on whether a specific request and exception should be retried', checkpointS3CustomRetry)
+            +form-field__java-class({
+                label: 'Retry condition:',
+                model: clientRetryModel + '.Custom.retryCondition',
+                name: '"checkpointS3CustomRetryPolicy"',
+                enabled: 'true',
+                required: checkpointS3CustomRetry,
+                tip: 'Retry condition on whether a specific request and exception should be retried',
+                validationActive: checkpointS3CustomRetry
+            })
         .pc-form-grid-col-60
-            +java-class('Backoff strategy:', clientRetryModel + '.Custom.backoffStrategy', '"checkpointS3CustomBackoffStrategy"', 'true', checkpointS3CustomRetry,
-            'Back-off strategy for controlling how long the next retry should wait', checkpointS3CustomRetry)
+            +form-field__java-class({
+                label: 'Backoff strategy:',
+                model: clientRetryModel + '.Custom.backoffStrategy',
+                name: '"checkpointS3CustomBackoffStrategy"',
+                enabled: 'true',
+                required: checkpointS3CustomRetry,
+                tip: 'Back-off strategy for controlling how long the next retry should wait',
+                validationActive: checkpointS3CustomRetry
+            })
         .pc-form-grid-col-60
             +form-field__number({
                 label: 'Maximum retry attempts:',
@@ -360,8 +388,15 @@ include /app/helpers/jade/mixins
                   By default, it is set to <b>-1</b>, i.e. connections do not expire'
         })
     .pc-form-grid-col-60
-        +java-class('DNS resolver:', clientCfgModel + '.dnsResolver', '"checkpointS3DnsResolver"', 'true', 'false',
-        'DNS Resolver that should be used to for resolving AWS IP addresses', checkpointS3)
+        +form-field__java-class({
+            label: 'DNS resolver:',
+            model: clientCfgModel + '.dnsResolver',
+            name: '"checkpointS3DnsResolver"',
+            enabled: 'true',
+            required: 'false',
+            tip: 'DNS Resolver that should be used to for resolving AWS IP addresses',
+            validationActive: checkpointS3
+        })
     .pc-form-grid-col-60
         +form-field__number({
             label: 'Response metadata cache size:',
@@ -373,8 +408,15 @@ include /app/helpers/jade/mixins
             tip: 'Response metadata cache size'
         })
     .pc-form-grid-col-60
-        +java-class('SecureRandom class name:', clientCfgModel + '.secureRandom', '"checkpointS3SecureRandom"', 'true', 'false',
-        'SecureRandom to be used by the SDK class name', checkpointS3)
+        +form-field__java-class({
+            label: 'SecureRandom class name:',
+            model: clientCfgModel + '.secureRandom',
+            name: '"checkpointS3SecureRandom"',
+            enabled: 'true',
+            required: 'false',
+            tip: 'SecureRandom to be used by the SDK class name',
+            validationActive: checkpointS3
+        })
     .pc-form-grid-col-60
         +form-field__number({
             label: 'Client execution timeout:',

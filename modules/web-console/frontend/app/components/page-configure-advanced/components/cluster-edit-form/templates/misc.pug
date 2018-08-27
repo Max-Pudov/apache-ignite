@@ -47,7 +47,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Consistent globally unique node ID which survives node restarts'
                 })
             .pc-form-grid-col-60
-                +java-class('Warmup closure:', model + '.warmupClosure', '"warmupClosure"', 'true', 'false', 'This closure will be executed before actual grid instance start')
+                +form-field__java-class({
+                    label: 'Warmup closure:',
+                    model: `${model}.warmupClosure`,
+                    name: '"warmupClosure"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'This closure will be executed before actual grid instance start'
+                })
+
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Active on start',

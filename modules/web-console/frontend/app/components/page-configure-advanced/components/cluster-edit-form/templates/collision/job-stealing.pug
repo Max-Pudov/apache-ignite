@@ -67,8 +67,15 @@ include /app/helpers/jade/mixins
         tip: 'Node should attempt to steal jobs from other nodes'
     })
 .pc-form-grid-col-60
-    +java-class('External listener:', `${model}.externalCollisionListener`, '"jsExternalCollisionListener"', 'true', 'false',
-        'Listener to be set for notification of external collision events', '$ctrl.clonedCluster.collision.kind === "JobStealing"')
+    +form-field__java-class({
+        label: 'External listener:',
+        model: `${model}.externalCollisionListener`,
+        name: '"jsExternalCollisionListener"',
+        enabled: 'true',
+        required: 'false',
+        tip: 'Listener to be set for notification of external collision events',
+        validationActive: '$ctrl.clonedCluster.collision.kind === "JobStealing"'
+    })
 .pc-form-grid-col-60
     .ignite-form-field
         +form-field__label({ label: 'Stealing attributes:', name: '"stealingAttributes"' })

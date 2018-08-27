@@ -100,8 +100,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             tip: 'Number of partitions'
                         })
                     .pc-form-grid-col-30
-                        +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
-                            'Backups will be selected from all nodes that pass this filter')
+                        +form-field__java-class({
+                            label: 'Backup filter',
+                            model: `${affModel}.Rendezvous.affinityBackupFilter`,
+                            name: '"RendAffinityBackupFilter"',
+                            enabled: 'true',
+                            required: 'false',
+                            tip: 'Backups will be selected from all nodes that pass this filter'
+                        })
                     .pc-form-grid-col-60(ng-if-end)
                         +form-field__checkbox({
                             label: 'Exclude neighbors',
@@ -110,7 +116,13 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             tip: 'Exclude same - host - neighbors from being backups of each other and specified number of backups'
                         })
                     .pc-form-grid-col-60(ng-if=customAff)
-                        +java-class('Class name:', `${affModel}.Custom.className`, '"AffCustomClassName"', 'true', customAff,
-                            'Custom key affinity function implementation class name')
+                        +form-field__java-class({
+                            label: 'Class name:',
+                            model: `${affModel}.Custom.className`,
+                            name: '"AffCustomClassName"',
+                            enabled: 'true',
+                            required: customAff,
+                            tip: 'Custom key affinity function implementation class name'
+                        })
         .pca-form-column-6
             +preview-xml-java(model, 'clusterAtomics')

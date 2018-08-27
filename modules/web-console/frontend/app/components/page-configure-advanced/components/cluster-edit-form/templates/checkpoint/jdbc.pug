@@ -39,8 +39,15 @@ include /app/helpers/jade/mixins
     })
 
 .pc-form-grid-col-60
-    +java-class('Listener:', '$checkpointSPI.JDBC.checkpointListener', '"checkpointJdbcListener"', 'true', 'false',
-        'Checkpoint listener implementation class name', jdbcCheckpoint)
+    +form-field__java-class({
+        label: 'Listener:',
+        model: '$checkpointSPI.JDBC.checkpointListener',
+        name: '"checkpointJdbcListener"',
+        enabled: 'true',
+        required: 'false',
+        tip: 'Checkpoint listener implementation class name',
+        validationActive: jdbcCheckpoint
+    })
 .pc-form-grid-col-60
     +form-field__text({
         label: 'User:',

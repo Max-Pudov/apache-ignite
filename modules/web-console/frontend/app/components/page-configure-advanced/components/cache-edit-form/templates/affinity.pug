@@ -79,8 +79,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             tip: 'Number of partitions'
                         })
                     .pc-form-grid-col-60
-                        +java-class('Backup filter', `${affModel}.Rendezvous.affinityBackupFilter`, '"RendAffinityBackupFilter"', 'true', 'false',
-                            'Backups will be selected from all nodes that pass this filter')
+                        +form-field__java-class({
+                            label: 'Backup filter',
+                            model: `${affModel}.Rendezvous.affinityBackupFilter`,
+                            name: '"RendAffinityBackupFilter"',
+                            enabled: 'true',
+                            required: 'false',
+                            tip: 'Backups will be selected from all nodes that pass this filter'
+                        })
                     .pc-form-grid-col-60
                         +form-field__checkbox({
                             label: 'Exclude neighbors',
@@ -101,8 +107,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             tip: 'Number of partitions'
                         })
                     .pc-form-grid-col-60
-                        +java-class('Backup filter', `${affModel}.Fair.affinityBackupFilter`, '"FairAffinityBackupFilter"', 'true', 'false',
-                            'Backups will be selected from all nodes that pass this filter')
+                        +form-field__java-class({
+                            label: 'Backup filter',
+                            model: `${affModel}.Fair.affinityBackupFilter`,
+                            name: '"FairAffinityBackupFilter"',
+                            enabled: 'true',
+                            required: 'false',
+                            tip: 'Backups will be selected from all nodes that pass this filter'
+                        })
                     .pc-form-grid-col-60
                         +form-field__checkbox({
                             label: 'Exclude neighbors',
@@ -112,15 +124,33 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         })
                 .pc-form-grid-row(ng-if=customAff)
                     .pc-form-grid-col-60
-                        +java-class('Class name:', `${affModel}.Custom.className`, '"AffCustomClassName"', 'true', customAff,
-                            'Custom key affinity function implementation class name')
+                        +form-field__java-class({
+                            label: 'Class name:',
+                            model: `${affModel}.Custom.className`,
+                            name: '"AffCustomClassName"',
+                            enabled: 'true',
+                            required: customAff,
+                            tip: 'Custom key affinity function implementation class name'
+                        })
             .pc-form-grid-col-60
-                +java-class('Mapper:', model + '.affinityMapper', '"AffMapCustomClassName"', 'true', 'false',
-                    'Provide custom affinity key for any given key')
+                +form-field__java-class({
+                    label: 'Mapper:',
+                    model: `${model}.affinityMapper`,
+                    name: '"AffMapCustomClassName"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Provide custom affinity key for any given key'
+                })
 
             //- Since ignite 2.0
             .pc-form-grid-col-60(ng-if='$ctrl.available("2.0.0")')
-                +java-class('Topology validator:', model + '.topologyValidator', '"topologyValidator"', 'true', 'false')
+                +form-field__java-class({
+                    label: 'Topology validator:',
+                    model: `${model}.topologyValidator`,
+                    name: '"topologyValidator"',
+                    enabled: 'true',
+                    required: 'false'
+                })
 
         .pca-form-column-6
             +preview-xml-java(model, 'cacheAffinity')

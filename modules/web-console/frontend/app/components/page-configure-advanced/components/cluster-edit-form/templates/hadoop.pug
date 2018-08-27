@@ -101,8 +101,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     })
             .pc-form-group.pc-form-grid-row(ng-show=customPlanner)
                 .pc-form-grid-col-60
-                    +java-class('Class name:', plannerModel + '.Custom.className', '"MapReducePlannerCustomClass"', 'true', customPlanner,
-                        'Custom planner implementation')
+                    +form-field__java-class({
+                        label: 'Class name:',
+                        model: `${plannerModel}.Custom.className`,
+                        name: '"MapReducePlannerCustomClass"',
+                        enabled: 'true',
+                        required: customPlanner,
+                        tip: 'Custom planner implementation'
+                    })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Finished job info TTL:',

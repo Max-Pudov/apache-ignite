@@ -58,8 +58,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Local port range'
                 })
             .pc-form-grid-col-60
-                +java-class('Address resolver:', `${model}.addressResolver`, '"discoAddressResolver"', 'true', 'false',
-                    'Provides resolution between external and internal addresses')
+                +form-field__java-class({
+                    label:'Address resolver:',
+                    model: `${model}.addressResolver`,
+                    name: '"discoAddressResolver"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Provides resolution between external and internal addresses'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Socket timeout:',
@@ -167,11 +173,32 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'Size of topology snapshots history'
                 })
             .pc-form-grid-col-60
-                +java-class('Discovery listener:', `${model}.listener`, '"discoListener"', 'true', 'false', 'Listener for grid node discovery events')
+                +form-field__java-class({
+                    label: 'Discovery listener:',
+                    model: `${model}.listener`,
+                    name: '"discoListener"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Listener for grid node discovery events'
+                })
             .pc-form-grid-col-60
-                +java-class('Data exchange:', `${model}.dataExchange`, '"dataExchange"', 'true', 'false', 'Class name of handler for initial data exchange between Ignite nodes')
+                +form-field__java-class({
+                    label: 'Data exchange:',
+                    model: `${model}.dataExchange`,
+                    name: '"dataExchange"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Class name of handler for initial data exchange between Ignite nodes'
+                })
             .pc-form-grid-col-60
-                +java-class('Metrics provider:', `${model}.metricsProvider`, '"metricsProvider"', 'true', 'false', 'Class name of metric provider to discovery SPI')
+                +form-field__java-class({
+                    label: 'Metrics provider:',
+                    model: `${model}.metricsProvider`,
+                    name: '"metricsProvider"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Class name of metric provider to discovery SPI'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Reconnect count:',
@@ -203,7 +230,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     tip: 'IP finder clean frequency'
                 })
             .pc-form-grid-col-60
-                +java-class('Node authenticator:', `${model}.authenticator`, '"authenticator"', 'true', 'false', 'Class name of node authenticator implementation')
+                +form-field__java-class({
+                    label: 'Node authenticator:',
+                    model: `${model}.authenticator`,
+                    name: '"authenticator"',
+                    enabled: 'true',
+                    required: 'false',
+                    tip: 'Class name of node authenticator implementation'
+                })
             .pc-form-grid-col-60
                 +form-field__checkbox({
                     label: 'Force server mode',

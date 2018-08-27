@@ -99,8 +99,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         tip: 'Maximum number of attempts to execute a failed job on another node'
                                     })
                                 .pc-form-grid-col-60(ng-show=failoverCustom)
-                                    +java-class('SPI implementation', '$item.Custom.class', '"failoverSpiClass"', 'true', failoverCustom,
-                                        'Custom FailoverSpi implementation class name.', failoverCustom)
+                                    +form-field__java-class({
+                                        label: 'SPI implementation',
+                                        model: '$item.Custom.class',
+                                        name: '"failoverSpiClass"',
+                                        enabled: 'true',
+                                        required: failoverCustom,
+                                        tip: 'Custom FailoverSpi implementation class name.',
+                                        validationActive: failoverCustom
+                                    })
 
                             list-editable-no-items
                                 list-editable-add-item-button(

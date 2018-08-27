@@ -136,8 +136,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         })
                                 .panel-details(ng-show=loadProbeCustom)
                                     .details-row
-                                        +java-class('Load brobe implementation:', '$item.Adaptive.loadProbe.Custom.className', '"loadBalancingAdaptiveJobUseClass"', 'true', loadProbeCustom,
-                                            'Custom load balancing SPI implementation class name.', loadProbeCustom)
+                                        +form-field__java-class({
+                                            label: 'Load brobe implementation:',
+                                            model: '$item.Adaptive.loadProbe.Custom.className',
+                                            name: '"loadBalancingAdaptiveJobUseClass"',
+                                            enabled: 'true',
+                                            required: loadProbeCustom,
+                                            tip: 'Custom load balancing SPI implementation class name.',
+                                            validationActive: loadProbeCustom
+                                        })
+
                             .settings-row(ng-show='$item.kind === "WeightedRandom"')
                                 +form-field__number({
                                     label: 'Node weight:',
@@ -156,8 +164,16 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                     tip: 'Node weights should be checked when doing random load balancing'
                                 })
                             .settings-row(ng-show=loadBalancingCustom)
-                                +java-class('Load balancing SPI implementation:', '$item.Custom.className', '"loadBalancingClass"', 'true', loadBalancingCustom,
-                                    'Custom load balancing SPI implementation class name.', loadBalancingCustom)
+                                +form-field__java-class({
+                                    label: 'Load balancing SPI implementation:',
+                                    model: '$item.Custom.className',
+                                    name: '"loadBalancingClass"',
+                                    enabled: 'true',
+                                    required: loadBalancingCustom,
+                                    tip: 'Custom load balancing SPI implementation class name.',
+                                    validationActive: loadBalancingCustom
+                                })
+
 
                         list-editable-no-items
                             list-editable-add-item-button(

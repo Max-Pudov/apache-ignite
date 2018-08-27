@@ -55,8 +55,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                 )
                     +form-field__error({ error: 'isInCollection',  message: `Cluster doesn't have such an IGFS` })
             .pc-form-grid-col-60(ng-show=customFilter)
-                +java-class('Class name:', `${nodeFilter}.Custom.className`, '"customNodeFilter"',
-                    'true', customFilter, 'Class name of custom node filter implementation', customFilter)
-
+                +form-field__java-class({
+                    label: 'Class name:',
+                    model: `${nodeFilter}.Custom.className`,
+                    name: '"customNodeFilter"',
+                    enabled: 'true',
+                    required: customFilter,
+                    tip: 'Class name of custom node filter implementation',
+                    validationActive: customFilter
+                })
         .pca-form-column-6
             +preview-xml-java(model, 'cacheNodeFilter', 'igfss')

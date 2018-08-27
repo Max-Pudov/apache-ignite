@@ -52,12 +52,6 @@ mixin form-field__java-class({ label, model, name, enabled, required, tip, place
         +form-field__error({ error: 'javaPackageSpecified', message: `${ errLbl } does not have package specified!` })
         +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 
-
-mixin java-class(label, model, name, enabled, required, tip, validationActive)
-    +form-field__java-class({ label, model, name, enabled, required, tip, validationActive })
-        if  block
-            block
-
 //- Mixin for text field with enabled condition with options.
 mixin form-field__java-class--typeahead({ label, model, name, options, enabled, required, placeholder, tip, validationActive })
     -var errLbl = label.substring(0, label.length - 1)

@@ -51,7 +51,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                 )
                                     +form-field__error({ error: 'uniqueName', message: 'Service with that name is already configured' })
                             .pc-form-grid-col-60
-                                +java-class('Service class', '$item.service', '"serviceService"', 'true', 'true', 'Service implementation class name')
+                                +form-field__java-class({
+                                    label: 'Service class',
+                                    model: '$item.service',
+                                    name: '"serviceService"',
+                                    enabled: 'true',
+                                    required: 'true',
+                                    tip: 'Service implementation class name'
+                                })
                             .pc-form-grid-col-60
                                 +form-field__number({
                                     label: 'Max per node count:',
