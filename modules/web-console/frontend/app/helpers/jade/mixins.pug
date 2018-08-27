@@ -127,24 +127,6 @@ mixin form-field__ip-address-with-port-range({ label, model, name, enabled, plac
         +form-field__error({ error: 'ipaddressPortRange', message: 'Invalid port range!' })
 
 //- Mixin for url field.
-mixin url(label, model, name, enabled, required, placeholder, tip)
-    -var errLbl = label.substring(0, label.length - 1)
-
-    +form-field__text({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        required,
-        placeholder,
-        tip
-    })(
-        type='url'
-    )
-        if  block
-            block
-
-        +form-field__error({ error: 'url', message: `${ errLbl } should be a valid URL!` })
 mixin form-field__url({ label, model, name, enabled, required, placeholder, tip })
     -var errLbl = label.substring(0, label.length - 1)
 
