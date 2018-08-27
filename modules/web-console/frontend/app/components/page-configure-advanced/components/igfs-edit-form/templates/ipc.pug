@@ -52,7 +52,14 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         </ul>'
                 })
             .pc-form-grid-col-30
-                +text-ip-address('Host:', `${ipcEndpointConfiguration}.host`, '"ipcEndpointConfigurationHost"', enabled, '127.0.0.1', 'Host endpoint is bound to')
+                +form-field__ip-address({
+                    label: 'Host:',
+                    model: `${ipcEndpointConfiguration}.host`,
+                    name: '"ipcEndpointConfigurationHost"',
+                    enabled: enabled,
+                    placeholder: '127.0.0.1',
+                    tip: 'Host endpoint is bound to'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Port:',

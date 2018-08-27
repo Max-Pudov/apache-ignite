@@ -22,7 +22,14 @@ mixin discovery-multicast(modelAt = '$ctrl.clonedCluster')
 
     .pc-form-grid-row&attributes(attributes=attributes)
         .pc-form-grid-col-30
-            +text-ip-address('IP address:', `${model}.multicastGroup`, '"multicastGroup"', 'true', '228.1.2.4', 'IP address of multicast group')
+            +form-field__ip-address({
+                label: 'IP address:',
+                model: `${model}.multicastGroup`,
+                name: '"multicastGroup"',
+                enabled: 'true',
+                placeholder: '228.1.2.4',
+                tip: 'IP address of multicast group'
+            })
         .pc-form-grid-col-30
             +form-field__number({
                 label: 'Port number:',
@@ -56,10 +63,16 @@ mixin discovery-multicast(modelAt = '$ctrl.clonedCluster')
                      IP finder re - sends request only in case if no reply for previous request is received'
             })
         .pc-form-grid-col-20.pc-form-grid-col-free
-            +text-ip-address('Local address:', `${model}.localAddress`, '"localAddress"', 'true', '0.0.0.0',
-                'Local host address used by this IP finder<br/>\
-                If provided address is non - loopback then multicast socket is bound to this interface<br/>\
-                If local address is not set or is any local address then IP finder creates multicast sockets for all found non - loopback addresses')
+            +form-field__ip-address({
+                label: 'Local address:',
+                model: `${model}.localAddress`,
+                name: '"localAddress"',
+                enabled: 'true',
+                placeholder: '0.0.0.0',
+                tip: 'Local host address used by this IP finder<br/>\
+                     If provided address is non - loopback then multicast socket is bound to this interface<br/>\
+                     If local address is not set or is any local address then IP finder creates multicast sockets for all found non - loopback addresses'
+            })
         .pc-form-grid-col-60
             .ignite-form-field
                 +list-addresses({

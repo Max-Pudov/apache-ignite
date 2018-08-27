@@ -27,9 +27,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
     panel-content.pca-form-row(ng-if=`ui.isPanelLoaded('${form}')`)
         .pca-form-column-6.pc-form-grid-row
             .pc-form-grid-col-20
-                +text-ip-address('Local address:', `${model}.localAddress`, '"discoLocalAddress"', 'true', '228.1.2.4',
-                    'Local host IP address that discovery SPI uses<br/>\
-                    If not provided a first found non-loopback address will be used')
+                +form-field__ip-address({
+                    label: 'Local address:',
+                    model: `${model}.localAddress`,
+                    name: '"discoLocalAddress"',
+                    enabled: 'true',
+                    placeholder: '228.1.2.4',
+                    tip: 'Local host IP address that discovery SPI uses<br/>\
+                         If not provided a first found non-loopback address will be used'
+                })
             .pc-form-grid-col-20
                 +form-field__number({
                     label: 'Local port:',

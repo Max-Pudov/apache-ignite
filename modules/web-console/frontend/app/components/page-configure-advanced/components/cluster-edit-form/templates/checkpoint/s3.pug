@@ -150,8 +150,14 @@ include /app/helpers/jade/mixins
             tip: 'HTTP user agent suffix to send with all requests'
         })
     .pc-form-grid-col-60
-        +text-ip-address('Local address:', clientCfgModel + '.localAddress', '"checkpointS3LocalAddress"', 'true', 'Not specified',
-        'Optionally specifies the local address to bind to')
+        +form-field__ip-address({
+            label: 'Local address:',
+            model: clientCfgModel + '.localAddress',
+            name: '"checkpointS3LocalAddress"',
+            enabled: 'true',
+            placeholder: 'Not specified',
+            tip: 'Optionally specifies the local address to bind to'
+        })
     .pc-form-grid-col-40
         +form-field__text({
             label: 'Proxy host:',

@@ -71,9 +71,15 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
             .pc-form-grid-col-60
                 +java-class('Communication listener:', `${communication}.listener`, '"comListener"', 'true', 'false', 'Listener of communication events')
             .pc-form-grid-col-30
-                +text-ip-address('Local IP address:', `${communication}.localAddress`, '"comLocalAddress"', 'true', '0.0.0.0',
-                    'Local host address for socket binding<br/>\
-                    If not specified use all available addres on local host')
+                +form-field__ip-address({
+                    label: 'Local IP address:',
+                    model: `${communication}.localAddress`,
+                    name: '"comLocalAddress"',
+                    enabled: 'true',
+                    placeholder: '0.0.0.0',
+                    tip: 'Local host address for socket binding<br/>\
+                         If not specified use all available addres on local host'
+                })
             .pc-form-grid-col-30
                 +form-field__number({
                     label: 'Local port:',

@@ -156,16 +156,6 @@ mixin form-field__java-package({ label, model, name, disabled, required, tip, ti
         +form-field__error({ error: 'javaKeywords', message: 'Package name could not contains reserved java keyword!' })
 
 //- Mixin for text field with IP address check.
-mixin text-ip-address(label, model, name, enabled, placeholder, tip)
-    +form-field__text({
-        label,
-        model,
-        name,
-        disabled: enabledToDisabled(enabled),
-        placeholder,
-        tip
-    })(data-ipaddress='true')
-        +form-field__error({ error: 'ipaddress', message: 'Invalid address!' })
 mixin form-field__ip-address({ label, model, name, enabled, placeholder, tip })
     +form-field__text({
         label,

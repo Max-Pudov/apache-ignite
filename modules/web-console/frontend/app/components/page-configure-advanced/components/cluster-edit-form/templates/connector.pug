@@ -48,11 +48,17 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                           If not provided, Jetty instance with default configuration will be started picking IgniteSystemProperties.IGNITE_JETTY_HOST and IgniteSystemProperties.IGNITE_JETTY_PORT as host and port respectively'
                 })
             .pc-form-grid-col-20
-                +text-ip-address('TCP host:', `${model}.host`, '"connectorHost"', enabled, 'IgniteConfiguration#getLocalHost()',
-                    'Host for TCP binary protocol server<br/>\
-                    This can be either an IP address or a domain name<br/>\
-                    If not defined, system - wide local address will be used IgniteConfiguration#getLocalHost()<br/>\
-                    You can also use "0.0.0.0" value to bind to all locally - available IP addresses')
+                +form-field__ip-address({
+                    label:'TCP host:',
+                    model: `${model}.host`,
+                    name: '"connectorHost"',
+                    enabled: enabled,
+                    placeholder: 'IgniteConfiguration#getLocalHost()',
+                    tip: 'Host for TCP binary protocol server<br/>\
+                         This can be either an IP address or a domain name<br/>\
+                         If not defined, system - wide local address will be used IgniteConfiguration#getLocalHost()<br/>\
+                         You can also use "0.0.0.0" value to bind to all locally - available IP addresses'
+                })
             .pc-form-grid-col-20
                 +form-field__number({
                     label: 'TCP port:',

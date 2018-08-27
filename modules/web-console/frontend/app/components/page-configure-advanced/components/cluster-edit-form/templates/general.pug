@@ -54,10 +54,16 @@ panel-collapsible(opened=`::true` ng-form=form)
                     +form-field__error({ error: 'igniteUnique', message: 'Cluster name should be unique.' })
 
             .pc-form-grid-col-30
-                +text-ip-address('Local host:', `${model}.localHost`, '"localHost"', 'true', '0.0.0.0',
-                    'System-wide local address or host for all Ignite components to bind to<br/>\
-                    If not defined then Ignite tries to use local wildcard address<br/>\
-                    That means that all services will be available on all network interfaces of the host machine')
+                +form-field__ip-address({
+                    label: 'Local host:',
+                    model: `${model}.localHost`,
+                    name: '"localHost"',
+                    enabled: 'true',
+                    placeholder: '0.0.0.0',
+                    tip: 'System-wide local address or host for all Ignite components to bind to<br/>\
+                          If not defined then Ignite tries to use local wildcard address<br/>\
+                          That means that all services will be available on all network interfaces of the host machine'
+                })
 
             .pc-form-grid-col-60
                 +form-field__dropdown({
