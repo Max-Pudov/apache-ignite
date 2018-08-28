@@ -106,7 +106,7 @@ export default class IgniteUiGrid {
                 }
 
                 this.$timeout(() => {
-                    if (this.selectedRowsId) this.applyIncomingSelectionRowsId(this.selectedRowsId);
+                    if (this.selectedRowsId && this.onSelectionChange) this.applyIncomingSelectionRowsId(this.selectedRowsId);
                 });
             }
         };
@@ -127,17 +127,17 @@ export default class IgniteUiGrid {
             // Without property existence check non-set selectedRowId binding might cause
             // unwanted behavior, like unchecking rows during any items change, even if
             // nothing really changed.
-            if ('selectedRows' in this)
+            if ('selectedRows' in this && this.onSelectionChange)
                 this.applyIncomingSelectionRows(this.selectedRows);
 
-            if ('selectedRowsId' in this)
+            if ('selectedRowsId' in this && this.onSelectionChange)
                 this.applyIncomingSelectionRowsId(this.selectedRowsId);
         }
 
-        if (hasChanged('selectedRows') && this.grid && this.grid.data)
+        if (hasChanged('selectedRows') && this.grid && this.grid.data && this.onSelectionChange)
             this.applyIncomingSelectionRows(changes.selectedRows.currentValue);
 
-        if (hasChanged('selectedRowsId') && this.grid && this.grid.data)
+        if (hasChanged('selectedRowsId') && this.grid && this.grid.data && this.onSelectionChange)
             this.applyIncomingSelectionRowsId(changes.selectedRowsId.currentValue);
 
         if (hasChanged('gridHeight') && this.grid)

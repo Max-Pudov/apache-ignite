@@ -167,6 +167,11 @@ export default class AgentManager {
             .distinctUntilChanged(({ cluster }) => prevCluster === cluster)
             .do(({ cluster }) => prevCluster = cluster);
 
+        this.clusterIsActive$ = this.connectionSbj
+            .map(({ cluster }) => cluster)
+            .filter((cluster) => Boolean(cluster))
+            .map(({active}) => active);
+
         if (!this.isDemoMode()) {
             this.connectionSbj.subscribe({
                 next: ({cluster}) => {
