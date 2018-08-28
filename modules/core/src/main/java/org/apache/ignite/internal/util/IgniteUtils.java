@@ -10508,9 +10508,9 @@ public abstract class IgniteUtils {
         else {
             byte[] buf0 = new byte[len];
 
-            buf.get(buf0);
+            buf.get(buf0, 0, len);
 
-            crcAlgo.update(buf0, 0, len);
+            crcAlgo.update(buf0);
         }
 
         res = (int)crcAlgo.getValue() ^ 0xFFFFFFFF;
