@@ -184,6 +184,8 @@ import scala.language.{implicitConversions, reflectiveCalls}
  *         Reset lost partitions for cache with name 'cache'.
  *     cache -statistics -enable -c=cache
  *         Enable statistics for cache with name 'cache'.
+ *     cache -statistics -disable -c=cache
+ *         Disable statistics for cache with name 'cache'.
  *
  * }}}
  */
@@ -857,7 +859,9 @@ object VisorCacheCommand {
             "cache -slp -c=@c0" -> "Show list of lost partitions for cache with name taken from 'c0' memory variable.",
             "cache -rlp -c=@c0" -> "Reset lost partitions for cache with name taken from 'c0' memory variable.",
             "cache -statistics -enable -c=@c0" ->
-                "Enable statistics collection for cache with name taken from 'c0' memory variable."
+                "Enable statistics collection for cache with name taken from 'c0' memory variable.",
+            "cache -statistics -disable -c=@c0" ->
+                "Disable statistics collection for cache with name taken from 'c0' memory variable."
         ),
         emptyArgs = cmd.cache,
         withArgs = cmd.cache

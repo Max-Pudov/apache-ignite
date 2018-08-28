@@ -32,7 +32,7 @@ import scala.language.reflectiveCalls
  *
  * ====Specification====
  * {{{
- *     cache -statistics -enabled -c=<cache name>
+ *     cache -statistics -enable|-disable -c=<cache name>
  * }}}
  *
  * ====Arguments====
@@ -47,6 +47,8 @@ import scala.language.reflectiveCalls
  * {{{
  *    cache -statistics -enable -c=@c0
  *        Enable collection of statistics for cache with name taken from 'c0' memory variable.
+ *    cache -statistics -disable -c=@c0
+ *        Disable collection of statistics for cache with name taken from 'c0' memory variable.
  * }}}
  */
 class VisorCacheToggleStatisticsCommand {
@@ -76,8 +78,10 @@ class VisorCacheToggleStatisticsCommand {
      * Toggle statistics collection for cache with specified name.
      *
      * ===Examples===
-     * <ex>cache -statistics -enabled -c=cache</ex>
+     * <ex>cache -statistics -enable -c=cache</ex>
      * Enable collection of statistics for cache with name 'cache'.
+     * <ex>cache -statistics -disable -c=cache</ex>
+     * Disable collection of statistics for cache with name 'cache'.
      *
      * @param argLst Command arguments.
      */
@@ -111,10 +115,22 @@ class VisorCacheToggleStatisticsCommand {
             val cacheNames = new JavaSet[String]()
             cacheNames.add(cacheName)
 
-            executeRandom(grp, classOf[VisorCacheToggleStatisticsTask],
-                new VisorCacheToggleStatisticsTaskArg(hasArgName("enabled", argLst), cacheNames))
+            val enable = if (hasArgName("enable", argLst))
+                true
+            else if (hasArgName("disable", argLst))
+                false
+            else {
+                warn("Goal state for collection of cache statistics is not specified.",
+                    "Use -enable or -disable flags to toggle collection of cache statistics.")
 
-            println("Visor successfully toggle statistics collection metrics for cache: " + escapeName(cacheName))
+                return
+            }
+
+            executeRandom(grp, classOf[VisorCacheToggleStatisticsTask],
+                new VisorCacheToggleStatisticsTaskArg(enable, cacheNames))
+
+            println("Visor successfully " + (if (enable) "enable" else "disable") +
+                " collection of statistics for cache: " + escapeName(cacheName))
         }
         catch {
             case _: ClusterGroupEmptyException => scold(messageNodeNotFound(node, cacheName))
