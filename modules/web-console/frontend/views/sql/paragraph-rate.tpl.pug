@@ -27,6 +27,13 @@
                     button.select-toggle(ng-init='refreshRate.unit = paragraph.rate.unit'  ng-model='refreshRate.unit' required placeholder='Time unit' bs-select bs-options='item.value as item.label for item in timeUnit' tabindex='0')
             .form-field.form-field__text.ignite-form-field
                 .actions
-                    button.btn-ignite.btn-ignite--primary(ng-disabled='popoverForm.$invalid' ng-click='startRefresh(paragraph, refreshRate.value, refreshRate.unit); $hide()') Start
-                    button.btn-ignite.btn-ignite--primary(ng-click='stopRefresh(paragraph); $hide()' ng-disabled='!paragraph.rate.installed') Stop
+                    button.btn-ignite.btn-ignite--primary(
+                        ng-disabled='popoverForm.$invalid'
+                        ng-click='startRefresh(paragraph, refreshRate.value, refreshRate.unit); $hide()'
+                        ng-hide='paragraph.rate.installed'
+                    ) Start
+                    button.btn-ignite.btn-ignite--primary(
+                        ng-click='stopRefresh(paragraph); $hide()'
+                        ng-hide='!paragraph.rate.installed'
+                    ) Stop
 

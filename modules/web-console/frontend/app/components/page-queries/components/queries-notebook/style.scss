@@ -144,7 +144,7 @@ queries-notebook {
 }
 
 .popover.settings.refresh-rate {
-    width: 220px;
+    width: 244px;
 
     [ignite-icon] {
         height: 12px;
@@ -155,8 +155,14 @@ queries-notebook {
         font-size: 14px;
     }
 
-    .actions button:first-child {
-        margin-left: 0;
+    .actions {
+        width: 100%;
+        text-align: right;
+
+        button {
+            margin-top: 20px;
+            margin-right: 0;
+        }
     }
 
     .ignite-form-field {
@@ -164,15 +170,7 @@ queries-notebook {
         padding: 5px;
 
         input {
-            margin-right: 20px;
-        }
-    }
-
-    .actions {
-
-
-        button {
-            margin: 0 10px;
+            margin-right: 10px;
         }
     }
 }
