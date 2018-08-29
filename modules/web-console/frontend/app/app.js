@@ -71,7 +71,6 @@ import igniteUiAceDocker from './directives/ui-ace-docker/ui-ace-docker.directiv
 import igniteUiAceTabs from './directives/ui-ace-tabs.directive';
 import igniteRetainSelection from './directives/retain-selection.directive';
 import btnIgniteLink from './directives/btn-ignite-link';
-import exposeInput from './components/expose-ignite-form-field-control';
 
 // Services.
 import ChartColors from './services/ChartColors.service';
@@ -245,7 +244,6 @@ export default angular.module('ignite-console', [
     connectedClustersDialog.name,
     igniteListOfRegisteredUsers.name,
     pageProfile.name,
-    exposeInput.name,
     pageLanding.name,
     pagePasswordChanged.name,
     pagePasswordReset.name,
