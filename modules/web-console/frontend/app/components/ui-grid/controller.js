@@ -46,6 +46,9 @@ export default class IgniteUiGrid {
     /** @type */
     selectedRowsId;
 
+    /** @type */
+    _selected;
+
     static $inject = ['$scope', '$element', '$timeout', 'gridUtil'];
 
     /**
@@ -93,6 +96,17 @@ export default class IgniteUiGrid {
 
                 api.core.on.rowsVisibleChanged(this.$scope, () => {
                     this.adjustHeight();
+
+                    // Without property existence check non-set selectedRows or selectedRowsId
+                    // binding might cause unwanted behavior,
+                    // like unchecking rows during any items change,
+                    // even if nothing really changed.
+                    if (this._selected && this._selected.length && this.onSelectionChange) {
+                        this.applyIncomingSelectionRows(this._selected);
+
+                        // Change selected rows if filter was changed.
+                        this.onRowsSelectionChange([]);
+                    }
                 });
 
                 if (this.onSelectionChange) {
@@ -104,6 +118,10 @@ export default class IgniteUiGrid {
                         this.onRowsSelectionChange(rows, e);
                     });
                 }
+
+                api.core.on.filterChanged(this.$scope, (column) => {
+                    this.onFilterChange(column);
+                });
 
                 this.$timeout(() => {
                     if (this.selectedRowsId && this.onSelectionChange) this.applyIncomingSelectionRowsId(this.selectedRowsId);
@@ -119,20 +137,8 @@ export default class IgniteUiGrid {
         const hasChanged = (binding) =>
             binding in changes && changes[binding].currentValue !== changes[binding].previousValue;
 
-        if (hasChanged('items') && this.grid) {
+        if (hasChanged('items') && this.grid)
             this.grid.data = changes.items.currentValue;
-            this.gridApi.grid.modifyRows(this.grid.data);
-            this.adjustHeight();
-
-            // Without property existence check non-set selectedRowId binding might cause
-            // unwanted behavior, like unchecking rows during any items change, even if
-            // nothing really changed.
-            if ('selectedRows' in this && this.onSelectionChange)
-                this.applyIncomingSelectionRows(this.selectedRows);
-
-            if ('selectedRowsId' in this && this.onSelectionChange)
-                this.applyIncomingSelectionRowsId(this.selectedRowsId);
-        }
 
         if (hasChanged('selectedRows') && this.grid && this.grid.data && this.onSelectionChange)
             this.applyIncomingSelectionRows(changes.selectedRows.currentValue);
@@ -144,37 +150,53 @@ export default class IgniteUiGrid {
             this.adjustHeight();
     }
 
-    applyIncomingSelectionRows(selected = []) {
+    applyIncomingSelectionRows = (selected = []) => {
         this.gridApi.selection.clearSelectedRows({ ignore: true });
 
-        const rows = this.grid.data.filter((r) =>
-            selected.map((row) =>
-                row[this.rowIdentityKey]).includes(r[this.rowIdentityKey]));
+        const visibleRows = this.gridApi.core.getVisibleRows(this.gridApi.grid)
+            .map(({ entity }) => entity);
+
+        const rows = visibleRows.filter((r) =>
+            selected.map((row) => row[this.rowIdentityKey]).includes(r[this.rowIdentityKey]));
 
         rows.forEach((r) => {
             this.gridApi.selection.selectRow(r, { ignore: true });
         });
-    }
+    };
 
-    applyIncomingSelectionRowsId(selected = []) {
+    applyIncomingSelectionRowsId = (selected = []) => {
         this.gridApi.selection.clearSelectedRows({ ignore: true });
 
-        const rows = this.grid.data.filter((r) =>
+        const visibleRows = this.gridApi.core.getVisibleRows(this.gridApi.grid)
+            .map(({ entity }) => entity);
+
+        const rows = visibleRows.filter((r) =>
             selected.includes(r[this.rowIdentityKey]));
 
         rows.forEach((r) => {
             this.gridApi.selection.selectRow(r, { ignore: true });
         });
-    }
+    };
 
     onRowsSelectionChange = debounce((rows, e = {}) => {
         if (e.ignore)
             return;
 
-        const selected = this.gridApi.selection.legacyGetSelectedRows();
+        this._selected = this.gridApi.selection.legacyGetSelectedRows();
 
         if (this.onSelectionChange)
-            this.onSelectionChange({ $event: selected });
+            this.onSelectionChange({ $event: this._selected });
+    });
+
+    onFilterChange = debounce((column) => {
+        if (!this.gridApi.selection)
+            return;
+
+        if (this.selectedRows && this.onSelectionChange)
+            this.applyIncomingSelectionRows(this.selectedRows);
+
+        if (this.selectedRowsId && this.onSelectionChange)
+            this.applyIncomingSelectionRowsId(this.selectedRowsId);
     });
 
     adjustHeight() {
