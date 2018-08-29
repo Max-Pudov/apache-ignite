@@ -299,6 +299,9 @@ public class FsyncModeFileWriteAheadLogManager extends GridCacheSharedManagerAda
      */
     @Nullable private volatile GridTimeoutObject nextAutoArchiveTimeoutObj;
 
+    /** CRC algo. */
+    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
+
     /**
      * @param ctx Kernal context.
      */
@@ -2180,7 +2183,7 @@ public class FsyncModeFileWriteAheadLogManager extends GridCacheSharedManagerAda
             buf.position(0);
 
             // This call will move buffer position to the end of the record again.
-            int crcVal = U.calcCrc(buf, curPos);
+            int crcVal = U.calcCrc(crc.get(), buf, curPos);
 
             buf.putInt(crcVal);
         }

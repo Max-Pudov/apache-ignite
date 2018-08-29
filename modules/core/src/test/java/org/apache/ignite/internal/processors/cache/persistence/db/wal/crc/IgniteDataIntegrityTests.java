@@ -76,7 +76,7 @@ public class IgniteDataIntegrityTests extends TestCase {
             if (oldCrcAlgo)
                 buf.putInt(PureJavaCrc32.calcCrc32(buf, 12));
             else
-                buf.putInt(U.calcCrc(buf, 12));
+                buf.putInt(U.calcCrc(crcAlgo, buf, 12));
         }
 
         buf.rewind();
