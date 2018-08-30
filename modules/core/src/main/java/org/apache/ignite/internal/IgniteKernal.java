@@ -125,6 +125,7 @@ import org.apache.ignite.internal.processors.cache.GridCacheUtilityKey;
 import org.apache.ignite.internal.processors.cache.IgniteCacheProxy;
 import org.apache.ignite.internal.processors.cache.IgniteInternalCache;
 import org.apache.ignite.internal.processors.cache.binary.CacheObjectBinaryProcessorImpl;
+import org.apache.ignite.internal.processors.cache.mvcc.MvccUtils;
 import org.apache.ignite.internal.processors.cache.persistence.DataRegion;
 import org.apache.ignite.internal.processors.cache.persistence.filename.PdsConsistentIdProcessor;
 import org.apache.ignite.internal.processors.cacheobject.IgniteCacheObjectProcessor;
@@ -993,6 +994,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
             // be able to start receiving messages once discovery completes.
             try {
                 startProcessor(new PdsConsistentIdProcessor(ctx));
+                startProcessor(MvccUtils.createProcessor(ctx));
                 startProcessor(createComponent(DiscoveryNodeValidationProcessor.class, ctx));
                 startProcessor(new GridAffinityProcessor(ctx));
                 startProcessor(createComponent(GridSegmentationProcessor.class, ctx));
@@ -2765,7 +2767,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
     /** {@inheritDoc} */
     @Override public <K, V> IgniteCache<K, V> createCache(CacheConfiguration<K, V> cacheCfg) {
         A.notNull(cacheCfg, "cacheCfg");
-        CU.validateCacheName(cacheCfg.getName());
+        CU.validateNewCacheName(cacheCfg.getName());
 
         guard();
 
@@ -2821,7 +2823,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
 
     /** {@inheritDoc} */
     @Override public <K, V> IgniteCache<K, V> createCache(String cacheName) {
-        CU.validateCacheName(cacheName);
+        CU.validateNewCacheName(cacheName);
 
         guard();
 
@@ -2850,7 +2852,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
     @Override public <K, V> IgniteBiTuple<IgniteCache<K, V>, Boolean> getOrCreateCache0(
         CacheConfiguration<K, V> cacheCfg, boolean sql) {
         A.notNull(cacheCfg, "cacheCfg");
-        CU.validateCacheName(cacheCfg.getName());
+        CU.validateNewCacheName(cacheCfg.getName());
 
         guard();
 
@@ -2916,7 +2918,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
         NearCacheConfiguration<K, V> nearCfg
     ) {
         A.notNull(cacheCfg, "cacheCfg");
-        CU.validateCacheName(cacheCfg.getName());
+        CU.validateNewCacheName(cacheCfg.getName());
         A.notNull(nearCfg, "nearCfg");
 
         guard();
@@ -2945,7 +2947,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
     @Override public <K, V> IgniteCache<K, V> getOrCreateCache(CacheConfiguration<K, V> cacheCfg,
         NearCacheConfiguration<K, V> nearCfg) {
         A.notNull(cacheCfg, "cacheCfg");
-        CU.validateCacheName(cacheCfg.getName());
+        CU.validateNewCacheName(cacheCfg.getName());
         A.notNull(nearCfg, "nearCfg");
 
         guard();
@@ -2986,7 +2988,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
 
     /** {@inheritDoc} */
     @Override public <K, V> IgniteCache<K, V> createNearCache(String cacheName, NearCacheConfiguration<K, V> nearCfg) {
-        CU.validateCacheName(cacheName);
+        CU.validateNewCacheName(cacheName);
         A.notNull(nearCfg, "nearCfg");
 
         guard();
@@ -3018,7 +3020,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
     /** {@inheritDoc} */
     @Override public <K, V> IgniteCache<K, V> getOrCreateNearCache(String cacheName,
         NearCacheConfiguration<K, V> nearCfg) {
-        CU.validateCacheName(cacheName);
+        CU.validateNewCacheName(cacheName);
         A.notNull(nearCfg, "nearCfg");
 
         guard();
@@ -3147,7 +3149,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
 
     /** {@inheritDoc} */
     @Override public <K, V> IgniteCache<K, V> getOrCreateCache(String cacheName) {
-        CU.validateCacheName(cacheName);
+        CU.validateNewCacheName(cacheName);
 
         guard();
 
@@ -3176,7 +3178,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
      */
     public IgniteInternalFuture<?> getOrCreateCacheAsync(String cacheName, String templateName,
         CacheConfigurationOverride cfgOverride, boolean checkThreadTx) {
-        CU.validateCacheName(cacheName);
+        CU.validateNewCacheName(cacheName);
 
         guard();
 
@@ -3196,7 +3198,7 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
     /** {@inheritDoc} */
     @Override public <K, V> void addCacheConfiguration(CacheConfiguration<K, V> cacheCfg) {
         A.notNull(cacheCfg, "cacheCfg");
-        CU.validateCacheName(cacheCfg.getName());
+        CU.validateNewCacheName(cacheCfg.getName());
 
         guard();
 
@@ -3872,7 +3874,8 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
                     }
                     catch (IgniteCheckedException e) {
                         if (!X.hasCause(e, IgniteNeedReconnectException.class,
-                            IgniteClientDisconnectedCheckedException.class)) {
+                            IgniteClientDisconnectedCheckedException.class,
+                            IgniteInterruptedCheckedException.class)) {
                             U.error(log, "Failed to reconnect, will stop node.", e);
 
                             reconnectState.firstReconnectFut.onDone(e);
@@ -3905,7 +3908,8 @@ public class IgniteKernal implements IgniteEx, IgniteMXBean, Externalizable {
         if (err != null) {
             U.error(log, "Failed to reconnect, will stop node", err);
 
-            close();
+            if (!X.hasCause(err, NodeStoppingException.class))
+                close();
         }
     }
 
