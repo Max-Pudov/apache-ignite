@@ -34,9 +34,12 @@ import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.configuration.TransactionConfiguration;
 import org.apache.ignite.internal.IgniteInternalFuture;
 import org.apache.ignite.internal.processors.cache.GridCacheAbstractSelfTest;
+import org.apache.ignite.internal.processors.cache.GridCacheAdapter;
+import org.apache.ignite.internal.processors.cache.IgniteCacheFutureImpl;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteFuture;
+import org.apache.ignite.lang.IgniteFutureTimeoutException;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.jetbrains.annotations.NotNull;
@@ -143,8 +146,25 @@ public abstract class CacheAsyncOperationsFailoverAbstractTest extends GridCache
             for (int i = 1; i < NODE_CNT; i++)
                 stopGrid(i);
 
-            for (IgniteFuture<?> fut : futs)
-                fut.get();
+            for (IgniteFuture<?> fut : futs) {
+                while (true) {
+                    try {
+                        fut.get(2 * 60 * 1000);
+
+                        break;
+                    }
+                    catch (IgniteFutureTimeoutException ex) {
+                        System.out.println("??? future: " + fut.toString());
+
+                        if (fut instanceof IgniteCacheFutureImpl) {
+                            IgniteInternalFuture innerFut = ((IgniteCacheFutureImpl)fut).internalFuture();
+
+                            if (innerFut instanceof GridCacheAdapter.AsyncOpRetryFuture)
+                                System.out.println("??? tx: " + ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx);
+                        }
+                    }
+                }
+            }
         }
         finally {
             for (int i = 1; i < NODE_CNT; i++)

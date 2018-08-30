@@ -4906,7 +4906,7 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
     /**
      *
      */
-    private class AsyncOpRetryFuture<T> extends GridFutureAdapter<T> {
+    public class AsyncOpRetryFuture<T> extends GridFutureAdapter<T> {
         /** */
         private AsyncOp<T> op;
 
@@ -4914,7 +4914,7 @@ public abstract class GridCacheAdapter<K, V> implements IgniteInternalCache<K, V
         private int retries;
 
         /** */
-        private GridNearTxLocal tx;
+        public GridNearTxLocal tx;
 
         /** */
         private CacheOperationContext opCtx;
