@@ -116,6 +116,18 @@ public final class GridNearTxFinishFuture<K, V> extends GridCacheCompoundIdentit
         this.tx = tx;
         this.commit = commit;
 
+        if (tx.allEntries().isEmpty()) {
+            System.out.println("??? created GridNearTxFinishFuture for empty TX");
+
+            try {
+                throw new RuntimeException();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+
         ignoreInterrupts();
 
         mappings = tx.mappings();
