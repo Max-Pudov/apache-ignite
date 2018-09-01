@@ -44,9 +44,7 @@ public class IgniteDataIntegrityTests extends TestCase {
     /** Buffer expander. */
     protected ByteBufferExpander expBuf;
 
-    /** CRC algo. */
-    private CRC32 crcAlgo = new CRC32();
-
+    /** Old crc algo flag. */
     protected boolean oldCrcAlgo;
 
     /** {@inheritDoc} */

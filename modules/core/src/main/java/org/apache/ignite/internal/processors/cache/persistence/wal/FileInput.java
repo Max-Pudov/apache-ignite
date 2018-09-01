@@ -289,6 +289,9 @@ public final class FileInput implements ByteBufferBackedDataInput {
         /** Skip crc check. */
         private boolean skipCheck;
 
+        /** Crc algorithm. */
+        private final CRC32 crcAlgo = new CRC32();
+
         /**
          * @param position Position.
          */
@@ -315,7 +318,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
         @Override public void close() throws Exception {
             updateCrc();
 
-            int val = (int) crc.getValue() ^ 0xFFFFFFFF;
+            int val = (int) crcAlgo.getValue() ^ 0xFFFFFFFF;
 
             int writtenCrc =  this.readInt();
 
@@ -340,7 +343,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
 
             buf.position(lastCalcPosition);
 
-            U.calcCrcWithReset(buf, oldPos - lastCalcPosition, false);
+            U.calcCrcWithReset(crcAlgo, buf, oldPos - lastCalcPosition, false);
 
             lastCalcPosition = oldPos;
         }

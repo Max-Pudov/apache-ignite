@@ -10492,13 +10492,26 @@ public abstract class IgniteUtils {
         return sb.toString();
     }
 
+    /**
+     * @param buf Input buffer.
+     * @param len Buffer length.
+     *
+     * @return Crc checksum.
+     */
     public static int calcCrc(ByteBuffer buf, int len) {
-        return calcCrcWithReset(buf, len, true);
+        CRC32 crcAlgo = crc.get();
+        return calcCrcWithReset(crcAlgo, buf, len, true);
     }
 
-    public static int calcCrcWithReset(ByteBuffer buf, int len, boolean reset) {
-        CRC32 crcAlgo = crc.get();
-
+    /**
+     * @param crcAlgo CRC algorithm.
+     * @param buf Input buffer.
+     * @param len Buffer length.
+     * @param reset Reset crc flag.
+     *
+     * @return Crc checksum.
+     */
+    public static int calcCrcWithReset(CRC32 crcAlgo, ByteBuffer buf, int len, boolean reset) {
         int pos = buf.position();
 
         int res;
