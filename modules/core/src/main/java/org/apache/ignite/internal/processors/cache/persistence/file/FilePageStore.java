@@ -96,9 +96,6 @@ public class FilePageStore implements PageStore {
     /** */
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    /** CRC algo. */
-    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
-
     /**
      * @param file File.
      */
@@ -373,7 +370,7 @@ public class FilePageStore implements PageStore {
             pageBuf.position(0);
 
             if (!skipCrc) {
-                int curCrc32 = U.calcCrc(crc.get(), pageBuf, pageSize);
+                int curCrc32 = U.calcCrc(pageBuf, pageSize);
 
                 if ((savedCrc32 ^ curCrc32) != 0)
                     throw new IgniteDataIntegrityViolationException("Failed to read page (CRC validation failed) " +
@@ -566,13 +563,13 @@ public class FilePageStore implements PageStore {
                     if (calculateCrc && !skipCrc) {
                         assert PageIO.getCrc(pageBuf) == 0 : U.hexLong(pageId);
 
-                        PageIO.setCrc(pageBuf, U.calcCrc(crc.get(), pageBuf, pageSize));
+                        PageIO.setCrc(pageBuf, U.calcCrc(pageBuf, pageSize));
 
                         pageBuf.position(0);
                     }
 
                     // Check whether crc was calculated somewhere above the stack if it is forcibly skipped.
-                    assert skipCrc || PageIO.getCrc(pageBuf) != 0 || U.calcCrc(crc.get(), pageBuf, pageSize) == 0 :
+                    assert skipCrc || PageIO.getCrc(pageBuf) != 0 || U.calcCrc(pageBuf, pageSize) == 0 :
                         "CRC hasn't been calculated, crc=0";
 
                     pageBuf.position(0);

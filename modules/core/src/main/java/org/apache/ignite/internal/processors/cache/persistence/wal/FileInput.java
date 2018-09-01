@@ -283,9 +283,6 @@ public final class FileInput implements ByteBufferBackedDataInput {
      * Checking of CRC32.
      */
     public class Crc32CheckingFileInput implements ByteBufferBackedDataInput, AutoCloseable {
-        /** */
-        private final CRC32 crc = new CRC32();
-
         /** Last calc position. */
         private int lastCalcPosition;
 
@@ -343,7 +340,7 @@ public final class FileInput implements ByteBufferBackedDataInput {
 
             buf.position(lastCalcPosition);
 
-            U.calcCrcWithReset(crc, buf, oldPos - lastCalcPosition, false);
+            U.calcCrcWithReset(buf, oldPos - lastCalcPosition, false);
 
             lastCalcPosition = oldPos;
         }

@@ -350,8 +350,6 @@ public class GridCacheDatabaseSharedManager extends IgniteCacheDatabaseSharedMan
     /** File I/O factory for writing checkpoint markers. */
     private final FileIOFactory ioFactory;
 
-    /** CRC algo. */
-    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
     /**
      * @param ctx Kernal context.
      */
@@ -3876,7 +3874,7 @@ public class GridCacheDatabaseSharedManager extends IgniteCacheDatabaseSharedMan
                     }
 
                     if (!skipCrc) {
-                        PageIO.setCrc(writeAddr, U.calcCrc(crc.get(), tmpWriteBuf, pageSize()));
+                        PageIO.setCrc(writeAddr, U.calcCrc(tmpWriteBuf, pageSize()));
 
                         tmpWriteBuf.rewind();
                     }

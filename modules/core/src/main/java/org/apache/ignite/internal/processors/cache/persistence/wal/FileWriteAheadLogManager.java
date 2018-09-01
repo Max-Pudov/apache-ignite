@@ -360,9 +360,6 @@ public class FileWriteAheadLogManager extends GridCacheSharedManagerAdapter impl
     /** Wal segment sync worker. */
     private WalSegmentSyncer walSegmentSyncWorker;
 
-    /** CRC algo. */
-    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
-
     /**
      * @param ctx Kernal context.
      */
@@ -2356,7 +2353,7 @@ public class FileWriteAheadLogManager extends GridCacheSharedManagerAdapter impl
             buf.position(0);
 
             // This call will move buffer position to the end of the record again.
-            int crcVal = U.calcCrc(crc.get(), buf, curPos);
+            int crcVal = U.calcCrc(buf, curPos);
 
             buf.putInt(crcVal);
         }

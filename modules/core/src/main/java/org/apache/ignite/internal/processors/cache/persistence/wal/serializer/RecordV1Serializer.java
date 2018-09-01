@@ -97,9 +97,6 @@ public class RecordV1Serializer implements RecordSerializer {
      */
     private final boolean marshalledMode;
 
-    /** CRC algo. */
-    private static ThreadLocal<CRC32> crc = ThreadLocal.withInitial(CRC32::new);
-
     /** Thread-local heap byte buffer. */
     private final ThreadLocal<ByteBuffer> heapTlb = new ThreadLocal<ByteBuffer>() {
         @Override protected ByteBuffer initialValue() {
@@ -423,7 +420,7 @@ public class RecordV1Serializer implements RecordSerializer {
             buf.position(startPos);
 
             // This call will move buffer position to the end of the record again.
-            int crcVal = U.calcCrc(crc.get(), buf, curPos - startPos);
+            int crcVal = U.calcCrc(buf, curPos - startPos);
 
             buf.putInt(crcVal);
         }
