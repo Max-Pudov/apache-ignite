@@ -404,7 +404,8 @@ public abstract class IgniteAbstractStandByClientReconnectTest extends GridCommo
                     System.out.println("Await cluster change state");
 
                     latch.await();
-                } catch (InterruptedException e) {
+                }
+                catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }

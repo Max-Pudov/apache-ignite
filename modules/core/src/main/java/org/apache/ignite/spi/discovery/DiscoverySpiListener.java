@@ -49,6 +49,8 @@ public interface DiscoverySpiListener {
      *      {@code EVT_NODE_JOINED}, then joined node will be in snapshot).
      * @param topHist Topology snapshots history.
      * @param data Data for custom event.
+     *
+     * @return A future that will be completed when notification process has finished.
      */
     public IgniteInternalFuture onDiscovery(
         int type,

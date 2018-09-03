@@ -5407,6 +5407,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
         /**
          * @param msg Message.
+         * @param waitForNotification If {@code true} then thread will wait when discovery event notification has finished.
          */
         private void processCustomMessage(TcpDiscoveryCustomEventMessage msg, boolean waitForNotification) {
             if (isLocalNodeCoordinator()) {
@@ -5597,6 +5598,7 @@ class ServerImpl extends TcpDiscoveryImpl {
 
         /**
          * @param msg Custom message.
+         * @param waitForNotification If {@code true} thread will wait when discovery event notification has finished.
          */
         private void notifyDiscoveryListener(TcpDiscoveryCustomEventMessage msg, boolean waitForNotification) {
             DiscoverySpiListener lsnr = spi.lsnr;

@@ -476,7 +476,7 @@ public class ZookeeperDiscoveryImpl {
                     null).get();
             }
             catch (IgniteCheckedException e) {
-                e.printStackTrace();
+                U.error(log, "Failed to wait for discovery event notification", e);
             }
         }
 

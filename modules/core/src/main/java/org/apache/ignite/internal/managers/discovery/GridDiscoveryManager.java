@@ -104,6 +104,7 @@ import org.apache.ignite.internal.util.tostring.GridToStringExclude;
 import org.apache.ignite.internal.util.typedef.CI1;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.P1;
+import org.apache.ignite.internal.util.typedef.T2;
 import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.LT;
 import org.apache.ignite.internal.util.typedef.internal.S;
@@ -222,8 +223,8 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
     /** Discovery event worker. */
     private final DiscoveryWorker discoWrk = new DiscoveryWorker();
 
-    /** Discovery custom event worker. */
-    private final DiscoveryCustomMessageWorker customDiscoWrk = new DiscoveryCustomMessageWorker();
+    /** Discovery event notyfier worker. */
+    private final DiscoveryMessageNotifyerWorker discoNotifierWrk = new DiscoveryMessageNotifyerWorker();
 
     /** Network segment check worker. */
     private SegmentCheckWorker segChkWrk;
@@ -595,20 +596,15 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
                 final Map<Long, Collection<ClusterNode>> snapshots,
                 @Nullable DiscoverySpiCustomMessage spiCustomMsg
             ) {
-                GridFutureAdapter fut = new GridFutureAdapter();
+                GridFutureAdapter notificationFut = new GridFutureAdapter();
 
-                customDiscoWrk.submit(() -> {
-                    try {
-                        synchronized (discoEvtMux) {
-                            onDiscovery0(type, topVer, node, topSnapshot, snapshots, spiCustomMsg);
-                        }
-                    }
-                    finally {
-                        fut.onDone();
+                discoNotifierWrk.submit(notificationFut, () -> {
+                    synchronized (discoEvtMux) {
+                        onDiscovery0(type, topVer, node, topSnapshot, snapshots, spiCustomMsg);
                     }
                 });
 
-                return fut;
+                return notificationFut;
             }
 
             /**
@@ -938,7 +934,7 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
             }
         });
 
-        new IgniteThread(customDiscoWrk).start();
+        new IgniteThread(discoNotifierWrk).start();
 
         startSpi();
 
@@ -1719,9 +1715,9 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
 
         U.join(discoWrk, log);
 
-        U.cancel(customDiscoWrk);
+        U.cancel(discoNotifierWrk);
 
-        U.join(customDiscoWrk, log);
+        U.join(discoNotifierWrk, log);
 
         // Stop SPI itself.
         stopSpi();
@@ -2689,33 +2685,56 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
         }
     }
 
-    private class DiscoveryCustomMessageWorker extends GridWorker {
+    /**
+     *
+     */
+    private class DiscoveryMessageNotifyerWorker extends GridWorker {
         /** Queue. */
-        private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
+        private final BlockingQueue<T2<GridFutureAdapter, Runnable>> queue = new LinkedBlockingQueue<>();
 
         /**
          * Default constructor.
          */
-        protected DiscoveryCustomMessageWorker() {
-            super(ctx.igniteInstanceName(), "disco-event-worker", GridDiscoveryManager.this.log, ctx.workersRegistry());
+        protected DiscoveryMessageNotifyerWorker() {
+            super(ctx.igniteInstanceName(), "disco-notyfier-worker", GridDiscoveryManager.this.log, ctx.workersRegistry());
         }
 
         /**
          *
          */
         private void body0() throws InterruptedException {
-            Runnable cmd = queue.take();
+            T2<GridFutureAdapter, Runnable> notification = queue.take();
 
-            cmd.run();
+            try {
+                notification.get2().run();
+            }
+            finally {
+                notification.get1().onDone();
+            }
         }
 
         /**
          * @param cmd Command.
          */
-        public void submit(Runnable cmd) {
-            queue.add(cmd);
+        public void submit(GridFutureAdapter notificationFut, Runnable cmd) {
+            queue.add(new T2<>(notificationFut, cmd));
         }
 
+        /**
+         * Cancel thread execution and completes all notification futures.
+         */
+        @Override public void cancel() {
+            super.cancel();
+
+            while (!queue.isEmpty()) {
+                T2<GridFutureAdapter, Runnable> notification = queue.poll();
+
+                if (notification != null)
+                    notification.get1().onDone();
+            }
+        }
+
+        /** {@inheritDoc} */
         @Override protected void body() throws InterruptedException, IgniteInterruptedCheckedException {
             while (!isCancelled()) {
                 try {
