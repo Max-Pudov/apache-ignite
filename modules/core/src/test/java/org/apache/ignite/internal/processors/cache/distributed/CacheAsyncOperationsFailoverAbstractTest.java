@@ -154,13 +154,15 @@ public abstract class CacheAsyncOperationsFailoverAbstractTest extends GridCache
                         break;
                     }
                     catch (IgniteFutureTimeoutException ex) {
-                        System.out.println("??? future: " + fut.toString());
+                        for (IgniteFuture<?> fut0 : futs) {
+                            System.out.println("??? future: " + fut0.toString());
 
-                        if (fut instanceof IgniteCacheFutureImpl) {
-                            IgniteInternalFuture innerFut = ((IgniteCacheFutureImpl)fut).internalFuture();
+                            if (fut0 instanceof IgniteCacheFutureImpl) {
+                                IgniteInternalFuture innerFut = ((IgniteCacheFutureImpl)fut0).internalFuture();
 
-                            if (innerFut instanceof GridCacheAdapter.AsyncOpRetryFuture)
-                                System.out.println("??? tx: " + ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx);
+                                if (innerFut instanceof GridCacheAdapter.AsyncOpRetryFuture)
+                                    System.out.println("??? tx: " + ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx);
+                            }
                         }
                     }
                 }
