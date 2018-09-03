@@ -2713,14 +2713,20 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
         /**
          * @param cmd Command.
          */
-        public void submit(GridFutureAdapter notificationFut, Runnable cmd) {
+        public synchronized void submit(GridFutureAdapter notificationFut, Runnable cmd) {
+            if (isCancelled()) {
+                notificationFut.onDone();
+
+                return;
+            }
+
             queue.add(new T2<>(notificationFut, cmd));
         }
 
         /**
          * Cancel thread execution and completes all notification futures.
          */
-        @Override public void cancel() {
+        @Override public synchronized void cancel() {
             super.cancel();
 
             while (!queue.isEmpty()) {
