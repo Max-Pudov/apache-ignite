@@ -61,6 +61,9 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
     /** */
     private final boolean canRemap;
 
+    /** */
+    private volatile boolean done;
+
     /**
      * @param cctx Cache context.
      */
@@ -135,7 +138,12 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
     }
 
     /** {@inheritDoc} */
-    @Override public void onDone() {
+    @Override public synchronized void onDone() {
+        if (done)
+            return;
+
+        done = true;
+
         MvccProcessor prc = cctx.shared().coordinators();
 
         MvccSnapshot snapshot = snapshot();
@@ -148,8 +156,14 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
     }
 
     /** {@inheritDoc} */
-    @Override public IgniteInternalFuture<Void> onDone(@NotNull GridNearTxLocal tx, boolean commit) {
-        MvccSnapshot snapshot = snapshot(), txSnapshot = tx.mvccSnapshot();
+    @Override public synchronized IgniteInternalFuture<Void> onDone(@NotNull GridNearTxLocal tx, boolean commit) {
+        if (done)
+            return commit ? new GridFinishedFuture<>() : null;
+
+        done = true;
+
+        MvccSnapshot snapshot = snapshot();
+        MvccSnapshot txSnapshot = tx.mvccSnapshot();
 
         if (snapshot == null && txSnapshot == null)
             return commit ? new GridFinishedFuture<>() : null;
@@ -229,6 +243,12 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
             return false;
         }
 
+        if(done) {
+            lsnr.onError(new IgniteCheckedException("Failed to request mvcc version, tracker has been closed."));
+
+            return false;
+        }
+
         this.topVer = topVer;
 
         synchronized (this) {
@@ -250,6 +270,12 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
 
     /** */
     private void tryRemap(MvccSnapshotResponseListener lsnr) {
+        if(done) {
+            lsnr.onError(new IgniteCheckedException("Failed to request mvcc version, tracker has been closed."));
+
+            return;
+        }
+
         if (!canRemap) {
             lsnr.onError(new ClusterTopologyCheckedException("Failed to request mvcc version, coordinator failed."));
 
@@ -286,8 +312,13 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
         synchronized (this) {
             assert snapshot() == null : "[this=" + this + ", rcvdVer=" + res + "]";
 
+            if(done)
+                return false;
+
             if (crdVer != 0) {
                 this.snapshot = res;
+
+                cctx.shared().coordinators().addQueryTracker(this);
             }
             else
                 needRemap = true;
@@ -298,8 +329,6 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
 
             return false;
         }
-
-        cctx.shared().coordinators().addQueryTracker(this);
 
         return true;
     }
