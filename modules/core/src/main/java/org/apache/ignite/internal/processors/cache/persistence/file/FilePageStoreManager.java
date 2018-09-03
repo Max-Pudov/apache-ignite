@@ -339,8 +339,10 @@ public class FilePageStoreManager extends GridCacheSharedManagerAdapter implemen
         else
             file = new File(cacheWorkDir, CACHE_DATA_FILENAME);
 
-        if (overwrite || !file.exists() || file.length() == 0) {
-            try {
+        Path filePath = file.toPath();
+
+        try {
+            if (overwrite || !Files.exists(filePath) || Files.size(filePath) == 0) {
                 File tmp = new File(file.getParent(), file.getName() + ".tmp");
 
                 tmp.createNewFile();
@@ -355,9 +357,11 @@ public class FilePageStoreManager extends GridCacheSharedManagerAdapter implemen
 
                 Files.move(tmp.toPath(), file.toPath());
             }
-            catch (IOException ex) {
-                throw new IgniteCheckedException("Failed to persist cache configuration: " + cacheData.config().getName(), ex);
-            }
+        }
+        catch (IOException ex) {
+            cctx.kernalContext().failure().process(new FailureContext(FailureType.CRITICAL_ERROR, ex));
+
+            throw new IgniteCheckedException("Failed to persist cache configuration: " + cacheData.config().getName(), ex);
         }
     }
 
