@@ -577,6 +577,11 @@ public class FilePageStoreManager extends GridCacheSharedManagerAdapter implemen
         return new File(cacheWorkDir, String.format(PART_FILE_TEMPLATE, partId));
     }
 
+    /** {@inheritDoc} */
+    @Override public boolean checkAndInitCacheWorkDir(CacheConfiguration cacheCfg) throws IgniteCheckedException {
+        return checkAndInitCacheWorkDir(cacheWorkDir(cacheCfg));
+    }
+
     /**
      * @param cacheWorkDir Cache work directory.
      */

@@ -39,6 +39,8 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.events.DiscoveryEvent;
 import org.apache.ignite.events.Event;
+import org.apache.ignite.failure.FailureContext;
+import org.apache.ignite.failure.FailureType;
 import org.apache.ignite.internal.IgniteInternalFuture;
 import org.apache.ignite.internal.cluster.ClusterTopologyServerNotFoundException;
 import org.apache.ignite.internal.events.DiscoveryCustomEvent;
@@ -2828,12 +2830,23 @@ public class CacheAffinitySharedManager<K, V> extends GridCacheSharedManagerAdap
             CU.isPersistentCache(cfg, cctx.gridConfig().getDataStorageConfiguration()) &&
             !cctx.kernalContext().clientNode()) {
 
+            StoredCacheData data = new StoredCacheData(cfg);
+
+            data.sql(sql);
+
+            try {
+                cctx.pageStore().checkAndInitCacheWorkDir(data.config());
+            }
+            catch (IgniteCheckedException e) {
+                if (!cctx.kernalContext().isStopping()) {
+                    cctx.kernalContext().failure().process(new FailureContext(FailureType.CRITICAL_ERROR, e));
+
+                    U.error(log, "Failed to initialize cache work directory for " + data.config(), e);
+                }
+            }
+
             return cctx.kernalContext().closure().runLocalSafe(() -> {
                 try {
-                    StoredCacheData data = new StoredCacheData(cfg);
-
-                    data.sql(sql);
-
                     cctx.pageStore().storeCacheData(data, false);
                 }
                 catch (IgniteCheckedException e) {
