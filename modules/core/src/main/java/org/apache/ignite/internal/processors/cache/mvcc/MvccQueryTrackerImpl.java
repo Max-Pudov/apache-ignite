@@ -270,12 +270,6 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
 
     /** */
     private void tryRemap(MvccSnapshotResponseListener lsnr) {
-        if(done) {
-            lsnr.onError(new IgniteCheckedException("Failed to request mvcc version, tracker has been closed."));
-
-            return;
-        }
-
         if (!canRemap) {
             lsnr.onError(new ClusterTopologyCheckedException("Failed to request mvcc version, coordinator failed."));
 
@@ -342,6 +336,12 @@ public class MvccQueryTrackerImpl implements MvccQueryTracker {
         if (e instanceof ClusterTopologyCheckedException && canRemap) {
             if (e instanceof ClusterTopologyServerNotFoundException)
                 return true; // No Mvcc coordinator assigned
+
+            if(done) {
+                lsnr.onError(new IgniteCheckedException("Failed to request mvcc version, tracker has been closed."));
+
+                return false;
+            }
 
             if (log.isDebugEnabled())
                 log.debug("Mvcc coordinator failed, need remap: " + e);
