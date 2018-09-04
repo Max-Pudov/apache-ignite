@@ -145,7 +145,7 @@ public class GridNearTxLocal extends GridDhtTxLocalAdapter implements GridTimeou
     /** Commit future. */
     @SuppressWarnings("UnusedDeclaration")
     @GridToStringExclude
-    private volatile NearTxFinishFuture finishFut;
+    public volatile NearTxFinishFuture finishFut;
 
     /** True if transaction contains near cache entries mapped to local node. */
     private boolean nearLocallyMapped;

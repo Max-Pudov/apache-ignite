@@ -166,7 +166,7 @@ public abstract class CacheAsyncOperationsFailoverAbstractTest extends GridCache
                                     GridNearTxLocal tx = ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx;
 
                                     System.out.println("??? future: " + fut0.toString() + " tx: " + tx + " prepFut: " +
-                                        tx.currentPrepareFuture() + " finishFut: " + tx.finishFuture());
+                                        tx.currentPrepareFuture() + " finishFut: " + tx.finishFut);
                                 }
 
 
