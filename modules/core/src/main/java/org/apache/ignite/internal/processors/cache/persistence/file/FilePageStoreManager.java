@@ -583,13 +583,15 @@ public class FilePageStoreManager extends GridCacheSharedManagerAdapter implemen
     private boolean checkAndInitCacheWorkDir(File cacheWorkDir) throws IgniteCheckedException {
         boolean dirExisted = false;
 
-        if (!cacheWorkDir.exists()) {
-            boolean res = cacheWorkDir.mkdirs();
-
-            if (!res)
+        if (!Files.exists(cacheWorkDir.toPath())) {
+            try {
+                Files.createDirectory(cacheWorkDir.toPath());
+            }
+            catch (IOException e) {
                 throw new IgniteCheckedException("Failed to initialize cache working directory " +
                     "(failed to create, make sure the work folder has correct permissions): " +
-                    cacheWorkDir.getAbsolutePath());
+                    cacheWorkDir.getAbsolutePath(), e);
+            }
         }
         else {
             if (cacheWorkDir.isFile())
