@@ -36,6 +36,7 @@ import org.apache.ignite.internal.IgniteInternalFuture;
 import org.apache.ignite.internal.processors.cache.GridCacheAbstractSelfTest;
 import org.apache.ignite.internal.processors.cache.GridCacheAdapter;
 import org.apache.ignite.internal.processors.cache.IgniteCacheFutureImpl;
+import org.apache.ignite.internal.processors.cache.distributed.near.GridNearTxLocal;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteFuture;
@@ -161,8 +162,14 @@ public abstract class CacheAsyncOperationsFailoverAbstractTest extends GridCache
                             if (fut0 instanceof IgniteCacheFutureImpl) {
                                 IgniteInternalFuture innerFut = ((IgniteCacheFutureImpl)fut0).internalFuture();
 
-                                if (innerFut instanceof GridCacheAdapter.AsyncOpRetryFuture)
-                                    System.out.println("??? future: " + fut0.toString() + " tx: " + ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx);
+                                if (innerFut instanceof GridCacheAdapter.AsyncOpRetryFuture) {
+                                    GridNearTxLocal tx = ((GridCacheAdapter.AsyncOpRetryFuture)innerFut).tx;
+
+                                    System.out.println("??? future: " + fut0.toString() + " tx: " + tx + " prepFut: " +
+                                        tx.currentPrepareFuture() + " finishFut: " + tx.finishFuture());
+                                }
+
+
                             }
                         }
                     }
