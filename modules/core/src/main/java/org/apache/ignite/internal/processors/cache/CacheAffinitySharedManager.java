@@ -2709,6 +2709,12 @@ public class CacheAffinitySharedManager<K, V> extends GridCacheSharedManagerAdap
             return registerAllCaches(caches.values());
         }
 
+        /**
+         * Registers caches and persists cache configurations on disk if needed.
+         *
+         * @param descs Cache descriptors.
+         * @return Future that will be completed when all unregistered caches will be registered.
+         */
         private IgniteInternalFuture<?> registerAllCaches(Collection<DynamicCacheDescriptor> descs) {
             Collection<DynamicCacheDescriptor> notRegistered = descs.stream()
                 .filter(desc -> !registeredCaches.containsKey(desc.cacheId()))
@@ -2824,6 +2830,7 @@ public class CacheAffinitySharedManager<K, V> extends GridCacheSharedManagerAdap
     /**
      * @param cfg cache configuration
      * @param sql SQL flag.
+     * @return Future that will be completed when cache configuration will be persisted to cache work directory.
      */
     private IgniteInternalFuture<?> saveCacheConfiguration(CacheConfiguration<?, ?> cfg, boolean sql) {
         if (cctx.pageStore() != null &&
