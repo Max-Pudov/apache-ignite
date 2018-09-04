@@ -18,6 +18,7 @@
 package org.apache.ignite.cache.query;
 
 import javax.cache.Cache;
+import javax.cache.configuration.CacheEntryListenerConfiguration;
 import javax.cache.configuration.Factory;
 import javax.cache.event.CacheEntryEventFilter;
 import javax.cache.event.CacheEntryUpdatedListener;
@@ -213,7 +214,16 @@ public final class ContinuousQuery<K, V> extends AbstractContinuousQuery<K, V> {
         return (ContinuousQuery<K, V>)super.setPageSize(pageSize);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Sets whether this query should be executed on local node only.
+     *
+     * Note: backup event queues are not kept for local continuous queries. It may lead to notifications loss in case of
+     * node failures. Use {@link Cache#registerCacheEntryListener(CacheEntryListenerConfiguration)} method to register
+     * cache event listeners on all primary cache nodes, if delivery guarantee is required.
+     *
+     * @param loc Local flag.
+     * @return {@code this} for chaining.
+     */
     @Override public ContinuousQuery<K, V> setLocal(boolean loc) {
         return (ContinuousQuery<K, V>)super.setLocal(loc);
     }
