@@ -88,7 +88,7 @@ public abstract class GridNearTxPrepareFutureAdapter extends
     protected GridNearTxLocal tx;
 
     /** Error. */
-    @GridToStringExclude
+    @GridToStringInclude
     protected volatile Throwable err;
 
     /** Trackable flag. */
