@@ -83,6 +83,12 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
     /** */
     private GridDhtTxMapping txMapping;
 
+    @GridToStringInclude
+    private volatile boolean onErrorCalled;
+
+    @GridToStringInclude
+    private volatile boolean onCompleteCalled;
+
     /**
      * @param cctx Context.
      * @param tx Transaction.
@@ -141,6 +147,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
      * @param discoThread {@code True} if executed from discovery thread.
      */
     private void onError(Throwable e, boolean discoThread) {
+        onErrorCalled = true;
+
         if (e instanceof IgniteTxTimeoutCheckedException) {
             onTimeout();
 
@@ -298,6 +306,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
      * @return {@code True} if future was finished by this call.
      */
     private boolean onComplete() {
+        onCompleteCalled = true;
+
         Throwable err0 = err;
 
         if (err0 == null || tx.needCheckBackup())
@@ -886,6 +896,9 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
         /** Mappings to proceed prepare. */
         private Queue<GridDistributedTxMapping> mappings;
 
+        @GridToStringInclude
+        private volatile boolean onNodeLeftCalled;
+
         /**
          * @param parent Parent.
          * @param m Mapping.
@@ -944,6 +957,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
          * @param discoThread {@code True} if executed from discovery thread.
          */
         void onNodeLeft(ClusterTopologyCheckedException e, boolean discoThread) {
+            onNodeLeftCalled = true;
+
             if (msgLog.isDebugEnabled()) {
                 msgLog.debug("Near optimistic prepare fut, mini future node left [txId=" + parent.tx.nearXidVersion() +
                     ", node=" + m.primary().id() + ']');
