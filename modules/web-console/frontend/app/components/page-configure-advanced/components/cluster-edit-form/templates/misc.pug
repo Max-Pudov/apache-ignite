@@ -51,7 +51,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Warmup closure:',
                     model: `${model}.warmupClosure`,
                     name: '"warmupClosure"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'This closure will be executed before actual grid instance start'
                 })

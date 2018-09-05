@@ -43,7 +43,7 @@ include /app/helpers/jade/mixins
         label: 'Listener:',
         model: '$checkpointSPI.JDBC.checkpointListener',
         name: '"checkpointJdbcListener"',
-        enabled: 'true',
+        disabled: 'false',
         required: 'false',
         tip: 'Checkpoint listener implementation class name',
         validationActive: jdbcCheckpoint

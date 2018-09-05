@@ -150,7 +150,7 @@ panel-collapsible(ng-show='$ctrl.available("2.3.0")' ng-form=form on-open=`ui.lo
                     label:'SSL factory:',
                     model: `${connectionModel}.sslContextFactory`,
                     name: '"ClientConnectorSslContextFactory"',
-                    enabled: sslFactoryEnabled,
+                    disabled: `!(${sslFactoryEnabled})`,
                     required: sslFactoryEnabled,
                     tip: 'If SSL factory specified then replication will be performed through secure SSL channel created with this factory<br/>\
                           If not present <b>isUseIgniteSslContextFactory()</b> flag will be evaluated<br/>\

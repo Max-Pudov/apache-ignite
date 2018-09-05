@@ -103,7 +103,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                         label: 'SPI implementation',
                                         model: '$item.Custom.class',
                                         name: '"failoverSpiClass"',
-                                        enabled: 'true',
+                                        disabled: 'false',
                                         required: failoverCustom,
                                         tip: 'Custom FailoverSpi implementation class name.',
                                         validationActive: failoverCustom

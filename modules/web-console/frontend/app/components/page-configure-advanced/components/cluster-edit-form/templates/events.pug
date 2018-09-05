@@ -85,7 +85,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         label: 'Filter:',
                         model: `${modelEventStorage}.Memory.filter`,
                         name: '"EventStorageFilter"',
-                        enabled: 'true',
+                        disabled: 'false',
                         required: 'false',
                         tip: 'Filter for events to be recorded<br/>\
                              Should be implementation of o.a.i.lang.IgnitePredicate&lt;o.a.i.events.Event&gt;',
@@ -97,7 +97,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         label: 'Class:',
                         model: `${modelEventStorage}.Custom.className`,
                         name: '"EventStorageCustom"',
-                        enabled: 'true',
+                        disabled: 'false',
                         required: eventStorageCustom,
                         tip: 'Event storage implementation class name',
                         validationActive: eventStorageCustom

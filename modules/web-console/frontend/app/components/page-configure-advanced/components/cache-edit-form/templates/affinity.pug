@@ -83,7 +83,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             label: 'Backup filter',
                             model: `${affModel}.Rendezvous.affinityBackupFilter`,
                             name: '"RendAffinityBackupFilter"',
-                            enabled: 'true',
+                            disabled: 'false',
                             required: 'false',
                             tip: 'Backups will be selected from all nodes that pass this filter'
                         })
@@ -111,7 +111,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             label: 'Backup filter',
                             model: `${affModel}.Fair.affinityBackupFilter`,
                             name: '"FairAffinityBackupFilter"',
-                            enabled: 'true',
+                            disabled: 'false',
                             required: 'false',
                             tip: 'Backups will be selected from all nodes that pass this filter'
                         })
@@ -128,7 +128,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             label: 'Class name:',
                             model: `${affModel}.Custom.className`,
                             name: '"AffCustomClassName"',
-                            enabled: 'true',
+                            disabled: 'false',
                             required: customAff,
                             tip: 'Custom key affinity function implementation class name'
                         })
@@ -137,7 +137,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Mapper:',
                     model: `${model}.affinityMapper`,
                     name: '"AffMapCustomClassName"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Provide custom affinity key for any given key'
                 })
@@ -148,7 +148,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Topology validator:',
                     model: `${model}.topologyValidator`,
                     name: '"topologyValidator"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false'
                 })
 

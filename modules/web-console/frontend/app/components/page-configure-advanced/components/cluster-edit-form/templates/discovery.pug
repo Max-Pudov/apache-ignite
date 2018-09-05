@@ -62,7 +62,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label:'Address resolver:',
                     model: `${model}.addressResolver`,
                     name: '"discoAddressResolver"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Provides resolution between external and internal addresses'
                 })
@@ -177,7 +177,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Discovery listener:',
                     model: `${model}.listener`,
                     name: '"discoListener"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Listener for grid node discovery events'
                 })
@@ -186,7 +186,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Data exchange:',
                     model: `${model}.dataExchange`,
                     name: '"dataExchange"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Class name of handler for initial data exchange between Ignite nodes'
                 })
@@ -195,7 +195,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Metrics provider:',
                     model: `${model}.metricsProvider`,
                     name: '"metricsProvider"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Class name of metric provider to discovery SPI'
                 })
@@ -234,7 +234,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Node authenticator:',
                     model: `${model}.authenticator`,
                     name: '"authenticator"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Class name of node authenticator implementation'
                 })

@@ -59,7 +59,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Class name:',
                     model: `${nodeFilter}.Custom.className`,
                     name: '"customNodeFilter"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: customFilter,
                     tip: 'Class name of custom node filter implementation',
                     validationActive: customFilter

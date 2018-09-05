@@ -37,7 +37,7 @@ include /app/helpers/jade/mixins
         label: 'Listener:',
         model: '$checkpointSPI.FS.checkpointListener',
         name: '"checkpointFsListener"',
-        enabled: 'true',
+        disabled: 'false',
         required: 'false',
         tip: 'Checkpoint listener implementation class name',
         validationActive: '$checkpointSPI.kind === "FS"'

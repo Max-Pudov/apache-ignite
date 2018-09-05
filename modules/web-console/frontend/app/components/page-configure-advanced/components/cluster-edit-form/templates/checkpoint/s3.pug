@@ -68,7 +68,7 @@ include /app/helpers/jade/mixins
             label: 'Class name:',
             model: credentialsModel + '.Custom.className',
             name: '"checkpointS3CustomClassName"',
-            enabled: 'true',
+            disabled: 'false',
             required: checkpointS3Custom,
             tip: 'Custom AWS credentials provider implementation class',
             validationActive:checkpointS3Custom
@@ -108,7 +108,7 @@ include /app/helpers/jade/mixins
         label: 'Listener:',
         model: '$checkpointSPI.S3.checkpointListener',
         name: '"checkpointS3Listener"',
-        enabled: 'true',
+        disabled: 'false',
         required: 'false',
         tip: 'Checkpoint listener implementation class name',
         validationActive: checkpointS3
@@ -280,7 +280,7 @@ include /app/helpers/jade/mixins
                 label: 'Retry condition:',
                 model: clientRetryModel + '.Custom.retryCondition',
                 name: '"checkpointS3CustomRetryPolicy"',
-                enabled: 'true',
+                disabled: 'false',
                 required: checkpointS3CustomRetry,
                 tip: 'Retry condition on whether a specific request and exception should be retried',
                 validationActive: checkpointS3CustomRetry
@@ -290,7 +290,7 @@ include /app/helpers/jade/mixins
                 label: 'Backoff strategy:',
                 model: clientRetryModel + '.Custom.backoffStrategy',
                 name: '"checkpointS3CustomBackoffStrategy"',
-                enabled: 'true',
+                disabled: 'false',
                 required: checkpointS3CustomRetry,
                 tip: 'Back-off strategy for controlling how long the next retry should wait',
                 validationActive: checkpointS3CustomRetry
@@ -392,7 +392,7 @@ include /app/helpers/jade/mixins
             label: 'DNS resolver:',
             model: clientCfgModel + '.dnsResolver',
             name: '"checkpointS3DnsResolver"',
-            enabled: 'true',
+            disabled: 'false',
             required: 'false',
             tip: 'DNS Resolver that should be used to for resolving AWS IP addresses',
             validationActive: checkpointS3
@@ -412,7 +412,7 @@ include /app/helpers/jade/mixins
             label: 'SecureRandom class name:',
             model: clientCfgModel + '.secureRandom',
             name: '"checkpointS3SecureRandom"',
-            enabled: 'true',
+            disabled: 'false',
             required: 'false',
             tip: 'SecureRandom to be used by the SDK class name',
             validationActive: checkpointS3

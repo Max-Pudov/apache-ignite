@@ -98,7 +98,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Manager factory:',
                     model: `${model}.txManagerFactory`,
                     name: '"txManagerFactory"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Class name of transaction manager factory for integration with JEE app servers'
                 })

@@ -73,7 +73,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Communication listener:',
                     model: `${communication}.listener`,
                     name: '"comListener"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Listener of communication events'
                 })
@@ -257,7 +257,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Address resolver:',
                     model: `${communication}.addressResolver`,
                     name: '"comAddressResolver"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Provides resolution between external and internal addresses'
                 })

@@ -68,7 +68,7 @@ panel-collapsible(opened=`::true` ng-form=form)
                     model: `${model}.keyType`,
                     name: '"keyType"',
                     options: '$ctrl.javaBuiltInClassesBase',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'true',
                     placeholder: '{{ ' + generatePojo + ' ? "Full class name for Key" : "Key type name" }}',
                     tip: 'Key class used to store key in cache',

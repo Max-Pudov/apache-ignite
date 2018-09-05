@@ -26,14 +26,14 @@ include ../../primitives/form-field/index
 -    return (enabled === false || enabled === true) ? !enabled : '!(' + enabled + ')';
 -}
 
-mixin form-field__java-class({ label, model, name, enabled, required, tip, placeholder, validationActive })
+mixin form-field__java-class({ label, model, name, disabled, required, tip, placeholder, validationActive })
     -var errLbl = label.substring(0, label.length - 1)
 
     +form-field__text({
         label,
         model,
         name,
-        disabled: enabledToDisabled(enabled),
+        disabled,
         required,
         placeholder: placeholder || 'Enter fully qualified class name',
         tip
@@ -53,14 +53,14 @@ mixin form-field__java-class({ label, model, name, enabled, required, tip, place
         +form-field__error({ error: 'javaIdentifier', message: `${ errLbl } is invalid Java identifier!` })
 
 //- Mixin for text field with enabled condition with options.
-mixin form-field__java-class--typeahead({ label, model, name, options, enabled, required, placeholder, tip, validationActive })
+mixin form-field__java-class--typeahead({ label, model, name, options, disabled, required, placeholder, tip, validationActive })
     -var errLbl = label.substring(0, label.length - 1)
 
     +form-field__typeahead({
         label,
         model,
         name,
-        disabled: enabledToDisabled(enabled),
+        disabled,
         required,
         placeholder,
         options,

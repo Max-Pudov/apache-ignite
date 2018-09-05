@@ -131,7 +131,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                     label: 'Class loader:',
                     model: `${model}.classLoader`,
                     name: '"classLoader"',
-                    enabled: 'true',
+                    disabled: 'false',
                     required: 'false',
                     tip: 'Loader which will be used for instantiating execution context'
                 })
@@ -229,7 +229,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         label: 'Listener:',
                         model: `${modelDeployment}.URI.listener`,
                         name: '"DeploymentURIListener"',
-                        enabled: 'true',
+                        disabled: 'false',
                         required: 'false',
                         tip: 'Deployment event listener',
                         validationActive: uriDeployment
@@ -254,7 +254,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         label: 'Listener:',
                         model: `${modelDeployment}.Local.listener`,
                         name: '"DeploymentLocalListener"',
-                        enabled: 'true',
+                        disabled: 'false',
                         required: 'false',
                         tip: 'Deployment event listener',
                         validationActive: localDeployment
@@ -265,7 +265,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                         label: 'Class:',
                         model: `${modelDeployment}.Custom.className`,
                         name: '"DeploymentCustom"',
-                        enabled: 'true',
+                        disabled: 'false',
                         required: customDeployment,
                         tip: 'DeploymentSpi implementation class',
                         validationActive: customDeployment

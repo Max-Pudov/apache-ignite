@@ -81,7 +81,7 @@ panel-collapsible(ng-form=form)
                                     label: 'Listener:',
                                     model: '$checkpointSPI.Cache.checkpointListener',
                                     name: '"checkpointCacheListener"',
-                                    enabled: 'true',
+                                    disabled: 'false',
                                     required: 'false',
                                     tip: 'Checkpoint listener implementation class name',
                                     validationActive: CacheCheckpoint
@@ -96,7 +96,7 @@ panel-collapsible(ng-form=form)
                                     label: 'Class name:',
                                     model: '$checkpointSPI.Custom.className',
                                     name: '"checkpointCustomClassName"',
-                                    enabled: 'true',
+                                    disabled: 'false',
                                     required: CustomCheckpoint,
                                     tip: 'Custom CheckpointSpi implementation class',
                                     validationActive: CustomCheckpoint

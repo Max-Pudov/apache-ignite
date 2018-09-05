@@ -140,7 +140,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                             label: 'Load brobe implementation:',
                                             model: '$item.Adaptive.loadProbe.Custom.className',
                                             name: '"loadBalancingAdaptiveJobUseClass"',
-                                            enabled: 'true',
+                                            disabled: 'false',
                                             required: loadProbeCustom,
                                             tip: 'Custom load balancing SPI implementation class name.',
                                             validationActive: loadProbeCustom
@@ -168,7 +168,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                                     label: 'Load balancing SPI implementation:',
                                     model: '$item.Custom.className',
                                     name: '"loadBalancingClass"',
-                                    enabled: 'true',
+                                    disabled: 'false',
                                     required: loadBalancingCustom,
                                     tip: 'Custom load balancing SPI implementation class name.',
                                     validationActive: loadBalancingCustom

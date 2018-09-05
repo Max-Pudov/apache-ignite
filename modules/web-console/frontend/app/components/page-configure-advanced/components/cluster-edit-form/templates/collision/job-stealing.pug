@@ -71,7 +71,7 @@ include /app/helpers/jade/mixins
         label: 'External listener:',
         model: `${model}.externalCollisionListener`,
         name: '"jsExternalCollisionListener"',
-        enabled: 'true',
+        disabled: 'false',
         required: 'false',
         tip: 'Listener to be set for notification of external collision events',
         validationActive: '$ctrl.clonedCluster.collision.kind === "JobStealing"'

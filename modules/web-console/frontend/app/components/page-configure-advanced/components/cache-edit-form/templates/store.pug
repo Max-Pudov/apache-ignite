@@ -130,7 +130,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             label: 'Hasher:',
                             model: `${pojoStoreFactory}.hasher`,
                             name: '"pojoHasher"',
-                            enabled: 'true',
+                            disabled: 'false',
                             required: 'false',
                             tip: 'Hash calculator',
                             validationActive: required
@@ -140,7 +140,7 @@ panel-collapsible(ng-form=form on-open=`ui.loadPanel('${form}')`)
                             label: 'Transformer:',
                             model: `${pojoStoreFactory}.transformer`,
                             name: '"pojoTransformer"',
-                            enabled: 'true',
+                            disabled: 'false',
                             required: 'false',
                             tip: 'Types transformer',
                             validationActive: required
