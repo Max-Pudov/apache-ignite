@@ -44,8 +44,9 @@ include /app/helpers/jade/mixins
                     )
 
             .modal-footer
-                button.btn-ignite.btn-ignite--link-success(ng-click='ctrl.back()') {{::ctrl.backText}}
-                a.btn-ignite.btn-ignite--success(href='/api/v1/downloads/agent' target='_self') Download agent
+                div
+                    button.btn-ignite.btn-ignite--link-success(ng-click='ctrl.back()') {{::ctrl.backText}}
+                    a.btn-ignite.btn-ignite--success(href='/api/v1/downloads/agent' target='_self') Download agent
 
         .modal-content(ng-switch-when='nodeMissing')
             .modal-header.header
