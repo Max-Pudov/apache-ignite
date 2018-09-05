@@ -33,7 +33,7 @@
                             | &nbsp;How To Start Demo
                         ul
                             li
-                                a(ng-click='downloadAgent()') #[b Download]
+                                a(ng-href='{{downloadAgentHref}}' target='_self') #[b Download]
                                 | &nbsp; and unzip ignite-web-agent archive
                             li #[b Run] shell file ignite-web-agent.{sh|bat}
                 div(ng-show='hasAgents')
@@ -45,5 +45,5 @@
                         li Close dialog and try Web Console
             .modal-footer
                 div
-                    a.btn-ignite.btn-ignite--link-success(ng-hide='hasAgents' href='/api/v1/downloads/agent' target='_self') Download agent
+                    a.btn-ignite.btn-ignite--link-success(ng-hide='hasAgents' ng-href='{{downloadAgentHref}}' target='_self') Download agent
                     button.btn-ignite.btn-ignite--success(ng-class='hasAgents ? "btn-primary" : "btn-default"' ng-click='close()') Close
