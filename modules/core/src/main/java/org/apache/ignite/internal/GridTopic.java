@@ -82,6 +82,9 @@ public enum GridTopic {
     TOPIC_CONTINUOUS,
 
     /** */
+    TOPIC_MONGO,
+
+    /** */
     TOPIC_TIME_SYNC,
 
     /** */
