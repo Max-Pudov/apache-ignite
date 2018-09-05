@@ -856,7 +856,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
             @Override public String apply(IgniteInternalFuture<?> f) {
                 return "[node=" + ((MiniFuture)f).node().id() +
                     ", loc=" + ((MiniFuture)f).node().isLocal() +
-                    ", done=" + f.isDone() + "]";
+                    ", done=" + f.isDone() +
+                    ", onNodeLeftCalled=" + ((MiniFuture)f).onNodeLeftCalled + "]";
             }
         }, new P1<IgniteInternalFuture<GridNearTxPrepareResponse>>() {
             @Override public boolean apply(IgniteInternalFuture<GridNearTxPrepareResponse> fut) {
