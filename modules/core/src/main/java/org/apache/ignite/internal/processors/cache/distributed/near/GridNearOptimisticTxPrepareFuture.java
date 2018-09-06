@@ -595,6 +595,8 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                 }
                 else {
                     try {
+                        fut.reqSnd = true;
+
                         cctx.io().send(n, req, tx.ioPolicy());
 
                         if (msgLog.isDebugEnabled()) {
@@ -603,11 +605,15 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                         }
                     }
                     catch (ClusterTopologyCheckedException e) {
+                        fut.exRcvd = e;
+
                         e.retryReadyFuture(cctx.nextAffinityReadyFuture(tx.topologyVersion()));
 
                         fut.onNodeLeft(e, false);
                     }
                     catch (IgniteCheckedException e) {
+                        fut.exRcvd = e;
+
                         if (msgLog.isDebugEnabled()) {
                             msgLog.debug("Near optimistic prepare fut, failed to sent request [txId=" + tx.nearXidVersion() +
                                 ", node=" + n.id() +
@@ -615,6 +621,11 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                         }
 
                         fut.onResult(e);
+                    }
+                    catch (Throwable e) {
+                        fut.exRcvd = e;
+
+                        throw e;
                     }
                 }
             }
@@ -858,7 +869,9 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
                     ", loc=" + ((MiniFuture)f).node().isLocal() +
                     ", done=" + f.isDone() +
                     ", onNodeLeftCalled=" + ((MiniFuture)f).onNodeLeftCalled +
-                    ", rcvRes=" + ((MiniFuture)f).rcvRes + "]";
+                    ", rcvRes=" + ((MiniFuture)f).rcvRes +
+                    ", reqSnd=" + ((MiniFuture)f).reqSnd +
+                    ", exRcvd=" + ((MiniFuture)f).exRcvd + "]";
             }
         }, new P1<IgniteInternalFuture<GridNearTxPrepareResponse>>() {
             @Override public boolean apply(IgniteInternalFuture<GridNearTxPrepareResponse> fut) {
@@ -900,6 +913,10 @@ public class GridNearOptimisticTxPrepareFuture extends GridNearOptimisticTxPrepa
 
         @GridToStringInclude
         private volatile boolean onNodeLeftCalled;
+
+        private volatile boolean reqSnd;
+
+        private volatile Throwable exRcvd;
 
         /**
          * @param parent Parent.
