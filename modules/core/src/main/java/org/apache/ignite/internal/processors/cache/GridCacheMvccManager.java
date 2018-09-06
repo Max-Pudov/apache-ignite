@@ -253,20 +253,22 @@ public class GridCacheMvccManager extends GridCacheSharedManagerAdapter {
 
     /** Discovery listener. */
     @GridToStringExclude private final GridLocalEventListener discoLsnr = new GridLocalEventListener() {
-        @Override public void onEvent(Event evt) {
-            assert evt instanceof DiscoveryEvent;
-            assert evt.type() == EVT_NODE_FAILED || evt.type() == EVT_NODE_LEFT;
+        @Override public void onEvent(final Event evt) {
+            cctx.kernalContext().getSystemExecutorService().submit(() -> {
+                assert evt instanceof DiscoveryEvent;
+                assert evt.type() == EVT_NODE_FAILED || evt.type() == EVT_NODE_LEFT;
 
-            DiscoveryEvent discoEvt = (DiscoveryEvent)evt;
+                DiscoveryEvent discoEvt = (DiscoveryEvent)evt;
 
-            if (log.isDebugEnabled())
-                log.debug("Processing node left [nodeId=" + discoEvt.eventNode().id() + "]");
+                if (log.isDebugEnabled())
+                    log.debug("Processing node left [nodeId=" + discoEvt.eventNode().id() + "]");
 
-            for (GridCacheFuture<?> fut : activeFutures())
-                fut.onNodeLeft(discoEvt.eventNode().id());
+                for (GridCacheFuture<?> fut : activeFutures())
+                    fut.onNodeLeft(discoEvt.eventNode().id());
 
-            for (GridCacheAtomicFuture<?> cacheFut : atomicFuts.values())
-                cacheFut.onNodeLeft(discoEvt.eventNode().id());
+                for (GridCacheAtomicFuture<?> cacheFut : atomicFuts.values())
+                    cacheFut.onNodeLeft(discoEvt.eventNode().id());
+            });
         }
     };
 
