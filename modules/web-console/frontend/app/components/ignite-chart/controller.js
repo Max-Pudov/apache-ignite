@@ -118,7 +118,7 @@ export class IgniteChartController {
     async initChart() {
         /** @type {import('chart.js').ChartConfiguration} */
         this.config = {
-            type: 'line',
+            type: 'LineWithVerticalCursor',
             data: {
                 datasets: []
             },
@@ -187,8 +187,9 @@ export class IgniteChartController {
                 },
                 tooltips: {
                     mode: 'index',
-                    position: 'average',
+                    position: 'yCenter',
                     intersect: false,
+                    yAlign: 'center',
                     xPadding: 20,
                     yPadding: 20,
                     bodyFontSize: 13,
@@ -228,6 +229,40 @@ export class IgniteChartController {
 
         const chartModule = await import('chart.js');
         const Chart = chartModule.default;
+
+        Chart.Tooltip.positioners.yCenter = (elements) => {
+            const chartHeight = elements[0]._chart.height;
+            const tooltipHeight = 60;
+
+            return {x: elements[0].getCenterPoint().x, y: Math.floor(chartHeight / 2) - Math.floor(tooltipHeight / 2) };
+        };
+
+
+        // Drawing vertical cursor
+        Chart.defaults.LineWithVerticalCursor = Chart.defaults.line;
+        Chart.controllers.LineWithVerticalCursor = Chart.controllers.line.extend({
+            draw(ease) {
+                Chart.controllers.line.prototype.draw.call(this, ease);
+
+                if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+                    const activePoint = this.chart.tooltip._active[0];
+                    const ctx = this.chart.ctx;
+                    const x = activePoint.tooltipPosition().x;
+                    const topY = this.chart.scales['y-axis-0'].top;
+                    const bottomY = this.chart.scales['y-axis-0'].bottom;
+
+                    // draw line
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, topY);
+                    ctx.lineTo(x, bottomY);
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeStyle = '#0080ff';
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        });
 
         await import('chartjs-plugin-streaming');
 
