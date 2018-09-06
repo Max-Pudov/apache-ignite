@@ -93,8 +93,10 @@ public class IgniteSpringTestSuite extends TestSuite {
 
         suite.addTestSuite(SpringCacheTest.class);
 
+        // TODO https://issues.apache.org/jira/browse/IGNITE-9488
         //suite.addTestSuite(GridSpringCacheManagerMultiJvmSelfTest.class);
 
+        // TODO CommandLineStartup calls System.exit, can't be tested directly
         //suite.addTestSuite(GridCommandLineLoaderTest.class);
 
         return suite;
