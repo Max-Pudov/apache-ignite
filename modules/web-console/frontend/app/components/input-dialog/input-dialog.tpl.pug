@@ -27,7 +27,7 @@ include /app/helpers/jade/mixins
                      svg(ignite-icon="cross")
 
             .modal-body
-                .row(ng-hide='{{ ctrl.mode === "memory" }}')
+                .row(ng-hide='ctrl.mode === "memory"')
                     .col-100
                         +form-field__text({
                             label: '{{ ctrl.label }}',
@@ -39,9 +39,9 @@ include /app/helpers/jade/mixins
                             data-ignite-form-field-input-autofocus='true'
                             ignite-on-enter='form.$valid && ctrl.confirm()'
                         )
-                .row(ng-show='{{ ctrl.mode === "memory" }}')
+                .row(ng-show='ctrl.mode === "memory"')
                     .col-100
-                        pc-form-field-size(
+                        form-field-size(
                             ng-model='ctrl.value'
                             ng-model-options='{allowInvalid: false}'
                             id='input-field-memory'
@@ -51,11 +51,11 @@ include /app/helpers/jade/mixins
                             size-scale-label='mb'
                             placeholder='{{ ctrl.placeholder }}'
                             min='{{ ctrl.min }}'
-                            tip='Enter value'
+                            tip='Last {{ ctrl.value }} bytes will be downloaded'
                             on-scale-change='scale = $event'
                             ng-required='true'
                         )
-                            +form-field-feedback(_, 'min', `{{ ctrl.minMessage }}`)
+                            +form-field__error({ error: 'min', message: `{{ ctrl.minMessage }}` })
 
             .modal-footer
                 div
